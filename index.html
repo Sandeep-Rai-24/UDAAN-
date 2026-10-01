@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UDAAN - Real-time Airfare Intelligence Portal</title>
+  <link rel="stylesheet" href="style.css" />
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- ================= TOP GOV HEADER ================= -->
+  <header class="gov-banner">
+    <div class="banner-left">
+      <img 
+        src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" 
+        alt="Emblem of India" 
+        class="emblem-img"
+      />
+      <div class="ministry-text">
+        <span class="govt-title">Government of India</span>
+        <span class="ministry-name">Ministry of Statistics &amp; Programme Implementation</span>
+        <span class="office-name">National Statistical Office</span>
+      </div>
+    </div>
+
+    <div class="banner-center">
+      <div class="brand-title-wrap">
+        <svg class="wing-icon left-wing" viewBox="0 0 100 40" fill="none">
+          <path d="M95,30 C70,30 40,25 10,5 C35,12 65,18 90,20 Z" fill="#E5A823"/>
+          <path d="M95,33 C65,33 35,28 5,14 C30,20 60,25 90,26 Z" fill="#E5A823"/>
+          <path d="M95,36 C60,37 30,34 0,23 C25,28 55,32 90,32 Z" fill="#E5A823"/>
+        </svg>
+        <h1 class="portal-brand-text">UDAAN</h1>
+        <svg class="wing-icon right-wing" viewBox="0 0 100 40" fill="none">
+          <path d="M5,30 C30,30 60,25 90,5 C65,12 35,18 10,20 Z" fill="#E5A823"/>
+          <path d="M5,33 C35,33 65,28 95,14 C70,20 40,25 10,26 Z" fill="#E5A823"/>
+          <path d="M5,36 C40,37 70,34 100,23 C75,28 45,32 10,32 Z" fill="#E5A823"/>
+        </svg>
+      </div>
+      <p class="portal-tagline">Real-time Airfare Intelligence Portal</p>
+    </div>
+
+    <div class="banner-right">
+      <div class="flag-section">
+        <img 
+          src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" 
+          alt="Flag of India" 
+          class="flag-img"
+        />
+        <div class="flag-text">
+          <span class="hindi-text">भारत सरकार</span>
+          <span class="eng-text">GOVERNMENT OF INDIA</span>
+        </div>
+      </div>
+      <button class="btn-login" id="loginBtn">
+        <i class="fa-regular fa-user"></i>
+        <span>Login / Sign Up</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= APPLICATION BODY ================= -->
+  <div class="app-layout">
+    
+   <!-- LEFT SIDEBAR -->
+<aside class="sidebar">
+
+    <nav class="nav-menu">
+
+        <!-- DASHBOARD -->
+        <button type="button"
+                class="nav-item active"
+                onclick="goToPage('index.html')">
+
+            <i class="fa-solid fa-house"></i>
+            <span>Dashboard</span>
+
+        </button>
+
+
+        <!-- AIRFARE INDEX -->
+        <button type="button"
+                class="nav-item"
+                onclick="goToPage('airfare-index.html')">
+
+            <i class="fa-solid fa-chart-column"></i>
+            <span>Airfare Index</span>
+
+        </button>
+
+
+        <!-- ROUTE ANALYSIS -->
+        <button type="button"
+                class="nav-item"
+                onclick="goToPage('route-analysis.html')">
+
+            <i class="fa-solid fa-route"></i>
+            <span>Route Analysis</span>
+
+        </button>
+
+
+        <!-- AIRLINE COMPARISON -->
+        <button type="button"
+                class="nav-item"
+                onclick="goToPage('airline-comparison.html')">
+
+            <i class="fa-solid fa-plane-departure"></i>
+            <span>Airline Comparison</span>
+
+        </button>
+
+
+        <!-- ADVANCE BOOKING -->
+        <button type="button"
+                class="nav-item"
+                onclick="goToPage('advance-booking.html')">
+
+            <i class="fa-regular fa-calendar-days"></i>
+            <span>Advance Booking Analysis</span>
+
+        </button>
+
+
+        <!-- HEAT MAP -->
+        <button type="button"
+                class="nav-item"
+                onclick="goToPage('heat-map.html')">
+
+            <i class="fa-solid fa-location-dot"></i>
+            <span>Heat Map</span>
+
+        </button>
+
+
+       <button type="button"
+        class="nav-item live-monitoring"
+        onclick="goToPage('live.html')">
+
+    <i class="fa-solid fa-plane-departure"></i>
+    <span>Live Monitoring</span>
+
+    <span class="live-dot"></span>
+
+</button>
+
+
+      
+
+        <!-- REPORTS -->
+        <button type="button"
+                class="nav-item"
+                onclick="goToPage('Complaints.html')">
+
+            <i class="fa-regular fa-file-lines"></i>
+            <span>Complaints</span>
+
+        </button>
+
+
+        <!-- API ACCESS -->
+        <button type="button"
+                class="nav-item"
+                onclick="window.open('https://esankhyiki.mospi.gov.in', '_blank')">
+
+            <i class="fa-solid fa-code"></i>
+            <span>API Access</span>
+
+        </button>
+
+
+        <!-- ALERTS -->
+        <button type="button"
+                class="nav-item"
+                onclick="goToPage('alerts.html')">
+
+            <i class="fa-regular fa-bell"></i>
+            <span>Alerts</span>
+
+        </button>
+
+
+        <!-- ABOUT -->
+        <button type="button"
+                class="nav-item"
+                onclick="goToPage('pages/about.html')">
+
+            <i class="fa-solid fa-circle-info"></i>
+            <span>About UDAAN</span>
+
+        </button>
+
+    </nav>
+
+
+   
+
+
+</nav>
+
+      <!-- Sidebar Status Live Box -->
+      <div class="sidebar-status-card">
+        <p class="status-label">Data Last Updated</p>
+        <p class="status-timestamp" id="lastUpdatedTime">Loading...</p>
+        <div class="live-pill">
+          <span class="dot-blink"></span>
+          <span>Live</span>
+        </div>
+        <div class="next-update-wrap">
+          <span class="nu-label">Next Update In</span>
+          <div class="countdown-digits" id="countdownTimer">02 : 14 : 37</div>
+          <span class="countdown-units">Hrs &nbsp; Mins &nbsp; Secs</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT DASHBOARD CONTENT -->
+    <main class="main-content">
+
+      <!-- 1. Hero Airplane Sunset Banner -->
+      <section class="hero-banner">
+        <div class="live-data-overlay">
+          <div class="live-tag">
+            <span class="pulse-dot"></span>
+            <span>LIVE SCRAPING</span>
+          </div>
+          <h2 class="hero-title">Real-time Airfare Price Index</h2>
+          <div class="price-index-group">
+            <span id="priceIndexValue" class="index-value">128.64</span>
+            <div class="percentage-change">
+              <i class="fa-solid fa-caret-up"></i>
+              <span id="indexDelta">4.82%</span>
+            </div>
+          </div>
+          <p class="base-period-text">(Compared to Base Period 2019 = 100)</p>
+          <p class="current-date-text">As on <strong id="liveHeroDate">Today</strong></p>
+        </div>
+      </section>
+
+      <!-- 2. KPI Summary Cards -->
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap blue-bg"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Average Airfare (INR)</span>
+            <div class="kpi-val-row">
+              <span class="kpi-val">₹ <span id="avgAirfare">5,246</span></span>
+              <span class="kpi-badge green"><i class="fa-solid fa-caret-up"></i> 5.21%</span>
+            </div>
+            <span class="kpi-sub">vs yesterday</span>
+          </div>
+          <svg class="sparkline" viewBox="0 0 100 30"><path d="M0,25 Q25,28 50,15 T100,5" fill="none" stroke="#2563eb" stroke-width="2.5"/><path d="M0,25 Q25,28 50,15 T100,5 L100,30 L0,30 Z" fill="rgba(37,99,235,0.08)"/></svg>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap green-bg"><i class="fa-solid fa-code-fork"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Routes Tracked</span>
+            <span class="kpi-val">50</span>
+            <span class="kpi-sub">Key City Pairs</span>
+          </div>
+          <svg class="sparkline" viewBox="0 0 100 30"><path d="M0,22 Q30,24 60,12 T100,6" fill="none" stroke="#10b981" stroke-width="2.5"/><path d="M0,22 Q30,24 60,12 T100,6 L100,30 L0,30 Z" fill="rgba(16,185,129,0.08)"/></svg>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap purple-bg"><i class="fa-solid fa-plane"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Airlines Monitored</span>
+            <span class="kpi-val">10</span>
+            <span class="kpi-sub">Domestic Carriers</span>
+          </div>
+          <svg class="sparkline" viewBox="0 0 100 30"><path d="M0,20 Q35,28 70,16 T100,8" fill="none" stroke="#8b5cf6" stroke-width="2.5"/><path d="M0,20 Q35,28 70,16 T100,8 L100,30 L0,30 Z" fill="rgba(139,92,246,0.08)"/></svg>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap orange-bg"><i class="fa-solid fa-coins"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Daily Price Quotes</span>
+            <span class="kpi-val" id="dailyQuotes">1,25,340</span>
+            <span class="kpi-sub" id="dailyQuotesDate">Live Scraping</span>
+          </div>
+          <svg class="sparkline" viewBox="0 0 100 30"><path d="M0,26 Q40,24 75,14 T100,4" fill="none" stroke="#f97316" stroke-width="2.5"/><path d="M0,26 Q40,24 75,14 T100,4 L100,30 L0,30 Z" fill="rgba(249,115,22,0.08)"/></svg>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap pink-bg"><i class="fa-solid fa-server"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Data Sources</span>
+            <span class="kpi-val">15</span>
+            <span class="kpi-sub">Airlines + OTAs</span>
+          </div>
+          <svg class="sparkline" viewBox="0 0 100 30"><path d="M0,24 Q30,26 65,18 T100,9" fill="none" stroke="#ec4899" stroke-width="2.5"/><path d="M0,24 Q30,26 65,18 T100,9 L100,30 L0,30 Z" fill="rgba(236,72,153,0.08)"/></svg>
+        </div>
+      </section>
+
+      <!-- 3. Middle Section: Index Trend + Isometric Indian Heatmap -->
+      <section class="charts-row">
+        
+        <!-- Airfare Index Trend (Line Chart with Sharp Multi-Edge Nodes) -->
+        <div class="dashboard-panel panel-large">
+          <div class="panel-header">
+            <div class="panel-title">
+              <h3>Airfare Price Index Trend</h3>
+              <i class="fa-regular fa-circle-question info-tooltip" title="Historical Index Data"></i>
+            </div>
+            <div class="filter-group">
+              <div class="segmented-control">
+                <button class="seg-btn active" data-range="daily">Daily</button>
+                <button class="seg-btn" data-range="weekly">Weekly</button>
+                <button class="seg-btn" data-range="monthly">Monthly</button>
+              </div>
+              <select class="custom-select" id="trendSpanSelect">
+                <option value="3m">3 Months</option>
+                <option value="6m">6 Months</option>
+                <option value="1y">1 Year</option>
+              </select>
+            </div>
+          </div>
+          <div class="chart-wrapper trend-wrapper">
+            <canvas id="indexTrendChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Isometric India Airfare Heatmap with Curved Flight Routes -->
+        <div class="dashboard-panel panel-small">
+          <div class="panel-header">
+            <div class="panel-title">
+              <h3>Route-wise Airfare Heat Map</h3>
+              <i class="fa-regular fa-circle-question info-tooltip"></i>
+            </div>
+            <div class="filter-inline">
+              <span class="filter-label">Select Metric</span>
+              <select class="custom-select" id="heatmapMetric">
+                <option value="avg">Average Fare (INR)</option>
+                <option value="median">Median Fare (INR)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="heatmap-body">
+            <!-- Accurate Isometric India Map SVG with Route Trajectories -->
+            <div class="india-map-container">
+              <svg class="india-iso-map" viewBox="0 0 300 320" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <filter id="mapShadow" x="-10%" y="-10%" width="130%" height="130%">
+                    <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.12"/>
+                  </filter>
+                  <linearGradient id="mapPlateGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#f1f5f9"/>
+                    <stop offset="100%" stop-color="#e2e8f0"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- Isometric Base Plate -->
+                <path d="M140,25 L165,15 L180,30 L185,55 L215,70 L250,75 L285,100 L300,125 L285,150 L245,155 L230,180 L190,235 L155,305 L140,305 L115,245 L90,190 L60,155 L35,135 L40,110 L75,85 L110,70 Z" 
+                      fill="#cbd5e1" transform="translate(0, 8)" opacity="0.6"/>
+
+                <!-- Top Silhouette Map Surface -->
+                <path d="M140,25 L165,15 L180,30 L185,55 L215,70 L250,75 L285,100 L300,125 L285,150 L245,155 L230,180 L190,235 L155,305 L140,305 L115,245 L90,190 L60,155 L35,135 L40,110 L75,85 L110,70 Z" 
+                      fill="url(#mapPlateGrad)" stroke="#94a3b8" stroke-width="1.2" filter="url(#mapShadow)"/>
+
+                <!-- Flight Route Arcs -->
+                <path d="M140,90 Q110,135 100,175" class="flight-arc" stroke="#64748b" stroke-dasharray="3,3" stroke-width="1.4"/>
+                <path d="M140,90 Q160,165 150,235" class="flight-arc" stroke="#64748b" stroke-dasharray="3,3" stroke-width="1.4"/>
+                <path d="M140,90 Q190,115 235,135" class="flight-arc" stroke="#64748b" stroke-dasharray="3,3" stroke-width="1.4"/>
+                <path d="M100,175 Q125,210 150,235" class="flight-arc" stroke="#64748b" stroke-dasharray="3,3" stroke-width="1.4"/>
+                <path d="M150,235 Q155,215 160,190" class="flight-arc" stroke="#64748b" stroke-dasharray="3,3" stroke-width="1.4"/>
+
+                <!-- Flight Hub Interactive Pins -->
+                <!-- Delhi (DEL) -->
+                <circle cx="140" cy="90" r="5.5" fill="#f97316" class="map-node" data-city="Delhi (DEL)"/>
+                <!-- Mumbai (BOM) -->
+                <circle cx="100" cy="175" r="5.5" fill="#ef4444" class="map-node" data-city="Mumbai (BOM)"/>
+                <!-- Bengaluru (BLR) -->
+                <circle cx="150" cy="235" r="5.5" fill="#10b981" class="map-node" data-city="Bengaluru (BLR)"/>
+                <!-- Kolkata (CCU) -->
+                <circle cx="235" cy="135" r="5.5" fill="#eab308" class="map-node" data-city="Kolkata (CCU)"/>
+                <!-- Hyderabad (HYD) -->
+                <circle cx="160" cy="190" r="5" fill="#06b6d4" class="map-node" data-city="Hyderabad (HYD)"/>
+              </svg>
+            </div>
+
+            <!-- Heat Map Top Routes List -->
+            <div class="top-routes-table">
+              <div class="routes-table-head">
+                <span class="th-title">Top Routes by Fare</span>
+                <span class="th-subtitle">(Average Total Fare)</span>
+              </div>
+              <ul class="route-list" id="routesListContainer">
+                <li class="route-item">
+                  <span class="route-name"><span class="dot red"></span> <strong>DEL - BOM</strong></span>
+                  <strong class="route-val">₹ 7,240</strong>
+                </li>
+                <li class="route-item">
+                  <span class="route-name"><span class="dot orange"></span> <strong>DEL - BLR</strong></span>
+                  <strong class="route-val">₹ 6,180</strong>
+                </li>
+                <li class="route-item">
+                  <span class="route-name"><span class="dot yellow"></span> <strong>DEL - CCU</strong></span>
+                  <strong class="route-val">₹ 5,980</strong>
+                </li>
+                <li class="route-item">
+                  <span class="route-name"><span class="dot green"></span> <strong>BOM - BLR</strong></span>
+                  <strong class="route-val">₹ 4,120</strong>
+                </li>
+                <li class="route-item">
+                  <span class="route-name"><span class="dot cyan"></span> <strong>BLR - HYD</strong></span>
+                  <strong class="route-val">₹ 3,820</strong>
+                </li>
+              </ul>
+              <button class="btn-view-all" id="viewAllRoutesBtn">View All Routes</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Lower Analytics Row (Airline Bars, Advance Booking, Price Forecast) -->
+      <section class="analytics-row">
+        
+        <!-- 4.1 Airline Wise Average Fare with High Contrast Bold Typography -->
+        <div class="dashboard-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <h3>Airline-wise Average Fare (INR)</h3>
+              <i class="fa-regular fa-circle-question info-tooltip"></i>
+            </div>
+            <select class="custom-select small" id="airlineFilterRoute">
+              <option value="all">All Routes</option>
+              <option value="del-bom">DEL - BOM</option>
+              <option value="del-blr">DEL - BLR</option>
+            </select>
+          </div>
+          
+          <div class="airline-bars-list" id="airlineBarsWrapper">
+            <!-- Air India -->
+            <div class="airline-row">
+              <div class="airline-brand">
+                <span class="airline-logo-badge ai-badge">AI</span>
+                <strong class="airline-text">Air India</strong>
+              </div>
+              <div class="bar-track"><div class="bar-fill ai-bar" style="width: 88%;"></div></div>
+              <strong class="fare-num">₹ 5,980</strong>
+            </div>
+
+            <!-- IndiGo -->
+            <div class="airline-row">
+              <div class="airline-brand">
+                <span class="airline-logo-badge igo-badge">6E</span>
+                <strong class="airline-text">IndiGo</strong>
+              </div>
+              <div class="bar-track"><div class="bar-fill igo-bar" style="width: 78%;"></div></div>
+              <strong class="fare-num">₹ 5,240</strong>
+            </div>
+
+            <!-- Vistara -->
+            <div class="airline-row">
+              <div class="airline-brand">
+                <span class="airline-logo-badge uk-badge">UK</span>
+                <strong class="airline-text">Vistara</strong>
+              </div>
+              <div class="bar-track"><div class="bar-fill uk-bar" style="width: 84%;"></div></div>
+              <strong class="fare-num">₹ 5,720</strong>
+            </div>
+
+            <!-- Akasa Air -->
+            <div class="airline-row">
+              <div class="airline-brand">
+                <span class="airline-logo-badge qp-badge">QP</span>
+                <strong class="airline-text">Akasa Air</strong>
+              </div>
+              <div class="bar-track"><div class="bar-fill qp-bar" style="width: 68%;"></div></div>
+              <strong class="fare-num">₹ 4,620</strong>
+            </div>
+
+            <!-- SpiceJet -->
+            <div class="airline-row">
+              <div class="airline-brand">
+                <span class="airline-logo-badge sg-badge">SG</span>
+                <strong class="airline-text">SpiceJet</strong>
+              </div>
+              <div class="bar-track"><div class="bar-fill sg-bar" style="width: 60%;"></div></div>
+              <strong class="fare-num">₹ 4,100</strong>
+            </div>
+
+            <!-- Air India Express -->
+            <div class="airline-row">
+              <div class="airline-brand">
+                <span class="airline-logo-badge ixe-badge">IX</span>
+                <strong class="airline-text">Air India Expr...</strong>
+              </div>
+              <div class="bar-track"><div class="bar-fill ixe-bar" style="width: 64%;"></div></div>
+              <strong class="fare-num">₹ 4,300</strong>
+            </div>
+
+            <!-- Go First -->
+            <div class="airline-row">
+              <div class="airline-brand">
+                <span class="airline-logo-badge g8-badge">G8</span>
+                <strong class="airline-text">Go First</strong>
+              </div>
+              <div class="bar-track"><div class="bar-fill g8-bar" style="width: 58%;"></div></div>
+              <strong class="fare-num">₹ 3,980</strong>
+            </div>
+
+            <!-- Others -->
+            <div class="airline-row">
+              <div class="airline-brand">
+                <span class="airline-logo-badge other-badge">OT</span>
+                <strong class="airline-text">Others</strong>
+              </div>
+              <div class="bar-track"><div class="bar-fill other-bar" style="width: 62%;"></div></div>
+              <strong class="fare-num">₹ 4,250</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4.2 Advance Booking Lead Time Analysis -->
+        <div class="dashboard-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <h3>Advance Booking (Lead Time) Analysis</h3>
+              <i class="fa-regular fa-circle-question info-tooltip"></i>
+            </div>
+            <select class="custom-select small" id="bookingLeadFilter"><option>All Routes</option></select>
+          </div>
+          <div class="chart-wrapper lower-wrapper">
+            <canvas id="advanceBookingChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 4.3 Price Forecast (Next 7 Days) -->
+        <div class="dashboard-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <h3>Price Forecast (Next 7 Days)</h3>
+              <i class="fa-regular fa-circle-question info-tooltip"></i>
+            </div>
+            <select class="custom-select small" id="forecastRouteSelect">
+              <option value="DEL-BOM">DEL - BOM</option>
+              <option value="DEL-BLR">DEL - BLR</option>
+              <option value="BOM-BLR">BOM - BLR</option>
+            </select>
+          </div>
+          <div class="chart-wrapper lower-wrapper">
+            <canvas id="forecastChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Bottom Insights Strip (BOLD & HIGH IMPACT) -->
+      <section class="insights-grid">
+        
+        <div class="insight-card">
+          <div class="insight-icon red-circle"><i class="fa-solid fa-plane-departure"></i></div>
+          <div class="insight-details">
+            <span class="insight-tag">Highest Fare Today</span>
+            <strong class="insight-main bold-title">DEL - BOM</strong>
+            <span class="insight-val red-text bold-metric">₹ 7,950 <i class="fa-solid fa-arrow-up"></i></span>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-icon green-circle"><i class="fa-solid fa-plane-arrival"></i></div>
+          <div class="insight-details">
+            <span class="insight-tag">Lowest Fare Today</span>
+            <strong class="insight-main bold-title">BLR - HYD</strong>
+            <span class="insight-val green-text bold-metric">₹ 2,180 <i class="fa-solid fa-arrow-down"></i></span>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-icon light-red-circle"><i class="fa-solid fa-arrow-trend-up"></i></div>
+          <div class="insight-details">
+            <span class="insight-tag">Highest Increase</span>
+            <strong class="insight-main bold-title">DEL - CCU</strong>
+            <span class="insight-val red-text bold-metric"><i class="fa-solid fa-caret-up"></i> 18.20% <small>vs yesterday</small></span>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-icon light-green-circle"><i class="fa-solid fa-arrow-trend-down"></i></div>
+          <div class="insight-details">
+            <span class="insight-tag">Highest Decrease</span>
+            <strong class="insight-main bold-title">BOM - BLR</strong>
+            <span class="insight-val green-text bold-metric"><i class="fa-solid fa-caret-down"></i> 6.40% <small>vs yesterday</small></span>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-icon blue-circle"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="insight-details">
+            <span class="insight-tag">Prices Stable</span>
+            <strong class="insight-main bold-title">28 Routes</strong>
+            <span class="insight-val bold-sub">No Significant Change</span>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-icon rose-circle"><i class="fa-solid fa-chair"></i></div>
+          <div class="insight-details">
+            <span class="insight-tag">Sold Out Flights</span>
+            <strong class="insight-main bold-title">134</strong>
+            <span class="insight-val bold-sub">Across 50 Routes</span>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="app-footer">
+    <div class="footer-left">
+      <span>© <span id="currentYear">2026</span> UDAAN - Real-time Airfare Intelligence Portal. All Rights Reserved.</span>
+    </div>
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <span>|</span>
+      <a href="#">Terms of Use</a>
+      <span>|</span>
+      <a href="#">Disclaimer</a>
+      <span>|</span>
+      <a href="#">Contact Us</a>
+    </div>
+  </footer>
+
+  <!-- ================= SCRIPTS ================= -->
+  <script>
+    // 1. Live Time & Date Sync
+    function updatePortalTime() {
+      const now = new Date();
+      const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+      const dateFormatted = now.toLocaleDateString('en-GB', dateOptions);
+      const timeFormatted = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+
+      document.getElementById('liveHeroDate').textContent = dateFormatted;
+      document.getElementById('lastUpdatedTime').textContent = `${dateFormatted}, ${timeFormatted.toUpperCase()}`;
+      document.getElementById('dailyQuotesDate').textContent = `As on ${dateFormatted}`;
+      document.getElementById('currentYear').textContent = now.getFullYear();
+    }
+    updatePortalTime();
+    setInterval(updatePortalTime, 1000);
+
+    // 2. Countdown Timer
+    let countdown = 8077;
+    setInterval(() => {
+      if (countdown > 0) countdown--;
+      const hrs = String(Math.floor(countdown / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((countdown % 3600) / 60)).padStart(2, '0');
+      const secs = String(countdown % 60).padStart(2, '0');
+      document.getElementById('countdownTimer').textContent = `${hrs} : ${mins} : ${secs}`;
+    }, 1000);
+
+    // 3. Scraping Simulation Ticker
+    let currentIdx = 128.64;
+    let quotesTotal = 125340;
+    setInterval(() => {
+      const delta = (Math.random() * 0.3 - 0.15);
+      currentIdx = +(currentIdx + delta).toFixed(2);
+      const elem = document.getElementById('priceIndexValue');
+      elem.textContent = currentIdx.toFixed(2);
+      elem.classList.add('price-pulse');
+      setTimeout(() => elem.classList.remove('price-pulse'), 400);
+
+      quotesTotal += Math.floor(Math.random() * 4);
+      document.getElementById('dailyQuotes').textContent = quotesTotal.toLocaleString('en-IN');
+    }, 4000);
+
+    // 4. Sidebar Active Toggle
+    document.querySelectorAll('.nav-item').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // 5. FUNCTIONAL CHARTS WITH SHARP MULTI-EDGE CONFIGURATIONS
+
+    // 5.1 Airfare Price Index Trend (Multi-edged with sharp visible nodes)
+    const ctxTrend = document.getElementById('indexTrendChart').getContext('2d');
+    const gradient = ctxTrend.createLinearGradient(0, 0, 0, 190);
+    gradient.addColorStop(0, 'rgba(37, 99, 235, 0.22)');
+    gradient.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
+
+    const trendChart = new Chart(ctxTrend, {
+      type: 'line',
+      data: {
+        labels: ['26 May', '02 Jun', '09 Jun', '16 Jun', '23 Jun', '30 Jun', '07 Jul', '14 Jul', '21 Jul', '28 Jul', '04 Aug', '11 Aug', '18 Aug', '26 Aug'],
+        datasets: [{
+          data: [120, 124, 126, 125, 128, 127, 129, 133, 137, 134, 131, 129, 126, 128.64],
+          borderColor: '#2563eb',
+          backgroundColor: gradient,
+          borderWidth: 2,
+          fill: true,
+          tension: 0.15, // Sharper multi-edged trajectory
+          pointRadius: 4,
+          pointBackgroundColor: '#2563eb',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 1.5,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0f172a',
+            padding: 8,
+            titleFont: { size: 11 },
+            bodyFont: { size: 12, weight: 'bold' },
+            callbacks: {
+              label: (ctx) => ` Airfare Index: ${ctx.parsed.y}`
+            }
+          }
+        },
+        scales: {
+          y: { 
+            min: 110, 
+            max: 150, 
+            ticks: { stepSize: 10, color: '#64748b', font: { size: 11 } }, 
+            grid: { color: '#f1f5f9' } 
+          },
+          x: { 
+            ticks: { color: '#64748b', font: { size: 10 } }, 
+            grid: { display: false } 
+          }
+        }
+      }
+    });
+
+    // Trend Segment Filter Switching
+    document.querySelectorAll('.seg-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        this.parentElement.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const mode = this.dataset.range;
+        if (mode === 'daily') {
+          trendChart.data.labels = ['26 May', '02 Jun', '09 Jun', '16 Jun', '23 Jun', '30 Jun', '07 Jul', '14 Jul', '21 Jul', '28 Jul', '04 Aug', '11 Aug', '18 Aug', '26 Aug'];
+          trendChart.data.datasets[0].data = [120, 124, 126, 125, 128, 127, 129, 133, 137, 134, 131, 129, 126, 128.64];
+        } else if (mode === 'weekly') {
+          trendChart.data.labels = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10'];
+          trendChart.data.datasets[0].data = [120, 123, 126, 127, 130, 137, 134, 130, 127, 128.64];
+        } else {
+          trendChart.data.labels = ['May', 'Jun', 'Jul', 'Aug'];
+          trendChart.data.datasets[0].data = [120, 127, 135, 128.64];
+        }
+        trendChart.update();
+      });
+    });
+
+    // 5.2 Advance Booking Chart (Functional Lead Time Bars)
+    const ctxBooking = document.getElementById('advanceBookingChart').getContext('2d');
+    const bookingChart = new Chart(ctxBooking, {
+      type: 'bar',
+      data: {
+        labels: ['T+1 (1 Day)', 'T+7 (7 Days)', 'T+15 (15 Days)', 'T+30 (30 Days)', 'T+45 (45 Days)'],
+        datasets: [{
+          data: [8210, 5560, 4780, 4210, 3920],
+          backgroundColor: '#3b82f6',
+          borderRadius: 4,
+          barThickness: 24
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0f172a',
+            callbacks: { label: (ctx) => ` Fare: ₹ ${ctx.parsed.y.toLocaleString('en-IN')}` }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 10000,
+            ticks: {
+              callback: (val) => val === 0 ? '0' : (val/1000) + 'K',
+              color: '#64748b',
+              font: { size: 10.5 }
+            },
+            grid: { color: '#f1f5f9' }
+          },
+          x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { display: false } }
+        }
+      }
+    });
+
+    // 5.3 Price Forecast (Functional Route-switching Chart)
+    const ctxForecast = document.getElementById('forecastChart').getContext('2d');
+    const forecastChart = new Chart(ctxForecast, {
+      type: 'line',
+      data: {
+        labels: ['19 Aug', '21 Aug', '23 Aug', '25 Aug', '27 Aug', '29 Aug', '31 Aug'],
+        datasets: [
+          {
+            label: 'Actual Price',
+            data: [4100, 3900, 4600, 4300, 5100, null, null],
+            borderColor: '#2563eb',
+            borderWidth: 2,
+            tension: 0.1, // Sharp multi-edge look
+            pointRadius: 4,
+            pointBackgroundColor: '#2563eb'
+          },
+          {
+            label: 'Forecast',
+            data: [null, null, null, null, 5100, 5600, 6200],
+            borderColor: '#10b981',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            tension: 0.1,
+            pointRadius: 4,
+            pointBackgroundColor: '#10b981'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', align: 'start', labels: { boxWidth: 12, font: { size: 10.5 } } }
+        },
+        scales: {
+          y: {
+            ticks: { callback: (val) => val === 0 ? '0' : (val/1000) + 'K', color: '#64748b', font: { size: 10.5 } },
+            grid: { color: '#f1f5f9' }
+          },
+          x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { display: false } }
+        }
+      }
+    });
+
+    // Forecast route switcher
+    document.getElementById('forecastRouteSelect').addEventListener('change', function() {
+      const selected = this.value;
+      if (selected === 'DEL-BOM') {
+        forecastChart.data.datasets[0].data = [4100, 3900, 4600, 4300, 5100, null, null];
+        forecastChart.data.datasets[1].data = [null, null, null, null, 5100, 5600, 6200];
+      } else if (selected === 'DEL-BLR') {
+        forecastChart.data.datasets[0].data = [4800, 4600, 5200, 4900, 5800, null, null];
+        forecastChart.data.datasets[1].data = [null, null, null, null, 5800, 6300, 6900];
+      } else {
+        forecastChart.data.datasets[0].data = [3500, 3400, 3800, 3600, 4100, null, null];
+        forecastChart.data.datasets[1].data = [null, null, null, null, 4100, 4400, 4800];
+      }
+      forecastChart.update();
+    });
+
+    // 6. Interactive Heatmap Pin Tooltip
+    document.querySelectorAll('.map-node').forEach(node => {
+      node.addEventListener('mouseenter', function(e) {
+        this.style.transform = 'scale(1.4)';
+        this.style.transformOrigin = `${this.getAttribute('cx')}px ${this.getAttribute('cy')}px`;
+      });
+      node.addEventListener('mouseleave', function(e) {
+        this.style.transform = 'scale(1)';
+      });
+    });
+  </script>
+  <script>
+function goToPage(page) {
+    window.location.assign(page);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,2849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UDAAN – National Airfare Heat Map</title>
+
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js">
+    </script>
+
+    <!-- Leaflet.js -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+    <!-- Leaflet.heat plugin -->
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js">
+    </script>
+
+    <style>
+        /* ----- RESET & BASE ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f7fc;
+            color: #1a2639;
+            display: flex;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            border: none;
+            background: none;
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #eef2f6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #b0c4d8;
+            border-radius: 6px;
+        }
+
+        /* ----- SIDEBAR ----- */
+        .sidebar {
+            width: 220px;
+            background: #062442;
+            color: #b8d0e8;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            min-height: 100vh;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 0 0 16px 0;
+            border-right: 1px solid #1a3a5a;
+            z-index: 100;
+        }
+        .sidebar-brand {
+            padding: 20px 18px 14px 18px;
+            border-bottom: 1px solid #1a3a5a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar-brand .brand-icon {
+            font-size: 22px;
+            color: #6a9af0;
+        }
+        .sidebar-brand .brand-text {
+            font-weight: 700;
+            font-size: 18px;
+            color: #fff;
+            letter-spacing: 0.3px;
+        }
+        .sidebar-brand .brand-sub {
+            font-size: 9px;
+            font-weight: 400;
+            color: #7a9ac0;
+            display: block;
+            margin-top: 1px;
+        }
+        .sidebar-nav {
+            padding: 14px 12px 0 12px;
+            flex: 1;
+        }
+        .sidebar-nav .nav-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #4a6a8e;
+            padding: 6px 12px 4px 12px;
+            font-weight: 600;
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #a0bcdc;
+            transition: background 0.15s, color 0.15s;
+            margin-bottom: 1px;
+        }
+        .sidebar-nav a i {
+            width: 18px;
+            text-align: center;
+            font-size: 14px;
+            color: #5a7a9e;
+        }
+        .sidebar-nav a:hover {
+            background: #0d3455;
+            color: #fff;
+        }
+        .sidebar-nav a:hover i {
+            color: #6a9af0;
+        }
+        .sidebar-nav a.active {
+            background: #0d3455;
+            color: #fff;
+            box-shadow: inset 3px 0 0 #3b82f6;
+        }
+        .sidebar-nav a.active i {
+            color: #6a9af0;
+        }
+        .sidebar-footer {
+            padding: 12px 18px 0 18px;
+            border-top: 1px solid #1a3a5a;
+            font-size: 10px;
+            color: #4a6a8e;
+            margin-top: auto;
+        }
+
+        /* ----- HEADER ----- */
+        .top-header {
+            background: #062442;
+            color: #fff;
+            padding: 8px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #1a3a5a;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 6px 16px;
+        }
+        .top-header .left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .top-header .left .emblem {
+            font-size: 26px;
+            color: #d4a843;
+        }
+        .top-header .left .gov-text {
+            line-height: 1.3;
+        }
+        .top-header .left .gov-text .line1 {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            color: #b8d0f0;
+        }
+        .top-header .left .gov-text .line2 {
+            font-size: 9px;
+            font-weight: 400;
+            color: #7a9ac0;
+        }
+        .top-header .center {
+            text-align: center;
+        }
+        .top-header .center .uda {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #fff;
+        }
+        .top-header .center .uda-sub {
+            font-size: 10px;
+            font-weight: 400;
+            color: #7a9ac0;
+            letter-spacing: 0.4px;
+            display: block;
+            margin-top: -2px;
+        }
+        .top-header .right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .top-header .right .hindi {
+            font-size: 12px;
+            font-weight: 500;
+            color: #b8d0f0;
+            line-height: 1.2;
+            text-align: right;
+        }
+        .top-header .right .hindi small {
+            font-size: 8px;
+            font-weight: 400;
+            color: #5a7a9e;
+            display: block;
+        }
+        .top-header .right .login-btn {
+            background: #0d3455;
+            border: 1px solid #1a4a6e;
+            color: #fff;
+            padding: 5px 16px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            transition: background 0.15s;
+        }
+        .top-header .right .login-btn:hover {
+            background: #1a4a6e;
+        }
+        .top-header .right .live-badge {
+            background: #0d4a2a;
+            color: #6acf8a;
+            font-size: 9px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .top-header .right .live-badge i {
+            font-size: 7px;
+            color: #4acf7a;
+        }
+
+        /* ----- MAIN WRAPPER ----- */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        /* ----- PAGE CONTENT ----- */
+        .page-content {
+            padding: 18px 24px 28px 24px;
+            flex: 1;
+        }
+
+        /* ----- TITLE ROW ----- */
+        .page-title-row {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px 20px;
+            margin-bottom: 16px;
+        }
+        .page-title-row .title-group h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #062442;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .page-title-row .title-group h1 i {
+            color: #b33a3a;
+            font-size: 22px;
+        }
+        .page-title-row .title-group p {
+            font-size: 14px;
+            color: #4a5a7a;
+            margin-top: 2px;
+            font-weight: 400;
+        }
+        .page-title-row .meta-group {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            background: #eef2f8;
+            padding: 6px 18px 6px 20px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #2a3a5a;
+        }
+        .page-title-row .meta-group .live {
+            color: #0d6a3a;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .page-title-row .meta-group .live i {
+            font-size: 8px;
+            color: #2a9a5a;
+        }
+        .page-title-row .meta-group .proto {
+            font-size: 10px;
+            color: #6a7a9a;
+            font-weight: 400;
+            border-left: 1px solid #d0d8e8;
+            padding-left: 14px;
+        }
+
+        /* ----- KPI STRIP ----- */
+        .kpi-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .kpi-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 12px 16px;
+            border: 1px solid #e6ecf4;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+            transition: box-shadow 0.15s;
+        }
+        .kpi-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+        .kpi-card .kpi-label {
+            font-size: 10px;
+            font-weight: 500;
+            color: #5a6a8a;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .kpi-card .kpi-label i {
+            font-size: 12px;
+            color: #6a8aaa;
+        }
+        .kpi-card .kpi-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #062442;
+            margin-top: 2px;
+        }
+        .kpi-card .kpi-change {
+            font-size: 10px;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+        .kpi-card .kpi-change.up {
+            color: #0d6a3a;
+        }
+        .kpi-card .kpi-change.down {
+            color: #b33a3a;
+        }
+
+        /* ----- MAP WRAPPER ----- */
+        .map-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+        .map-container-wrap {
+            position: relative;
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e6ecf4;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+        }
+        .map-container {
+            height: 580px;
+            width: 100%;
+            background: #eef3fa;
+        }
+        .map-container .leaflet-container {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Map controls overlay */
+        .map-controls-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 220px;
+        }
+        .map-controls-overlay .search-box {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 8px;
+            padding: 4px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #d8e0ec;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(4px);
+        }
+        .map-controls-overlay .search-box input {
+            border: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 12px;
+            padding: 6px 0;
+            flex: 1;
+            background: transparent;
+            color: #1a2639;
+        }
+        .map-controls-overlay .search-box input::placeholder {
+            color: #8a9aaa;
+        }
+        .map-controls-overlay .search-box i {
+            color: #6a8aaa;
+            font-size: 14px;
+        }
+
+        .map-controls-overlay .filter-chip-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.88);
+            border-radius: 8px;
+            padding: 6px 10px;
+            border: 1px solid #d8e0ec;
+            backdrop-filter: blur(4px);
+        }
+        .map-controls-overlay .filter-chip-group select,
+        .map-controls-overlay .filter-chip-group input {
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            border: 1px solid #d8e0ec;
+            background: #fff;
+            font-family: inherit;
+            color: #1a2639;
+            max-width: 100px;
+        }
+        .map-controls-overlay .filter-chip-group select:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+
+        .map-controls-overlay .sim-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.88);
+            border-radius: 8px;
+            padding: 4px 12px;
+            border: 1px solid #d8e0ec;
+            backdrop-filter: blur(4px);
+            font-size: 11px;
+            color: #4a5a7a;
+        }
+        .map-controls-overlay .sim-controls .sim-time {
+            font-weight: 600;
+            color: #062442;
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
+        }
+        .map-controls-overlay .sim-controls button {
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #fff;
+            background: #062442;
+            transition: background 0.15s;
+        }
+        .map-controls-overlay .sim-controls button:hover {
+            background: #0d3455;
+        }
+        .map-controls-overlay .sim-controls .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #2a9a5a;
+            display: inline-block;
+            animation: pulse-dot 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* ----- SIDE PANEL ----- */
+        .side-panel {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e6ecf4;
+            padding: 16px 18px 18px 18px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+            overflow-y: auto;
+            max-height: 580px;
+            display: flex;
+            flex-direction: column;
+        }
+        .side-panel .sp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #eef2f8;
+            padding-bottom: 10px;
+        }
+        .side-panel .sp-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #062442;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .side-panel .sp-header h3 i {
+            color: #2a5a8a;
+        }
+        .side-panel .sp-header .sp-close {
+            font-size: 18px;
+            color: #6a7a9a;
+            cursor: pointer;
+        }
+        .side-panel .sp-body {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .side-panel .sp-body .sp-empty {
+            color: #6a7a9a;
+            font-size: 13px;
+            text-align: center;
+            padding: 40px 0;
+        }
+        .side-panel .sp-body .sp-empty i {
+            font-size: 32px;
+            color: #b0c4d8;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .sp-detail .sp-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #f4f7fc;
+            font-size: 13px;
+        }
+        .sp-detail .sp-row .sp-label {
+            color: #4a5a7a;
+        }
+        .sp-detail .sp-row .sp-value {
+            font-weight: 500;
+            color: #062442;
+        }
+        .sp-detail .sp-row .sp-value.high {
+            color: #b33a3a;
+        }
+        .sp-detail .sp-row .sp-value.moderate {
+            color: #b37a2a;
+        }
+        .sp-detail .sp-row .sp-value.low {
+            color: #0d6a3a;
+        }
+        .sp-detail .sp-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #062442;
+            margin-bottom: 4px;
+        }
+        .sp-detail .sp-subtitle {
+            font-size: 12px;
+            color: #4a5a7a;
+            margin-bottom: 10px;
+        }
+        .sp-detail .sp-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #062442;
+            margin-top: 10px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-top: 1px solid #eef2f8;
+            padding-top: 10px;
+        }
+        .sp-detail .sp-btn {
+            background: #062442;
+            color: #fff;
+            padding: 6px 18px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.15s;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        .sp-detail .sp-btn:hover {
+            background: #0d3455;
+        }
+
+        /* ----- EVENT FEED (below map) ----- */
+        .event-feed-wrap {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e6ecf4;
+            padding: 12px 18px 14px 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+        }
+        .event-feed-wrap .ef-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .event-feed-wrap .ef-head h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #062442;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .event-feed-wrap .ef-head h3 i {
+            color: #b33a3a;
+        }
+        .event-feed-wrap .ef-head .ef-label {
+            font-size: 10px;
+            color: #6a7a9a;
+            font-weight: 400;
+        }
+        .event-feed-wrap .ef-list {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            max-height: 100px;
+            overflow-y: auto;
+            font-size: 12px;
+            color: #1a2a4a;
+        }
+        .event-feed-wrap .ef-list .ef-item {
+            display: flex;
+            gap: 12px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            animation: fadeInItem 0.3s ease;
+        }
+        .event-feed-wrap .ef-list .ef-item .ef-time {
+            color: #6a7a9a;
+            font-weight: 500;
+            min-width: 60px;
+            font-size: 10px;
+        }
+        .event-feed-wrap .ef-list .ef-item .ef-text {
+            color: #1a2a4a;
+        }
+        .event-feed-wrap .ef-list .ef-item .ef-text .highlight {
+            font-weight: 600;
+            color: #062442;
+        }
+        @keyframes fadeInItem {
+            0% {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ----- CHARTS ROW ----- */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+        .chart-card {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e6ecf4;
+            padding: 14px 16px 12px 16px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+        }
+        .chart-card .chart-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .chart-card .chart-head h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #062442;
+        }
+        .chart-card .chart-head .small-note {
+            font-size: 10px;
+            color: #6a7a9a;
+        }
+        .chart-container {
+            height: 160px;
+            position: relative;
+        }
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* ----- AIRLINE ACTIVITY TABLE ----- */
+        .airline-activity {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e6ecf4;
+            padding: 14px 18px 16px 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+            overflow-x: auto;
+        }
+        .airline-activity .aa-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .airline-activity .aa-head h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #062442;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .airline-activity .aa-head h3 i {
+            color: #2a5a8a;
+        }
+        .airline-activity table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            min-width: 500px;
+        }
+        .airline-activity table th {
+            background: #f7f9fc;
+            color: #1a2a4a;
+            font-weight: 600;
+            padding: 6px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .airline-activity table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid #eef2f8;
+            color: #1a2a4a;
+            font-size: 12px;
+        }
+        .airline-activity table tr:last-child td {
+            border-bottom: none;
+        }
+        .airline-activity table .al-logo-sm {
+            height: 16px;
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+        }
+        .airline-activity table .al-logo-sm img {
+            height: 100%;
+            max-width: 40px;
+            object-fit: contain;
+        }
+
+        /* ----- ROUTE RANKINGS ----- */
+        .rankings-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+        .rank-card {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e6ecf4;
+            padding: 14px 18px 16px 18px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+        }
+        .rank-card .rk-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .rank-card .rk-head h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #062442;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .rank-card .rk-head h3 i {
+            color: #2a5a8a;
+        }
+        .rank-card .rk-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .rank-card .rk-list .rk-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.15s;
+            font-size: 12px;
+        }
+        .rank-card .rk-list .rk-item:hover {
+            background: #f4f7fc;
+        }
+        .rank-card .rk-list .rk-item .rk-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .rank-card .rk-list .rk-item .rk-left .rk-route {
+            font-weight: 500;
+            color: #062442;
+        }
+        .rank-card .rk-list .rk-item .rk-left .rk-sub {
+            font-size: 10px;
+            color: #6a7a9a;
+        }
+        .rank-card .rk-list .rk-item .rk-right {
+            text-align: right;
+        }
+        .rank-card .rk-list .rk-item .rk-right .rk-fare {
+            font-weight: 600;
+            color: #062442;
+        }
+        .rank-card .rk-list .rk-item .rk-right .rk-change {
+            font-size: 10px;
+            font-weight: 500;
+        }
+        .rk-change.up {
+            color: #b33a3a;
+        }
+        .rk-change.down {
+            color: #0d6a3a;
+        }
+        .rk-change.flat {
+            color: #8a6a2a;
+        }
+
+        .rank-card .rk-list .rk-item .rk-badge {
+            font-size: 9px;
+            font-weight: 600;
+            padding: 1px 10px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        .rk-badge.high {
+            background: #f0d0d0;
+            color: #8a1a1a;
+        }
+        .rk-badge.moderate {
+            background: #f0e8d0;
+            color: #8a6a2a;
+        }
+        .rk-badge.low {
+            background: #d0e8d8;
+            color: #0d6a3a;
+        }
+
+        /* ----- FOOTER ----- */
+        .page-footer {
+            border-top: 1px solid #e6ecf4;
+            padding-top: 14px;
+            margin-top: 6px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            font-size: 11px;
+            color: #6a7a9a;
+        }
+        .page-footer .footer-links {
+            display: flex;
+            gap: 16px;
+        }
+        .page-footer .footer-links a {
+            color: #4a6a8a;
+        }
+        .page-footer .footer-links a:hover {
+            color: #062442;
+        }
+        .page-footer .footer-disclaimer {
+            font-size: 10px;
+            color: #8a9aaa;
+            font-style: italic;
+        }
+
+        /* ----- CHATBOT ----- */
+        .chatbot-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 200;
+            width: 350px;
+            max-width: calc(100vw - 40px);
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 36px rgba(0, 0, 0, 0.14);
+            border: 1px solid #e6ecf4;
+            display: none;
+            flex-direction: column;
+            max-height: 480px;
+            overflow: hidden;
+        }
+        .chatbot-float.open {
+            display: flex;
+        }
+        .chatbot-float .cb-head {
+            background: #062442;
+            color: #fff;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .chatbot-float .cb-head .cb-title {
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chatbot-float .cb-head .cb-title .online {
+            font-size: 8px;
+            background: #0d6a3a;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-weight: 400;
+        }
+        .chatbot-float .cb-head .cb-close {
+            background: none;
+            border: none;
+            color: #8aaac0;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .chatbot-float .cb-body {
+            padding: 10px 14px;
+            overflow-y: auto;
+            flex: 1;
+            font-size: 12px;
+            color: #1a2a4a;
+            background: #f9fafc;
+            min-height: 100px;
+            max-height: 200px;
+        }
+        .chatbot-float .cb-body .cb-msg {
+            margin-bottom: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: #fff;
+            border: 1px solid #e6ecf4;
+            max-width: 88%;
+            font-size: 12px;
+        }
+        .chatbot-float .cb-body .cb-msg.bot {
+            background: #eef3fa;
+            border-color: #d8e0ec;
+        }
+        .chatbot-float .cb-body .cb-msg.user {
+            background: #062442;
+            color: #fff;
+            border-color: #062442;
+            margin-left: auto;
+        }
+        .chatbot-float .cb-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: 6px 12px 8px 12px;
+            border-top: 1px solid #eef2f8;
+            background: #fff;
+            flex-shrink: 0;
+        }
+        .chatbot-float .cb-questions button {
+            background: #f7f9fc;
+            border: 1px solid #d8e0ec;
+            border-radius: 14px;
+            padding: 3px 12px;
+            font-size: 10px;
+            font-weight: 500;
+            color: #1a2a4a;
+            transition: background 0.15s;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .chatbot-float .cb-questions button:hover {
+            background: #e8ecf4;
+        }
+
+        .chatbot-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 190;
+            background: #062442;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            font-size: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.14);
+            cursor: pointer;
+            transition: transform 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chatbot-toggle:hover {
+            transform: scale(1.05);
+        }
+        .chatbot-toggle .badge-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 12px;
+            height: 12px;
+            background: #3bdf7a;
+            border-radius: 50%;
+            border: 2px solid #062442;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .map-wrapper {
+                grid-template-columns: 1fr;
+            }
+            .side-panel {
+                max-height: 300px;
+            }
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+            .rankings-row {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                width: 60px;
+                padding: 0 0 10px 0;
+            }
+            .sidebar-brand .brand-text,
+            .sidebar-brand .brand-sub,
+            .sidebar-nav .nav-label,
+            .sidebar-nav a span,
+            .sidebar-footer {
+                display: none;
+            }
+            .sidebar-nav a {
+                justify-content: center;
+                padding: 10px 0;
+            }
+            .sidebar-nav a i {
+                font-size: 18px;
+                width: auto;
+            }
+            .top-header .left .gov-text .line2 {
+                display: none;
+            }
+            .top-header .center .uda {
+                font-size: 22px;
+            }
+            .page-content {
+                padding: 12px 14px 20px 14px;
+            }
+            .map-container {
+                height: 440px;
+            }
+            .map-controls-overlay {
+                max-width: 180px;
+            }
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 48px;
+            }
+            .sidebar-nav a {
+                padding: 8px 0;
+            }
+            .top-header {
+                padding: 6px 12px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+            }
+            .top-header .left,
+            .top-header .center,
+            .top-header .right {
+                justify-content: center;
+            }
+            .top-header .right .hindi {
+                text-align: center;
+            }
+            .page-content {
+                padding: 8px 10px 14px 10px;
+            }
+            .page-title-row .title-group h1 {
+                font-size: 18px;
+            }
+            .kpi-strip {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .map-container {
+                height: 340px;
+            }
+            .map-controls-overlay {
+                max-width: 140px;
+                top: 6px;
+                left: 6px;
+            }
+            .map-controls-overlay .search-box input {
+                font-size: 10px;
+                padding: 4px 0;
+            }
+            .map-controls-overlay .filter-chip-group select {
+                max-width: 70px;
+                font-size: 9px;
+                padding: 2px 4px;
+            }
+            .map-controls-overlay .sim-controls {
+                font-size: 10px;
+                padding: 2px 8px;
+            }
+            .map-controls-overlay .sim-controls .sim-time {
+                font-size: 10px;
+            }
+            .side-panel {
+                max-height: 260px;
+            }
+            .event-feed-wrap .ef-list {
+                max-height: 80px;
+            }
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+            .rankings-row {
+                grid-template-columns: 1fr;
+            }
+            .chatbot-float {
+                width: calc(100vw - 24px);
+                right: 12px;
+                bottom: 74px;
+                max-height: 380px;
+            }
+            .chatbot-toggle {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+                bottom: 14px;
+                right: 14px;
+            }
+            .airline-activity table {
+                min-width: 400px;
+            }
+        }
+        @media (max-width: 480px) {
+            .kpi-strip {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .kpi-card .kpi-value {
+                font-size: 17px;
+            }
+            .page-title-row .title-group h1 {
+                font-size: 16px;
+            }
+            .page-title-row .meta-group {
+                font-size: 10px;
+                padding: 4px 12px;
+                gap: 8px;
+            }
+            .map-container {
+                height: 280px;
+            }
+            .side-panel {
+                max-height: 220px;
+            }
+            .map-controls-overlay {
+                max-width: 120px;
+            }
+            .map-controls-overlay .filter-chip-group {
+                display: none;
+            }
+            .map-controls-overlay .sim-controls .sim-time {
+                font-size: 9px;
+            }
+            .map-controls-overlay .sim-controls button {
+                font-size: 9px;
+                padding: 1px 6px;
+            }
+            .chart-container {
+                height: 130px;
+            }
+            .page-footer {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+
+        /* ===== UTILITY ===== */
+        .hidden {
+            display: none !important;
+        }
+        .text-muted {
+            color: #6a7a9a;
+        }
+        .mt-1 {
+            margin-top: 4px;
+        }
+        .mb-1 {
+            margin-bottom: 4px;
+        }
+
+        /* Custom leaflet layer control tweak */
+        .leaflet-control-layers {
+            border-radius: 8px !important;
+            border: 1px solid #d8e0ec !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+            font-family: 'Inter', sans-serif !important;
+            font-size: 11px !important;
+        }
+        .leaflet-control-layers label {
+            font-weight: 400 !important;
+        }
+        .leaflet-control-layers .leaflet-control-layers-separator {
+            border-top: 1px solid #eef2f8 !important;
+        }
+        .leaflet-popup-content-wrapper {
+            border-radius: 8px !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        .leaflet-popup-content {
+            font-size: 12px !important;
+            line-height: 1.5 !important;
+        }
+        .leaflet-control-zoom {
+            border-radius: 8px !important;
+            border: 1px solid #d8e0ec !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+        }
+        .leaflet-control-zoom a {
+            color: #062442 !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        .leaflet-control-attribution {
+            font-size: 8px !important;
+            color: #6a7a9a !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon"><i class="fas fa-plane-departure"></i></span>
+            <div>
+                <span class="brand-text">UDAAN</span>
+                <span class="brand-sub">Airfare Intelligence</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main</div>
+            <a href="index.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+            <a href="airfare-index.html"><i class="fas fa-chart-line"></i><span>Airfare Index</span></a>
+            <a href="routeanalysis.html"><i class="fas fa-route"></i><span>Route Analysis</span></a>
+            <a href="airline-comparison.html"><i class="fas fa-building"></i><span>Airline Comparison</span></a>
+            <a href="advance-booking.html"><i class="fas fa-calendar-alt"></i><span>Advance Booking</span></a>
+            <a href="#" class="active"><i class="fas fa-fire"></i><span>Heat Map</span></a>
+            <a href="price-forecast.html"><i class="fas fa-cloud-sun"></i><span>Price Forecast</span></a>
+            <a href="data-explorer.html"><i class="fas fa-database"></i><span>Data Explorer</span></a>
+            <a href="reports.html"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+            <a href="https://esankhyiki.mospi.gov.in" target="_blank"><i class="fas fa-plug"></i><span>API Access</span></a>
+            <a href="alerts.html"><i class="fas fa-bell"></i><span>Alerts</span></a>
+            <a href="about.html"><i class="fas fa-info-circle"></i><span>About UDAAN</span></a>
+        </nav>
+        <div class="sidebar-footer">v2.4 &bull; Prototype</div>
+    </aside>
+
+    <!-- ===== MAIN WRAPPER ===== -->
+    <div class="main-wrapper">
+
+        <!-- ===== HEADER ===== -->
+        <header class="top-header">
+            <div class="left">
+                <span class="emblem"><i class="fas fa-ashoka"></i></span>
+                <div class="gov-text">
+                    <div class="line1">Government of India</div>
+                    <div class="line2">Ministry of Statistics &amp; Programme Implementation &middot; National Statistical Office</div>
+                </div>
+            </div>
+            <div class="center">
+                <div class="uda">UDAAN</div>
+                <span class="uda-sub">Real-time Airfare Intelligence Portal</span>
+            </div>
+            <div class="right">
+                <div class="hindi">
+                    भारत सरकार
+                    <small>GOVERNMENT OF INDIA</small>
+                </div>
+                <button class="login-btn"><i class="fas fa-user-circle"></i> Login / Sign Up</button>
+                <span class="live-badge"><i class="fas fa-circle"></i> LIVE</span>
+            </div>
+        </header>
+
+        <!-- ===== PAGE CONTENT ===== -->
+        <div class="page-content">
+
+            <!-- TITLE -->
+            <div class="page-title-row">
+                <div class="title-group">
+                    <h1><i class="fas fa-fire"></i> National Airfare Heat Map</h1>
+                    <p>Monitor airfare pressure, flight activity, passenger demand and route-level intelligence across India's aviation network.</p>
+                </div>
+                <div class="meta-group">
+                    <span class="live"><i class="fas fa-circle"></i> LIVE DATA</span>
+                    <span>Data Last Updated: <strong>31 Aug 2026, 11:18 PM</strong></span>
+                    <span class="proto">Prototype &bull; Simulated Live Feed</span>
+                </div>
+            </div>
+
+            <!-- KPI STRIP -->
+            <div class="kpi-strip" id="kpiStrip">
+                <div class="kpi-card"><div class="kpi-label"><i class="fas fa-plane"></i> Airports Monitored</div><div class="kpi-value" id="kpiAirports">28</div></div>
+                <div class="kpi-card"><div class="kpi-label"><i class="fas fa-route"></i> Active Routes</div><div class="kpi-value" id="kpiRoutes">50</div></div>
+                <div class="kpi-card"><div class="kpi-label"><i class="fas fa-plane-departure"></i> Flights Tracked</div><div class="kpi-value" id="kpiFlights">1,284</div><div class="kpi-change up"><i class="fas fa-arrow-up"></i> +3.2%</div></div>
+                <div class="kpi-card"><div class="kpi-label"><i class="fas fa-exclamation-triangle"></i> High Fare Pressure</div><div class="kpi-value" id="kpiHighPressure">12</div><div class="kpi-change up"><i class="fas fa-arrow-up"></i> +2</div></div>
+                <div class="kpi-card"><div class="kpi-label"><i class="fas fa-users"></i> High Demand Airports</div><div class="kpi-value" id="kpiHighDemand">7</div></div>
+                <div class="kpi-card"><div class="kpi-label"><i class="fas fa-exclamation-circle"></i> Open Passenger Issues</div><div class="kpi-value" id="kpiIssues">384</div><div class="kpi-change down"><i class="fas fa-arrow-down"></i> -2.1%</div></div>
+            </div>
+
+            <!-- MAP + SIDE PANEL -->
+            <div class="map-wrapper">
+                <div class="map-container-wrap">
+                    <div id="indiaMap" class="map-container"></div>
+
+                    <!-- Map Controls Overlay -->
+                    <div class="map-controls-overlay">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="mapSearch" placeholder="Search airport, route or flight..." />
+                        </div>
+                        <div class="filter-chip-group">
+                            <select id="mapFilterAirline">
+                                <option value="all">All Airlines</option>
+                                <option value="IndiGo">IndiGo</option>
+                                <option value="Air India">Air India</option>
+                                <option value="Akasa Air">Akasa Air</option>
+                                <option value="SpiceJet">SpiceJet</option>
+                                <option value="Air India Express">Air India Express</option>
+                            </select>
+                            <select id="mapFilterStatus">
+                                <option value="all">All Status</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="inair">In Air</option>
+                                <option value="delayed">Delayed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                            <select id="mapFilterDemand">
+                                <option value="all">All Demand</option>
+                                <option value="low">Low</option>
+                                <option value="moderate">Moderate</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                        <div class="sim-controls">
+                            <span class="status-dot"></span>
+                            <span class="sim-time" id="simTime">18:30:00</span>
+                            <span style="font-size:9px;color:#6a7a9a;">Data stream active</span>
+                            <button id="pauseBtn"><i class="fas fa-pause"></i></button>
+                            <button id="resumeBtn" style="display:none;"><i class="fas fa-play"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Side Panel -->
+                <div class="side-panel" id="sidePanel">
+                    <div class="sp-header">
+                        <h3><i class="fas fa-microchip"></i> LIVE ANALYSIS</h3>
+                        <span class="sp-close" id="sidePanelClose"><i class="fas fa-times"></i></span>
+                    </div>
+                    <div class="sp-body" id="sidePanelBody">
+                        <div class="sp-empty">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <p>Click an airport, route or flight on the map to view intelligence.</p>
+                            <p style="font-size:11px;color:#8a9aaa;margin-top:4px;">Or use the search box above.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EVENT FEED -->
+            <div class="event-feed-wrap">
+                <div class="ef-head">
+                    <h3><i class="fas fa-bolt"></i> Live Aviation Events <span class="ef-label">Simulated</span></h3>
+                    <span style="font-size:10px;color:#6a7a9a;">Updates every few seconds</span>
+                </div>
+                <div class="ef-list" id="eventFeed">
+                    <div class="ef-item"><span class="ef-time">18:31:04</span><span class="ef-text"><span class="highlight">DEL → BOM</span> Fare increased by ₹420</span></div>
+                    <div class="ef-item"><span class="ef-time">18:30:52</span><span class="ef-text"><span class="highlight">BOM Airport</span> High demand detected</span></div>
+                    <div class="ef-item"><span class="ef-time">18:30:31</span><span class="ef-text"><span class="highlight">DEL → BLR</span> Seat availability reduced</span></div>
+                    <div class="ef-item"><span class="ef-time">18:30:08</span><span class="ef-text"><span class="highlight">DEL Airport</span> Flight activity increased</span></div>
+                    <div class="ef-item"><span class="ef-time">18:29:44</span><span class="ef-text"><span class="highlight">DEL → GOI</span> Fare pressure crossed threshold</span></div>
+                </div>
+            </div>
+
+            <!-- CHARTS ROW -->
+            <div class="charts-row">
+                <div class="chart-card">
+                    <div class="chart-head"><h3>National Fare Pressure — 30 Day Trend</h3><span class="small-note">Index vs Baseline</span></div>
+                    <div class="chart-container"><canvas id="fareTrendChart"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-head"><h3>Flight Activity by Hour</h3><span class="small-note">Today's schedule</span></div>
+                    <div class="chart-container"><canvas id="flightActivityChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- AIRLINE ACTIVITY -->
+            <div class="airline-activity">
+                <div class="aa-head">
+                    <h3><i class="fas fa-building"></i> Airline Network Activity</h3>
+                    <span class="small-note" style="font-size:10px;color:#6a7a9a;">Live metrics</span>
+                </div>
+                <table>
+                    <thead><tr><th>Airline</th><th>Flights</th><th>Routes</th><th>Avg Fare</th><th>Seat Availability</th><th>Fare Pressure</th></tr></thead>
+                    <tbody id="airlineActivityBody">
+                        <tr>
+                            <td><span class="al-logo-sm"><img src="https://upload.wikimedia.org/wikipedia/en/9/9c/IndiGo_logo.svg" alt="IndiGo" onerror="this.style.display='none'" /></span> IndiGo</td>
+                            <td>342</td><td>28</td><td>₹5,240</td><td><span class="rk-badge moderate">Moderate</span></td><td><span class="rk-badge high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="al-logo-sm"><img src="https://upload.wikimedia.org/wikipedia/en/8/8d/Air_India_Logo.svg" alt="Air India" onerror="this.style.display='none'" /></span> Air India</td>
+                            <td>284</td><td>24</td><td>₹5,980</td><td><span class="rk-badge moderate">Moderate</span></td><td><span class="rk-badge high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="al-logo-sm"><img src="https://upload.wikimedia.org/wikipedia/en/8/8c/Akasa_Air_logo.svg" alt="Akasa Air" onerror="this.style.display='none'" /></span> Akasa Air</td>
+                            <td>196</td><td>18</td><td>₹5,120</td><td><span class="rk-badge low">Good</span></td><td><span class="rk-badge moderate">Moderate</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="al-logo-sm"><img src="https://upload.wikimedia.org/wikipedia/en/7/7c/SpiceJet_logo.svg" alt="SpiceJet" onerror="this.style.display='none'" /></span> SpiceJet</td>
+                            <td>218</td><td>20</td><td>₹5,340</td><td><span class="rk-badge moderate">Moderate</span></td><td><span class="rk-badge moderate">Moderate</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="al-logo-sm"><img src="https://upload.wikimedia.org/wikipedia/en/4/4f/Air_India_Express_logo.svg" alt="Air India Express" onerror="this.style.display='none'" /></span> Air India Express</td>
+                            <td>244</td><td>22</td><td>₹4,880</td><td><span class="rk-badge low">Good</span></td><td><span class="rk-badge low">Low</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- RANKINGS ROW -->
+            <div class="rankings-row">
+                <div class="rank-card">
+                    <div class="rk-head">
+                        <h3><i class="fas fa-chart-simple"></i> Airfare Pressure by Airport</h3>
+                        <span class="small-note" style="font-size:10px;color:#6a7a9a;">Click to zoom</span>
+                    </div>
+                    <div class="rk-list" id="airportRankList">
+                        <div class="rk-item" data-airport="DEL">
+                            <span class="rk-left"><span class="rk-route">DEL</span><span class="rk-sub">Delhi</span></span>
+                            <span class="rk-right"><span class="rk-fare">132.4</span> <span class="rk-badge high">High</span></span>
+                        </div>
+                        <div class="rk-item" data-airport="BOM">
+                            <span class="rk-left"><span class="rk-route">BOM</span><span class="rk-sub">Mumbai</span></span>
+                            <span class="rk-right"><span class="rk-fare">128.7</span> <span class="rk-badge high">High</span></span>
+                        </div>
+                        <div class="rk-item" data-airport="BLR">
+                            <span class="rk-left"><span class="rk-route">BLR</span><span class="rk-sub">Bengaluru</span></span>
+                            <span class="rk-right"><span class="rk-fare">124.3</span> <span class="rk-badge moderate">Moderate</span></span>
+                        </div>
+                        <div class="rk-item" data-airport="HYD">
+                            <span class="rk-left"><span class="rk-route">HYD</span><span class="rk-sub">Hyderabad</span></span>
+                            <span class="rk-right"><span class="rk-fare">117.8</span> <span class="rk-badge moderate">Moderate</span></span>
+                        </div>
+                        <div class="rk-item" data-airport="MAA">
+                            <span class="rk-left"><span class="rk-route">MAA</span><span class="rk-sub">Chennai</span></span>
+                            <span class="rk-right"><span class="rk-fare">115.2</span> <span class="rk-badge moderate">Moderate</span></span>
+                        </div>
+                        <div class="rk-item" data-airport="CCU">
+                            <span class="rk-left"><span class="rk-route">CCU</span><span class="rk-sub">Kolkata</span></span>
+                            <span class="rk-right"><span class="rk-fare">108.6</span> <span class="rk-badge low">Low</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="rank-card">
+                    <div class="rk-head">
+                        <h3><i class="fas fa-fire"></i> Top Fare Pressure Routes</h3>
+                        <span class="small-note" style="font-size:10px;color:#6a7a9a;">Click to view</span>
+                    </div>
+                    <div class="rk-list" id="routeRankList">
+                        <div class="rk-item" data-route="DEL-BOM">
+                            <span class="rk-left"><span class="rk-route">DEL → BOM</span></span>
+                            <span class="rk-right"><span class="rk-fare">₹7,240</span> <span class="rk-change up">+18.2%</span></span>
+                        </div>
+                        <div class="rk-item" data-route="DEL-MAA">
+                            <span class="rk-left"><span class="rk-route">DEL → MAA</span></span>
+                            <span class="rk-right"><span class="rk-fare">₹6,820</span> <span class="rk-change up">+14.8%</span></span>
+                        </div>
+                        <div class="rk-item" data-route="DEL-BLR">
+                            <span class="rk-left"><span class="rk-route">DEL → BLR</span></span>
+                            <span class="rk-right"><span class="rk-fare">₹6,180</span> <span class="rk-change up">+9.4%</span></span>
+                        </div>
+                        <div class="rk-item" data-route="BOM-BLR">
+                            <span class="rk-left"><span class="rk-route">BOM → BLR</span></span>
+                            <span class="rk-right"><span class="rk-fare">₹5,240</span> <span class="rk-change flat">+4.2%</span></span>
+                        </div>
+                        <div class="rk-item" data-route="DEL-GOI">
+                            <span class="rk-left"><span class="rk-route">DEL → GOI</span></span>
+                            <span class="rk-right"><span class="rk-fare">₹6,580</span> <span class="rk-change up">+21.3%</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="page-footer">
+                <span>© 2026 UDAAN — Real-time Airfare Intelligence Portal. All Rights Reserved.</span>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Use</a>
+                    <a href="#">Disclaimer</a>
+                    <a href="#">Contact Us</a>
+                </div>
+                <div class="footer-disclaimer">Prototype demonstration. Flight positions, fares and telemetry shown are simulated for demonstration purposes. Production deployment would connect approved aviation, airline and airfare data sources.</div>
+            </div>
+
+        </div><!-- /page-content -->
+    </div><!-- /main-wrapper -->
+
+    <!-- ===== CHATBOT ===== -->
+    <button class="chatbot-toggle" id="chatToggle" aria-label="UDAAN Assistant">
+        <i class="fas fa-comment-dots"></i>
+        <span class="badge-dot"></span>
+    </button>
+    <div class="chatbot-float" id="chatbot">
+        <div class="cb-head">
+            <span class="cb-title"><i class="fas fa-robot"></i> UDAAN Assistant <span class="online">Online</span></span>
+            <button class="cb-close" id="chatClose">&times;</button>
+        </div>
+        <div class="cb-body" id="chatBody">
+            <div class="cb-msg bot">Hello! I'm UDAAN Assistant. Ask me about airfare pressure, routes, or airport status.</div>
+        </div>
+        <div class="cb-questions" id="chatQuestions">
+            <button data-q="highpressure">Which routes have highest fare pressure?</button>
+            <button data-q="demand">Where is demand highest?</button>
+            <button data-q="del">Show me DEL airport status.</button>
+            <button data-q="inair">Which flights are currently in air?</button>
+            <button data-q="expensive">Why is DEL-BOM expensive?</button>
+            <button data-q="anomalies">What are the major anomalies?</button>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ============================================================ -->
+    <script>
+        // ============================================================
+        //  DATA
+        // ============================================================
+
+        // Airport data with real coordinates
+        const AIRPORTS = {
+            DEL: { name: 'Indira Gandhi International Airport', city: 'Delhi', lat: 28.6139, lng: 77.2090, code: 'DEL',
+                flights: 182, avgFare: 5246, farePressure: 'HIGH', demand: 'VERY HIGH', issues: 42, onTime: 84.2,
+                departures: 91, arrivals: 91, fareChange: 8.4, demandIndex: 86, seatAvail: 'Moderate', topRoute: 'DEL → BOM',
+                peakTime: '18:00–21:00' },
+            BOM: { name: 'Chhatrapati Shivaji Maharaj International Airport', city: 'Mumbai', lat: 19.0760, lng: 72.8777,
+                code: 'BOM', flights: 168, avgFare: 4980, farePressure: 'HIGH', demand: 'HIGH', issues: 37, onTime: 82.1,
+                departures: 84, arrivals: 84, fareChange: 6.2, demandIndex: 79, seatAvail: 'Moderate', topRoute: 'BOM → DEL',
+                peakTime: '17:00–20:00' },
+            BLR: { name: 'Kempegowda International Airport', city: 'Bengaluru', lat: 12.9716, lng: 77.5946, code: 'BLR',
+                flights: 151, avgFare: 6840, farePressure: 'MODERATE', demand: 'HIGH', issues: 29, onTime: 86.4,
+                departures: 76, arrivals: 75, fareChange: 3.8, demandIndex: 74, seatAvail: 'Good', topRoute: 'BLR → DEL',
+                peakTime: '16:00–19:00' },
+            HYD: { name: 'Rajiv Gandhi International Airport', city: 'Hyderabad', lat: 17.3850, lng: 78.4867, code: 'HYD',
+                flights: 126, avgFare: 4720, farePressure: 'MODERATE', demand: 'MODERATE', issues: 21, onTime: 85.6,
+                departures: 63, arrivals: 63, fareChange: 2.1, demandIndex: 65, seatAvail: 'Good', topRoute: 'HYD → DEL',
+                peakTime: '15:00–18:00' },
+            MAA: { name: 'Chennai International Airport', city: 'Chennai', lat: 13.0827, lng: 80.2707, code: 'MAA',
+                flights: 118, avgFare: 4950, farePressure: 'MODERATE', demand: 'MODERATE', issues: 18, onTime: 83.8,
+                departures: 59, arrivals: 59, fareChange: 1.6, demandIndex: 61, seatAvail: 'Moderate', topRoute: 'MAA → DEL',
+                peakTime: '14:00–17:00' },
+            CCU: { name: 'Netaji Subhas Chandra Bose International Airport', city: 'Kolkata', lat: 22.5726, lng: 88.3639,
+                code: 'CCU', flights: 94, avgFare: 4620, farePressure: 'LOW', demand: 'MODERATE', issues: 14, onTime: 87.2,
+                departures: 47, arrivals: 47, fareChange: -0.8, demandIndex: 54, seatAvail: 'Good', topRoute: 'CCU → DEL',
+                peakTime: '13:00–16:00' },
+            GOI: { name: 'Goa International Airport', city: 'Goa', lat: 15.2993, lng: 74.1240, code: 'GOI', flights: 68,
+                avgFare: 5580, farePressure: 'HIGH', demand: 'HIGH', issues: 16, onTime: 80.4, departures: 34, arrivals: 34,
+                fareChange: 12.4, demandIndex: 82, seatAvail: 'Tight', topRoute: 'DEL → GOI', peakTime: '17:00–20:00' },
+            AMD: { name: 'Sardar Vallabhbhai Patel International Airport', city: 'Ahmedabad', lat: 23.0225, lng: 72.5714,
+                code: 'AMD', flights: 76, avgFare: 4320, farePressure: 'MODERATE', demand: 'MODERATE', issues: 11,
+                onTime: 86.1, departures: 38, arrivals: 38, fareChange: 2.4, demandIndex: 58, seatAvail: 'Good',
+                topRoute: 'AMD → DEL', peakTime: '14:00–17:00' },
+            PNQ: { name: 'Pune Airport', city: 'Pune', lat: 18.5204, lng: 73.8567, code: 'PNQ', flights: 62, avgFare: 4560,
+                farePressure: 'MODERATE', demand: 'MODERATE', issues: 9, onTime: 84.7, departures: 31, arrivals: 31,
+                fareChange: 1.8, demandIndex: 52, seatAvail: 'Good', topRoute: 'PNQ → DEL', peakTime: '13:00–16:00' },
+            LKO: { name: 'Chaudhary Charan Singh Airport', city: 'Lucknow', lat: 26.8467, lng: 80.9462, code: 'LKO',
+                flights: 48, avgFare: 4180, farePressure: 'LOW', demand: 'LOW', issues: 6, onTime: 88.3, departures: 24,
+                arrivals: 24, fareChange: -0.4, demandIndex: 42, seatAvail: 'Good', topRoute: 'LKO → DEL',
+                peakTime: '12:00–15:00' },
+            PAT: { name: 'Jay Prakash Narayan Airport', city: 'Patna', lat: 25.5941, lng: 85.1376, code: 'PAT', flights: 42,
+                avgFare: 4080, farePressure: 'LOW', demand: 'LOW', issues: 5, onTime: 85.9, departures: 21, arrivals: 21,
+                fareChange: 0.2, demandIndex: 38, seatAvail: 'Good', topRoute: 'PAT → DEL', peakTime: '11:00–14:00' },
+            GAU: { name: 'Lokpriya Gopinath Bordoloi Airport', city: 'Guwahati', lat: 26.1445, lng: 91.7362, code: 'GAU',
+                flights: 36, avgFare: 4780, farePressure: 'MODERATE', demand: 'MODERATE', issues: 8, onTime: 82.6,
+                departures: 18, arrivals: 18, fareChange: 3.6, demandIndex: 48, seatAvail: 'Moderate', topRoute: 'GAU → DEL',
+                peakTime: '13:00–16:00' },
+            COK: { name: 'Cochin International Airport', city: 'Kochi', lat: 9.9312, lng: 76.2673, code: 'COK', flights: 56,
+                avgFare: 5020, farePressure: 'MODERATE', demand: 'MODERATE', issues: 12, onTime: 83.4, departures: 28,
+                arrivals: 28, fareChange: 2.8, demandIndex: 56, seatAvail: 'Good', topRoute: 'COK → DEL',
+                peakTime: '14:00–17:00' },
+            JAI: { name: 'Jaipur International Airport', city: 'Jaipur', lat: 26.9124, lng: 75.7873, code: 'JAI', flights: 46,
+                avgFare: 4220, farePressure: 'LOW', demand: 'LOW', issues: 4, onTime: 87.8, departures: 23, arrivals: 23,
+                fareChange: -0.6, demandIndex: 36, seatAvail: 'Good', topRoute: 'JAI → DEL', peakTime: '12:00–15:00' },
+            IXC: { name: 'Chandigarh Airport', city: 'Chandigarh', lat: 30.6734, lng: 76.7881, code: 'IXC', flights: 38,
+                avgFare: 4280, farePressure: 'LOW', demand: 'LOW', issues: 3, onTime: 86.2, departures: 19, arrivals: 19,
+                fareChange: 0.8, demandIndex: 34, seatAvail: 'Good', topRoute: 'IXC → DEL', peakTime: '12:00–15:00' },
+            BBI: { name: 'Bhubaneswar Airport', city: 'Bhubaneswar', lat: 20.2444, lng: 85.8178, code: 'BBI', flights: 34,
+                avgFare: 4380, farePressure: 'LOW', demand: 'LOW', issues: 4, onTime: 84.8, departures: 17, arrivals: 17,
+                fareChange: 1.2, demandIndex: 32, seatAvail: 'Good', topRoute: 'BBI → DEL', peakTime: '11:00–14:00' },
+            TRV: { name: 'Thiruvananthapuram Airport', city: 'Thiruvananthapuram', lat: 8.4822, lng: 76.9201, code: 'TRV',
+                flights: 32, avgFare: 4920, farePressure: 'MODERATE', demand: 'MODERATE', issues: 7, onTime: 82.4,
+                departures: 16, arrivals: 16, fareChange: 2.6, demandIndex: 44, seatAvail: 'Moderate', topRoute: 'TRV → DEL',
+                peakTime: '13:00–16:00' },
+            SXR: { name: 'Srinagar Airport', city: 'Srinagar', lat: 33.9872, lng: 74.7742, code: 'SXR', flights: 28,
+                avgFare: 5120, farePressure: 'HIGH', demand: 'HIGH', issues: 9, onTime: 79.8, departures: 14, arrivals: 14,
+                fareChange: 14.2, demandIndex: 78, seatAvail: 'Tight', topRoute: 'SXR → DEL', peakTime: '16:00–19:00' },
+            IXB: { name: 'Bagdogra Airport', city: 'Bagdogra', lat: 26.6812, lng: 88.3286, code: 'IXB', flights: 26,
+                avgFare: 4680, farePressure: 'MODERATE', demand: 'MODERATE', issues: 5, onTime: 83.6, departures: 13,
+                arrivals: 13, fareChange: 3.2, demandIndex: 46, seatAvail: 'Moderate', topRoute: 'IXB → DEL',
+                peakTime: '12:00–15:00' },
+            VNS: { name: 'Lal Bahadur Shastri Airport', city: 'Varanasi', lat: 25.4521, lng: 82.8592, code: 'VNS', flights: 30,
+                avgFare: 4150, farePressure: 'LOW', demand: 'LOW', issues: 3, onTime: 86.8, departures: 15, arrivals: 15,
+                fareChange: 0.4, demandIndex: 30, seatAvail: 'Good', topRoute: 'VNS → DEL', peakTime: '11:00–14:00' }
+        };
+
+        // Route definitions with fare pressure
+        const ROUTES = [
+            { from: 'DEL', to: 'BOM', freq: 42, avgFare: 7240, fareChange: 18.2, pressure: 'HIGH', demand: 'HIGH',
+                avail: 'Moderate', complaints: 216, airlines: 5 },
+            { from: 'DEL', to: 'BLR', freq: 36, avgFare: 6180, fareChange: 9.4, pressure: 'MODERATE', demand: 'HIGH',
+                avail: 'Good', complaints: 164, airlines: 4 },
+            { from: 'DEL', to: 'HYD', freq: 28, avgFare: 5720, fareChange: 7.8, pressure: 'MODERATE', demand: 'MODERATE',
+                avail: 'Good', complaints: 118, airlines: 4 },
+            { from: 'DEL', to: 'MAA', freq: 24, avgFare: 6820, fareChange: 14.8, pressure: 'HIGH', demand: 'HIGH',
+                avail: 'Moderate', complaints: 142, airlines: 3 },
+            { from: 'DEL', to: 'CCU', freq: 22, avgFare: 5480, fareChange: 4.2, pressure: 'MODERATE', demand: 'MODERATE',
+                avail: 'Good', complaints: 98, airlines: 3 },
+            { from: 'DEL', to: 'GOI', freq: 18, avgFare: 6580, fareChange: 21.3, pressure: 'HIGH', demand: 'VERY HIGH',
+                avail: 'Tight', complaints: 86, airlines: 3 },
+            { from: 'BOM', to: 'BLR', freq: 30, avgFare: 5240, fareChange: 4.2, pressure: 'MODERATE', demand: 'MODERATE',
+                avail: 'Good', complaints: 129, airlines: 4 },
+            { from: 'BOM', to: 'HYD', freq: 24, avgFare: 4980, fareChange: 3.6, pressure: 'MODERATE', demand: 'MODERATE',
+                avail: 'Good', complaints: 87, airlines: 3 },
+            { from: 'BOM', to: 'DEL', freq: 42, avgFare: 7120, fareChange: 16.4, pressure: 'HIGH', demand: 'HIGH',
+                avail: 'Moderate', complaints: 194, airlines: 5 },
+            { from: 'BLR', to: 'HYD', freq: 20, avgFare: 4620, fareChange: 1.8, pressure: 'LOW', demand: 'MODERATE',
+                avail: 'Good', complaints: 62, airlines: 3 },
+            { from: 'DEL', to: 'AMD', freq: 18, avgFare: 5120, fareChange: 5.6, pressure: 'MODERATE', demand: 'MODERATE',
+                avail: 'Good', complaints: 54, airlines: 3 },
+            { from: 'DEL', to: 'PNQ', freq: 16, avgFare: 4980, fareChange: 4.4, pressure: 'MODERATE', demand: 'MODERATE',
+                avail: 'Good', complaints: 48, airlines: 2 },
+            { from: 'DEL', to: 'COK', freq: 14, avgFare: 5640, fareChange: 8.2, pressure: 'MODERATE', demand: 'MODERATE',
+                avail: 'Good', complaints: 42, airlines: 2 },
+            { from: 'DEL', to: 'SXR', freq: 12, avgFare: 6120, fareChange: 14.8, pressure: 'HIGH', demand: 'HIGH',
+                avail: 'Tight', complaints: 38, airlines: 2 },
+            { from: 'DEL', to: 'GAU', freq: 10, avgFare: 5480, fareChange: 6.8, pressure: 'MODERATE', demand: 'MODERATE',
+                avail: 'Moderate', complaints: 32, airlines: 2 }
+        ];
+
+        const AIRLINE_NAMES = ['IndiGo', 'Air India', 'Akasa Air', 'SpiceJet', 'Air India Express'];
+        const AIRLINE_COLORS = ['#e84a2d', '#b33a3a', '#1a6a8a', '#e87a2a', '#2a6a4a'];
+
+        // Generate flight data
+        let flights = [];
+        let aircraftMarkers = [];
+        let aircraftIntervals = [];
+        let animationFrameId = null;
+        let isPaused = false;
+        let simTime = new Date();
+        simTime.setHours(18, 30, 0, 0);
+
+        // Map state
+        let map = null;
+        let heatLayer = null;
+        let routeLines = [];
+        let airportMarkers = [];
+        let selectedLayer = 'fare';
+
+        // Chart instances
+        let fareTrendChart = null;
+        let flightActivityChart = null;
+
+        // DOM refs
+        const sidePanel = document.getElementById('sidePanel');
+        const sidePanelBody = document.getElementById('sidePanelBody');
+        const sidePanelClose = document.getElementById('sidePanelClose');
+        const eventFeed = document.getElementById('eventFeed');
+        const mapSearch = document.getElementById('mapSearch');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resumeBtn = document.getElementById('resumeBtn');
+        const simTimeEl = document.getElementById('simTime');
+
+        // ============================================================
+        //  HELPERS
+        // ============================================================
+        function formatCurrency(v) { return '₹' + Number(v).toLocaleString('en-IN'); }
+
+        function getPressureColor(p) {
+            const map = { 'VERY HIGH': '#b31a1a', 'HIGH': '#b33a3a', 'MODERATE': '#d4a843', 'LOW': '#2a7a3a' };
+            return map[p] || '#6a8aaa';
+        }
+
+        function getPressureLabel(p) {
+            return p.charAt(0) + p.slice(1).toLowerCase();
+        }
+
+        function getRouteKey(a, b) { return [a, b].sort().join('-'); }
+
+        function getAirportByCode(code) { return AIRPORTS[code] || null; }
+
+        function getRouteBetween(from, to) {
+            return ROUTES.find(r => (r.from === from && r.to === to) || (r.from === to && r.to === from));
+        }
+
+        function randomBetween(min, max) { return Math.round(min + (max - min) * Math.random()); }
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        function lerpLatLng(p1, p2, t) {
+            return [lerp(p1[0], p2[0], t), lerp(p1[1], p2[1], t)];
+        }
+
+        function distance(p1, p2) {
+            const R = 6371;
+            const dLat = (p2[0] - p1[0]) * Math.PI / 180;
+            const dLng = (p2[1] - p1[1]) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) ** 2 + Math.cos(p1[0] * Math.PI / 180) * Math.cos(p2[0] * Math.PI / 180) * Math.sin(
+                dLng / 2) ** 2;
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+
+        // ============================================================
+        //  MAP INIT
+        // ============================================================
+        function initMap() {
+            const container = document.getElementById('indiaMap');
+            if (map) { map.remove();
+                map = null; }
+
+            map = L.map(container, {
+                center: [22.5, 80.0],
+                zoom: 5,
+                zoomControl: true,
+                attributionControl: true
+            });
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; CartoDB',
+                subdomains: 'abcd',
+                maxZoom: 19,
+                minZoom: 4
+            }).addTo(map);
+
+            // Layer control
+            const layers = {
+                'Airfare Heat': L.layerGroup().addTo(map),
+                'Flight Activity': L.layerGroup().addTo(map),
+                'Passenger Demand': L.layerGroup().addTo(map),
+                'Complaint Density': L.layerGroup().addTo(map),
+                'Route Pressure': L.layerGroup().addTo(map),
+                'Airport Activity': L.layerGroup().addTo(map)
+            };
+
+            // Store layers for later
+            window._layers = layers;
+
+            const layerControl = L.control.layers(null, null, { collapsed: false, position: 'topright' });
+            layerControl.addOverlay(layers['Airfare Heat'], 'Airfare Heat');
+            layerControl.addOverlay(layers['Flight Activity'], 'Flight Activity');
+            layerControl.addOverlay(layers['Passenger Demand'], 'Passenger Demand');
+            layerControl.addOverlay(layers['Complaint Density'], 'Complaint Density');
+            layerControl.addOverlay(layers['Route Pressure'], 'Route Pressure');
+            layerControl.addOverlay(layers['Airport Activity'], 'Airport Activity');
+            layerControl.addTo(map);
+
+            // Default: show Airfare Heat
+            layers['Airfare Heat'].addTo(map);
+
+            // Build map elements
+            buildAirportMarkers(layers);
+            buildRouteLines(layers);
+            buildHeatmap(layers);
+            buildDemandCircles(layers);
+            buildComplaintDensity(layers);
+            buildFlightActivity(layers);
+
+            // Fit bounds
+            map.fitBounds([
+                [8.0, 68.0],
+                [36.0, 98.0]
+            ]);
+
+            // Handle resize
+            setTimeout(() => { if (map) map.invalidateSize(); }, 300);
+
+            return layers;
+        }
+
+        // ============================================================
+        //  AIRPORT MARKERS
+        // ============================================================
+        function buildAirportMarkers(layers) {
+            const group = layers['Airport Activity'];
+            const codes = Object.keys(AIRPORTS);
+
+            codes.forEach(code => {
+                const ap = AIRPORTS[code];
+                const color = getPressureColor(ap.farePressure);
+                const radius = 10 + (ap.flights / 182) * 16;
+
+                const marker = L.circleMarker([ap.lat, ap.lng], {
+                    radius: radius,
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.6,
+                    weight: 2,
+                    opacity: 0.8,
+                    className: 'airport-marker'
+                });
+
+                marker.bindPopup(`
+                    <strong>${ap.name}</strong><br>
+                    <strong>${ap.code}</strong> · ${ap.city}<br>
+                    Flights Today: ${ap.flights}<br>
+                    Avg Fare: ${formatCurrency(ap.avgFare)}<br>
+                    Fare Pressure: <span style="color:${color};font-weight:600;">${ap.farePressure}</span><br>
+                    Demand: ${ap.demand}<br>
+                    Issues: ${ap.issues}
+                `);
+
+                marker.on('click', function() {
+                    showAirportDetail(code);
+                });
+
+                marker.addTo(group);
+                airportMarkers.push({ marker, code });
+            });
+        }
+
+        // ============================================================
+        //  ROUTE LINES
+        // ============================================================
+        function buildRouteLines(layers) {
+            const group = layers['Route Pressure'];
+            const routeGroup = L.layerGroup().addTo(group);
+
+            ROUTES.forEach(route => {
+                const from = AIRPORTS[route.from];
+                const to = AIRPORTS[route.to];
+                if (!from || !to) return;
+
+                const color = getPressureColor(route.pressure);
+                const weight = 2 + (route.freq / 42) * 4;
+
+                const midLat = (from.lat + to.lat) / 2;
+                const midLng = (from.lng + to.lng) / 2;
+                const curve = 0.15;
+                const latOffset = (to.lat - from.lat) * curve;
+                const lngOffset = (to.lng - from.lng) * curve * 0.6;
+
+                const line = L.polyline([
+                    [from.lat, from.lng],
+                    [midLat + latOffset, midLng + lngOffset],
+                    [to.lat, to.lng]
+                ], {
+                    color: color,
+                    weight: weight,
+                    opacity: 0.7,
+                    smoothFactor: 0.5,
+                    className: 'route-line'
+                });
+
+                line.bindPopup(`
+                    <strong>${route.from} → ${route.to}</strong><br>
+                    Flights: ${route.freq}<br>
+                    Avg Fare: ${formatCurrency(route.avgFare)}<br>
+                    Fare Change: <span style="color:${route.fareChange > 5 ? '#b33a3a' : '#2a7a3a'};">${route.fareChange > 0 ? '+' : ''}${route.fareChange}%</span><br>
+                    Pressure: <span style="color:${color};font-weight:600;">${route.pressure}</span><br>
+                    Demand: ${route.demand}<br>
+                    Availability: ${route.avail}<br>
+                    Complaints: ${route.complaints}<br>
+                    Airlines: ${route.airlines}
+                `);
+
+                line.on('click', function() {
+                    showRouteDetail(route.from, route.to);
+                });
+
+                line.addTo(routeGroup);
+                routeLines.push(line);
+            });
+        }
+
+        // ============================================================
+        //  HEATMAP (Airfare Heat)
+        // ============================================================
+        function buildHeatmap(layers) {
+            const group = layers['Airfare Heat'];
+            const heatGroup = L.layerGroup().addTo(group);
+
+            const points = [];
+            const codes = Object.keys(AIRPORTS);
+            codes.forEach(code => {
+                const ap = AIRPORTS[code];
+                const intensity = ap.farePressure === 'VERY HIGH' ? 0.9 :
+                    ap.farePressure === 'HIGH' ? 0.7 :
+                    ap.farePressure === 'MODERATE' ? 0.4 : 0.15;
+                // Add multiple points around the airport for heat spread
+                for (let i = 0; i < 6; i++) {
+                    const angle = Math.random() * 2 * Math.PI;
+                    const dist = 0.1 + Math.random() * 0.5;
+                    const lat = ap.lat + Math.sin(angle) * dist;
+                    const lng = ap.lng + Math.cos(angle) * dist;
+                    points.push([lat, lng, intensity * (0.6 + Math.random() * 0.4)]);
+                }
+            });
+
+            if (typeof L.heat !== 'undefined') {
+                const heat = L.heat(points, {
+                    radius: 35,
+                    blur: 20,
+                    maxZoom: 8,
+                    gradient: {
+                        0.0: '#2a7a3a',
+                        0.3: '#6aaa3a',
+                        0.5: '#d4a843',
+                        0.7: '#d47a2a',
+                        1.0: '#b33a3a'
+                    }
+                });
+                heat.addTo(heatGroup);
+                heatLayer = heat;
+            } else {
+                // Fallback: use circle markers
+                codes.forEach(code => {
+                    const ap = AIRPORTS[code];
+                    const intensity = ap.farePressure === 'VERY HIGH' ? 0.9 :
+                        ap.farePressure === 'HIGH' ? 0.7 :
+                        ap.farePressure === 'MODERATE' ? 0.4 : 0.15;
+                    const color = intensity > 0.7 ? '#b33a3a' : intensity > 0.4 ? '#d4a843' : '#2a7a3a';
+                    const radius = 15 + intensity * 30;
+                    const marker = L.circle([ap.lat, ap.lng], {
+                        radius: radius * 1000,
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: 0.3 + intensity * 0.4,
+                        weight: 1,
+                        opacity: 0.4
+                    });
+                    marker.addTo(heatGroup);
+                });
+            }
+        }
+
+        // ============================================================
+        //  DEMAND CIRCLES
+        // ============================================================
+        function buildDemandCircles(layers) {
+            const group = layers['Passenger Demand'];
+            const demandGroup = L.layerGroup().addTo(group);
+
+            const codes = Object.keys(AIRPORTS);
+            codes.forEach(code => {
+                const ap = AIRPORTS[code];
+                const idx = ap.demandIndex || 50;
+                const radius = 8 + (idx / 100) * 30;
+                const color = idx > 75 ? '#b33a3a' : idx > 50 ? '#d4a843' : '#2a7a3a';
+
+                const circle = L.circle([ap.lat, ap.lng], {
+                    radius: radius * 1200,
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.35,
+                    weight: 2,
+                    opacity: 0.6,
+                    dashArray: '4 6'
+                });
+
+                circle.bindPopup(`
+                    <strong>${ap.code} · ${ap.city}</strong><br>
+                    Demand Index: ${ap.demandIndex}/100<br>
+                    Trend: ${idx > 70 ? '↑ Rising' : idx > 50 ? '→ Stable' : '↓ Falling'}<br>
+                    Peak: ${ap.peakTime}<br>
+                    Top Destination: ${ap.topRoute}<br>
+                    Avg Fare: ${formatCurrency(ap.avgFare)}
+                `);
+
+                circle.addTo(demandGroup);
+            });
+        }
+
+        // ============================================================
+        //  COMPLAINT DENSITY
+        // ============================================================
+        function buildComplaintDensity(layers) {
+            const group = layers['Complaint Density'];
+            const compGroup = L.layerGroup().addTo(group);
+
+            const codes = Object.keys(AIRPORTS);
+            codes.forEach(code => {
+                const ap = AIRPORTS[code];
+                const count = ap.issues || 0;
+                const radius = 6 + (count / 42) * 24;
+                const color = count > 30 ? '#b33a3a' : count > 20 ? '#d4a843' : '#2a7a3a';
+
+                const marker = L.circle([ap.lat, ap.lng], {
+                    radius: radius * 1000,
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.5,
+                    weight: 1.5,
+                    opacity: 0.7
+                });
+
+                marker.bindPopup(`
+                    <strong>${ap.code} · ${ap.city}</strong><br>
+                    Total Reports: ${count}<br>
+                    High Priority: ${Math.round(count * 0.18)}<br>
+                    Top Issue: Fare Discrepancy<br>
+                    Most Affected Route: ${ap.topRoute}
+                `);
+
+                marker.addTo(compGroup);
+            });
+        }
+
+        // ============================================================
+        //  FLIGHT ACTIVITY (Aircraft simulation)
+        // ============================================================
+        let aircraftData = [];
+
+        function buildFlightActivity(layers) {
+            const group = layers['Flight Activity'];
+            const flightGroup = L.layerGroup().addTo(group);
+
+            // Create 25 flights on major routes
+            const routePairs = [
+                ['DEL', 'BOM'],
+                ['DEL', 'BLR'],
+                ['DEL', 'HYD'],
+                ['DEL', 'MAA'],
+                ['DEL', 'CCU'],
+                ['DEL', 'GOI'],
+                ['BOM', 'BLR'],
+                ['BOM', 'HYD'],
+                ['BOM', 'DEL'],
+                ['BLR', 'HYD'],
+                ['DEL', 'AMD'],
+                ['DEL', 'PNQ'],
+                ['DEL', 'SXR'],
+                ['DEL', 'COK']
+            ];
+
+            aircraftData = [];
+
+            routePairs.forEach((pair, idx) => {
+                const from = AIRPORTS[pair[0]];
+                const to = AIRPORTS[pair[1]];
+                if (!from || !to) return;
+
+                const count = idx < 8 ? 2 : 1;
+                for (let i = 0; i < count; i++) {
+                    const airline = AIRLINE_NAMES[Math.floor(Math.random() * AIRLINE_NAMES.length)];
+                    const flightNum = airline.substring(0, 2).toUpperCase() + '-' + String(1000 + Math.floor(Math
+                    .random() * 9000));
+                    const progress = Math.random();
+                    const speed = 750 + Math.random() * 150;
+
+                    aircraftData.push({
+                        from: pair[0],
+                        to: pair[1],
+                        fromLat: from.lat,
+                        fromLng: from.lng,
+                        toLat: to.lat,
+                        toLng: to.lng,
+                        progress: progress,
+                        speed: speed,
+                        airline: airline,
+                        flight: flightNum,
+                        altitude: 30000 + Math.random() * 8000,
+                        status: 'In Air',
+                        scheduledDeparture: new Date(simTime.getTime() - 1000 * 60 * 60 * 2),
+                        estimatedArrival: new Date(simTime.getTime() + 1000 * 60 * 60 * 2.5),
+                        marker: null,
+                        icon: null
+                    });
+                }
+            });
+
+            // Create markers for each aircraft
+            aircraftData.forEach((ac, index) => {
+                const pos = getAircraftPosition(ac);
+                const icon = createAircraftIcon(ac.airline);
+                const marker = L.marker(pos, {
+                    icon: icon,
+                    rotationAngle: getAircraftAngle(ac),
+                    className: 'aircraft-marker'
+                });
+
+                const fromName = AIRPORTS[ac.from]?.city || ac.from;
+                const toName = AIRPORTS[ac.to]?.city || ac.to;
+
+                marker.bindPopup(`
+                    <strong>${ac.airline}</strong> ${ac.flight}<br>
+                    ${fromName} (${ac.from}) → ${toName} (${ac.to})<br>
+                    ● In Air<br>
+                    Altitude: ${Math.round(ac.altitude)} ft<br>
+                    Speed: ${Math.round(ac.speed)} km/h<br>
+                    ETA: ${formatTime(ac.estimatedArrival)}<br>
+                    Fare from: ${formatCurrency(4000 + Math.random() * 3000)}
+                `);
+
+                marker.on('click', function() {
+                    showFlightDetail(ac);
+                });
+
+                marker.addTo(flightGroup);
+                ac.marker = marker;
+                ac.icon = icon;
+            });
+
+            // Store for animation
+            window._flightGroup = flightGroup;
+            window._aircraftData = aircraftData;
+        }
+
+        function createAircraftIcon(airline) {
+            const colors = {
+                'IndiGo': '#e84a2d',
+                'Air India': '#b33a3a',
+                'Akasa Air': '#1a6a8a',
+                'SpiceJet': '#e87a2a',
+                'Air India Express': '#2a6a4a'
+            };
+            const color = colors[airline] || '#062442';
+
+            return L.divIcon({
+                html: `<div style="font-size:20px;color:${color};transform:rotate(-45deg);filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2));"><i class="fas fa-plane"></i></div>`,
+                className: 'aircraft-icon',
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+        }
+
+        function getAircraftPosition(ac) {
+            const lat = lerp(ac.fromLat, ac.toLat, ac.progress);
+            const lng = lerp(ac.fromLng, ac.toLng, ac.progress);
+            return [lat, lng];
+        }
+
+        function getAircraftAngle(ac) {
+            const dx = ac.toLng - ac.fromLng;
+            const dy = ac.toLat - ac.fromLat;
+            return Math.atan2(dy, dx) * 180 / Math.PI + 90;
+        }
+
+        function formatTime(date) {
+            if (!date) return '--:--';
+            return date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // ============================================================
+        //  ANIMATION LOOP
+        // ============================================================
+        let lastFrameTime = 0;
+
+        function animateAircraft(timestamp) {
+            if (isPaused) {
+                animationFrameId = requestAnimationFrame(animateAircraft);
+                return;
+            }
+
+            const delta = lastFrameTime ? (timestamp - lastFrameTime) / 1000 : 0.016;
+            lastFrameTime = timestamp;
+
+            // Update sim time
+            simTime.setSeconds(simTime.getSeconds() + delta * 2);
+            simTimeEl.textContent = simTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit',
+                second: '2-digit' });
+
+            // Update aircraft positions
+            aircraftData.forEach(ac => {
+                if (!ac.marker) return;
+                ac.progress += delta * 0.004;
+                if (ac.progress > 1) {
+                    // Reverse direction
+                    const temp = ac.from;
+                    ac.from = ac.to;
+                    ac.to = temp;
+                    const tempLat = ac.fromLat;
+                    ac.fromLat = ac.toLat;
+                    ac.toLat = tempLat;
+                    const tempLng = ac.fromLng;
+                    ac.fromLng = ac.toLng;
+                    ac.toLng = tempLng;
+                    ac.progress = 0;
+                    // Update airline/flight
+                    ac.airline = AIRLINE_NAMES[Math.floor(Math.random() * AIRLINE_NAMES.length)];
+                    ac.flight = ac.airline.substring(0, 2).toUpperCase() + '-' + String(1000 + Math.floor(Math
+                    .random() * 9000));
+                    ac.altitude = 30000 + Math.random() * 8000;
+                    ac.speed = 750 + Math.random() * 150;
+                    // Update icon
+                    const newIcon = createAircraftIcon(ac.airline);
+                    ac.marker.setIcon(newIcon);
+                    ac.icon = newIcon;
+                }
+
+                const pos = getAircraftPosition(ac);
+                ac.marker.setLatLng(pos);
+                const angle = getAircraftAngle(ac);
+                ac.marker.setRotationAngle ? ac.marker.setRotationAngle(angle) : null;
+            });
+
+            // Spawn events occasionally
+            if (Math.random() < 0.015) {
+                spawnEvent();
+            }
+
+            animationFrameId = requestAnimationFrame(animateAircraft);
+        }
+
+        // ============================================================
+        //  EVENTS
+        // ============================================================
+        function spawnEvent() {
+            const events = [
+                { text: '{route} Fare increased by ₹{amount}', highlight: true },
+                { text: '{airport} Airport High demand detected', highlight: true },
+                { text: '{route} Seat availability reduced', highlight: true },
+                { text: '{airport} Airport Flight activity increased', highlight: true },
+                { text: '{route} Fare pressure crossed threshold', highlight: true },
+                { text: 'New route {route} fare spike observed', highlight: true },
+                { text: '{airline} flight {flight} delayed at {airport}', highlight: false },
+                { text: '{route} passenger demand surged', highlight: true }
+            ];
+
+            const event = events[Math.floor(Math.random() * events.length)];
+            const routes = ['DEL → BOM', 'DEL → BLR', 'DEL → MAA', 'BOM → BLR', 'DEL → GOI', 'DEL → HYD'];
+            const airports = ['DEL', 'BOM', 'BLR', 'HYD', 'MAA', 'GOI'];
+            const airlines = ['IndiGo', 'Air India', 'Akasa Air', 'SpiceJet'];
+
+            let text = event.text;
+            let highlight = event.highlight;
+
+            if (text.includes('{route}')) {
+                const r = routes[Math.floor(Math.random() * routes.length)];
+                text = text.replace(/{route}/g, r);
+            }
+            if (text.includes('{airport}')) {
+                const a = airports[Math.floor(Math.random() * airports.length)];
+                text = text.replace(/{airport}/g, a);
+            }
+            if (text.includes('{amount}')) {
+                text = text.replace(/{amount}/g, String(100 + Math.floor(Math.random() * 800)));
+            }
+            if (text.includes('{airline}')) {
+                text = text.replace(/{airline}/g, airlines[Math.floor(Math.random() * airlines.length)]);
+            }
+            if (text.includes('{flight}')) {
+                text = text.replace(/{flight}/g, '6E-' + String(1000 + Math.floor(Math.random() * 9000)));
+            }
+
+            const time = simTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+            const item = document.createElement('div');
+            item.className = 'ef-item';
+            if (highlight) {
+                item.innerHTML =
+                    `<span class="ef-time">${time}</span><span class="ef-text"><span class="highlight">${text}</span></span>`;
+            } else {
+                item.innerHTML = `<span class="ef-time">${time}</span><span class="ef-text">${text}</span>`;
+            }
+            eventFeed.prepend(item);
+
+            // Limit events
+            while (eventFeed.children.length > 12) {
+                eventFeed.removeChild(eventFeed.lastChild);
+            }
+        }
+
+        // ============================================================
+        //  SIDE PANEL - DETAILS
+        // ============================================================
+        function showAirportDetail(code) {
+            const ap = AIRPORTS[code];
+            if (!ap) return;
+
+            sidePanelBody.innerHTML = `
+                <div class="sp-detail">
+                    <div class="sp-title">${ap.name}</div>
+                    <div class="sp-subtitle">${ap.code} · ${ap.city}</div>
+                    <div class="sp-section-title">Airport Intelligence</div>
+                    <div class="sp-row"><span class="sp-label">IATA</span><span class="sp-value">${ap.code}</span></div>
+                    <div class="sp-row"><span class="sp-label">Flights Today</span><span class="sp-value">${ap.flights}</span></div>
+                    <div class="sp-row"><span class="sp-label">Departures</span><span class="sp-value">${ap.departures}</span></div>
+                    <div class="sp-row"><span class="sp-label">Arrivals</span><span class="sp-value">${ap.arrivals}</span></div>
+                    <div class="sp-row"><span class="sp-label">Average Fare</span><span class="sp-value">${formatCurrency(ap.avgFare)}</span></div>
+                    <div class="sp-row"><span class="sp-label">Fare Change</span><span class="sp-value ${ap.fareChange > 5 ? 'high' : ap.fareChange > 0 ? 'moderate' : 'low'}">${ap.fareChange > 0 ? '+' : ''}${ap.fareChange}%</span></div>
+                    <div class="sp-row"><span class="sp-label">Demand Index</span><span class="sp-value">${ap.demandIndex}/100</span></div>
+                    <div class="sp-row"><span class="sp-label">Seat Availability</span><span class="sp-value">${ap.seatAvail}</span></div>
+                    <div class="sp-row"><span class="sp-label">Passenger Issues</span><span class="sp-value">${ap.issues}</span></div>
+                    <div class="sp-row"><span class="sp-label">Top Route</span><span class="sp-value">${ap.topRoute}</span></div>
+                    <div class="sp-row"><span class="sp-label">Peak Time</span><span class="sp-value">${ap.peakTime}</span></div>
+                    <div class="sp-row"><span class="sp-label">Fare Pressure</span><span class="sp-value" style="color:${getPressureColor(ap.farePressure)};font-weight:600;">${ap.farePressure}</span></div>
+                    <div class="sp-row"><span class="sp-label">On-Time Performance</span><span class="sp-value">${ap.onTime}%</span></div>
+                    <div style="margin-top:12px;">
+                        <span class="sp-btn" onclick="zoomToAirport('${code}')"><i class="fas fa-search-location"></i> View Airport Analysis</span>
+                    </div>
+                    <div style="margin-top:8px;font-size:11px;color:#6a7a9a;border-top:1px solid #eef2f8;padding-top:8px;">
+                        <strong>UDAAN Intelligence:</strong> ${ap.farePressure === 'HIGH' ? 'Fare pressure is elevated. Monitor evening departures.' : ap.farePressure === 'VERY HIGH' ? 'Critical fare pressure detected. Immediate monitoring recommended.' : 'Fare levels are stable. Normal operations.'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function showRouteDetail(from, to) {
+            const route = getRouteBetween(from, to);
+            if (!route) return;
+            const f = AIRPORTS[from];
+            const t = AIRPORTS[to];
+            if (!f || !t) return;
+
+            sidePanelBody.innerHTML = `
+                <div class="sp-detail">
+                    <div class="sp-title">${from} → ${to}</div>
+                    <div class="sp-subtitle">${f.city} to ${t.city}</div>
+                    <div class="sp-section-title">Route Intelligence</div>
+                    <div class="sp-row"><span class="sp-label">Flights</span><span class="sp-value">${route.freq}</span></div>
+                    <div class="sp-row"><span class="sp-label">Average Fare</span><span class="sp-value">${formatCurrency(route.avgFare)}</span></div>
+                    <div class="sp-row"><span class="sp-label">Fare Change</span><span class="sp-value ${route.fareChange > 5 ? 'high' : route.fareChange > 0 ? 'moderate' : 'low'}">${route.fareChange > 0 ? '+' : ''}${route.fareChange}%</span></div>
+                    <div class="sp-row"><span class="sp-label">Fare Pressure</span><span class="sp-value" style="color:${getPressureColor(route.pressure)};font-weight:600;">${route.pressure}</span></div>
+                    <div class="sp-row"><span class="sp-label">Demand</span><span class="sp-value">${route.demand}</span></div>
+                    <div class="sp-row"><span class="sp-label">Availability</span><span class="sp-value">${route.avail}</span></div>
+                    <div class="sp-row"><span class="sp-label">Complaints</span><span class="sp-value">${route.complaints}</span></div>
+                    <div class="sp-row"><span class="sp-label">Airlines</span><span class="sp-value">${route.airlines}</span></div>
+                    <div style="margin-top:12px;">
+                        <span class="sp-btn" onclick="zoomToRoute('${from}','${to}')"><i class="fas fa-search-location"></i> View Route Analysis</span>
+                    </div>
+                    <div style="margin-top:8px;font-size:11px;color:#6a7a9a;border-top:1px solid #eef2f8;padding-top:8px;">
+                        <strong>UDAAN Intelligence:</strong> ${route.pressure === 'HIGH' ? 'Fare pressure is above baseline. Consider booking 22–30 days ahead.' : route.pressure === 'VERY HIGH' ? 'Critical fare pressure. Immediate passenger advisory recommended.' : 'Route operating within normal parameters.'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function showFlightDetail(ac) {
+            const fromName = AIRPORTS[ac.from]?.city || ac.from;
+            const toName = AIRPORTS[ac.to]?.city || ac.to;
+            const progressPct = Math.round(ac.progress * 100);
+
+            sidePanelBody.innerHTML = `
+                <div class="sp-detail">
+                    <div class="sp-title">${ac.flight}</div>
+                    <div class="sp-subtitle">${ac.airline}</div>
+                    <div class="sp-section-title">Flight Intelligence</div>
+                    <div class="sp-row"><span class="sp-label">Origin</span><span class="sp-value">${fromName} (${ac.from})</span></div>
+                    <div class="sp-row"><span class="sp-label">Destination</span><span class="sp-value">${toName} (${ac.to})</span></div>
+                    <div class="sp-row"><span class="sp-label">Status</span><span class="sp-value" style="color:#2a7a3a;">● In Air</span></div>
+                    <div class="sp-row"><span class="sp-label">Altitude</span><span class="sp-value">${Math.round(ac.altitude)} ft</span></div>
+                    <div class="sp-row"><span class="sp-label">Speed</span><span class="sp-value">${Math.round(ac.speed)} km/h</span></div>
+                    <div class="sp-row"><span class="sp-label">Progress</span><span class="sp-value">${progressPct}%</span></div>
+                    <div class="sp-row"><span class="sp-label">Scheduled Departure</span><span class="sp-value">${formatTime(ac.scheduledDeparture)}</span></div>
+                    <div class="sp-row"><span class="sp-label">Estimated Arrival</span><span class="sp-value">${formatTime(ac.estimatedArrival)}</span></div>
+                    <div style="margin-top:8px;background:#f4f7fc;border-radius:6px;padding:8px 12px;font-size:12px;">
+                        <div style="display:flex;justify-content:space-between;font-size:10px;color:#6a7a9a;">
+                            <span>${ac.from}</span>
+                            <span>${progressPct}% completed</span>
+                            <span>${ac.to}</span>
+                        </div>
+                        <div style="height:4px;background:#e2e8f0;border-radius:2px;margin-top:3px;position:relative;">
+                            <div style="width:${progressPct}%;height:100%;background:#2a5a8a;border-radius:2px;"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;font-size:11px;color:#6a7a9a;border-top:1px solid #eef2f8;padding-top:8px;">
+                        <strong>Fare Snapshot:</strong> ${formatCurrency(4000 + Math.random() * 3000)} · Seat Availability: ${Math.random() > 0.6 ? 'Tight' : 'Good'}
+                    </div>
+                    <div style="font-size:10px;color:#8a9aaa;margin-top:4px;">Simulated telemetry for prototype demonstration.</div>
+                </div>
+            `;
+        }
+
+        // ============================================================
+        //  ZOOM FUNCTIONS
+        // ============================================================
+        window.zoomToAirport = function(code) {
+            const ap = AIRPORTS[code];
+            if (!ap || !map) return;
+            map.setView([ap.lat, ap.lng], 8);
+            sidePanelBody.scrollTop = 0;
+        };
+
+        window.zoomToRoute = function(from, to) {
+            const f = AIRPORTS[from];
+            const t = AIRPORTS[to];
+            if (!f || !t || !map) return;
+            const midLat = (f.lat + t.lat) / 2;
+            const midLng = (f.lng + t.lng) / 2;
+            map.setView([midLat, midLng], 6);
+            sidePanelBody.scrollTop = 0;
+        };
+
+        // ============================================================
+        //  SEARCH
+        // ============================================================
+        mapSearch.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const query = this.value.trim().toUpperCase();
+                if (!query) return;
+
+                // Check airport
+                if (AIRPORTS[query]) {
+                    showAirportDetail(query);
+                    zoomToAirport(query);
+                    return;
+                }
+
+                // Check route
+                const routeParts = query.split('-');
+                if (routeParts.length === 2 && AIRPORTS[routeParts[0]] && AIRPORTS[routeParts[1]]) {
+                    showRouteDetail(routeParts[0], routeParts[1]);
+                    zoomToRoute(routeParts[0], routeParts[1]);
+                    return;
+                }
+
+                // Check flight
+                const found = aircraftData.find(ac => ac.flight.toUpperCase().includes(query));
+                if (found) {
+                    showFlightDetail(found);
+                    if (map && found.marker) {
+                        const pos = found.marker.getLatLng();
+                        map.setView(pos, 10);
+                    }
+                    return;
+                }
+
+                // Check city name
+                const code = Object.keys(AIRPORTS).find(k => AIRPORTS[k].city.toUpperCase().includes(query) || AIRPORTS[k]
+                    .name.toUpperCase().includes(query));
+                if (code) {
+                    showAirportDetail(code);
+                    zoomToAirport(code);
+                    return;
+                }
+
+                // Not found
+                sidePanelBody.innerHTML = `
+                    <div class="sp-empty">
+                        <i class="fas fa-search"></i>
+                        <p>No results found for "${this.value}"</p>
+                        <p style="font-size:11px;color:#8a9aaa;margin-top:4px;">Try an airport code (DEL, BOM), route (DEL-BOM), or flight number.</p>
+                    </div>
+                `;
+            }
+        });
+
+        // ============================================================
+        //  SIDE PANEL CLOSE
+        // ============================================================
+        sidePanelClose.addEventListener('click', function() {
+            sidePanelBody.innerHTML = `
+                <div class="sp-empty">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <p>Click an airport, route or flight on the map to view intelligence.</p>
+                    <p style="font-size:11px;color:#8a9aaa;margin-top:4px;">Or use the search box above.</p>
+                </div>
+            `;
+        });
+
+        // ============================================================
+        //  PAUSE / RESUME
+        // ============================================================
+        pauseBtn.addEventListener('click', function() {
+            isPaused = true;
+            this.style.display = 'none';
+            resumeBtn.style.display = 'inline-block';
+        });
+
+        resumeBtn.addEventListener('click', function() {
+            isPaused = false;
+            this.style.display = 'none';
+            pauseBtn.style.display = 'inline-block';
+            lastFrameTime = 0;
+        });
+
+        // ============================================================
+        //  RANK CLICKS
+        // ============================================================
+        document.querySelectorAll('#airportRankList .rk-item').forEach(el => {
+            el.addEventListener('click', function() {
+                const code = this.dataset.airport;
+                if (code) { showAirportDetail(code);
+                    zoomToAirport(code); }
+            });
+        });
+
+        document.querySelectorAll('#routeRankList .rk-item').forEach(el => {
+            el.addEventListener('click', function() {
+                const route = this.dataset.route;
+                if (route) {
+                    const parts = route.split('-');
+                    if (parts.length === 2) {
+                        showRouteDetail(parts[0], parts[1]);
+                        zoomToRoute(parts[0], parts[1]);
+                    }
+                }
+            });
+        });
+
+        // ============================================================
+        //  CHARTS
+        // ============================================================
+        function renderCharts() {
+            // Fare Trend
+            const ctx1 = document.getElementById('fareTrendChart').getContext('2d');
+            if (fareTrendChart) { fareTrendChart.destroy(); }
+
+            const labels = [];
+            const indices = [];
+            const baselines = [];
+            const now = new Date();
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date(now);
+                d.setDate(d.getDate() - i);
+                labels.push(d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }));
+                const base = 118 + Math.sin(i / 4) * 6 + (i / 30) * 2;
+                indices.push(Math.round(base + (Math.random() - 0.5) * 4));
+                baselines.push(Math.round(120 + Math.sin(i / 5 + 0.5) * 3));
+            }
+
+            fareTrendChart = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'National Fare Index',
+                        data: indices,
+                        borderColor: '#b33a3a',
+                        backgroundColor: 'rgba(179,58,58,0.06)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 1.5,
+                        borderWidth: 2
+                    }, {
+                        label: 'Historical Baseline',
+                        data: baselines,
+                        borderColor: '#6a8aaa',
+                        borderDash: [4, 4],
+                        tension: 0.3,
+                        pointRadius: 0,
+                        borderWidth: 1.5,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'top', labels: { boxWidth: 12, padding: 6,
+                                font: { size: 9 } } },
+                        tooltip: {
+                            callbacks: {
+                                footer: function() {
+                                    return 'Observation Count: ' + (24 + Math.floor(Math.random() * 20));
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: false, grid: { color: '#eef2f8' }, ticks: { font: { size: 9 } } },
+                        x: { grid: { display: false }, ticks: { maxTicksLimit: 12, font: { size: 8 } } }
+                    }
+                }
+            });
+
+            // Flight Activity
+            const ctx2 = document.getElementById('flightActivityChart').getContext('2d');
+            if (flightActivityChart) { flightActivityChart.destroy(); }
+
+            const hours = [];
+            const counts = [];
+            for (let i = 0; i < 24; i++) {
+                hours.push(String(i).padStart(2, '0') + ':00');
+                const peak = (i >= 6 && i <= 10) || (i >= 16 && i <= 22);
+                const base = peak ? 60 + Math.random() * 30 : 20 + Math.random() * 20;
+                counts.push(Math.round(base));
+            }
+
+            flightActivityChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: hours,
+                    datasets: [{
+                        label: 'Flights',
+                        data: counts,
+                        backgroundColor: counts.map(c => c > 60 ? '#b33a3a' : c > 40 ? '#d4a843' : '#2a7a3a'),
+                        borderRadius: 2,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#eef2f8' }, ticks: { font: { size: 9 } } },
+                        x: { grid: { display: false }, ticks: { maxTicksLimit: 12, font: { size: 7 } } }
+                    }
+                }
+            });
+        }
+
+        // ============================================================
+        //  CHATBOT
+        // ============================================================
+        function chatResponse(q) {
+            const routes = ROUTES.filter(r => r.pressure === 'HIGH' || r.pressure === 'VERY HIGH');
+            const highPressureRoutes = routes.map(r => `${r.from} → ${r.to}`).join(', ') || 'DEL → BOM, DEL → MAA';
+
+            const airports = Object.keys(AIRPORTS).filter(k => AIRPORTS[k].demand === 'VERY HIGH' || AIRPORTS[k].demand ===
+                'HIGH');
+            const highDemand = airports.map(k => AIRPORTS[k].code).join(', ') || 'DEL, BOM, BLR';
+
+            const inAir = aircraftData.filter(ac => ac.progress > 0.05 && ac.progress < 0.95);
+            const inAirList = inAir.slice(0, 5).map(ac => ac.flight).join(', ') || '6E-5214, AI-101, 6E-1234';
+
+            const delAirport = AIRPORTS['DEL'];
+            const delStatus = delAirport ?
+                `DEL Airport: ${delAirport.flights} flights today, fare pressure ${delAirport.farePressure}, demand ${delAirport.demand}, ${delAirport.issues} issues.` :
+                'DEL Airport data not available.';
+
+            const delBomRoute = ROUTES.find(r => r.from === 'DEL' && r.to === 'BOM') || ROUTES.find(r => r.from === 'BOM' &&
+                r.to === 'DEL');
+            const expensiveInfo = delBomRoute ?
+                `DEL-BOM is expensive due to ${delBomRoute.pressure} pressure, ${delBomRoute.demand} demand, and ${delBomRoute.avail} availability. Fare is ${formatCurrency(delBomRoute.avgFare)} with ${delBomRoute.fareChange > 0 ? '+' : ''}${delBomRoute.fareChange}% change.` :
+                'DEL-BOM route data not available.';
+
+            const anomalies = ROUTES.filter(r => r.fareChange > 10 || r.pressure === 'VERY HIGH')
+                .map(r => `${r.from}→${r.to} (${r.fareChange > 0 ? '+' : ''}${r.fareChange}%)`).join(', ') ||
+                'DEL→GOI (+21.3%), DEL→MAA (+14.8%)';
+
+            const responses = {
+                'highpressure': `Routes with highest fare pressure: ${highPressureRoutes}. These routes are above baseline and require monitoring.`,
+                'demand': `Highest demand airports: ${highDemand}. Demand is driven by metropolitan travel and business routes.`,
+                'del': delStatus,
+                'inair': `Currently in air: ${inAirList}${inAir.length > 5 ? ` and ${inAir.length - 5} more` : ''}. Total ${inAir.length} active flights.`,
+                'expensive': expensiveInfo,
+                'anomalies': `Major anomalies detected: ${anomalies}. These show significant fare movement above typical patterns.`
+            };
+            return responses[q] ||
+                `I can help with airfare intelligence. Ask about high pressure routes, demand, airport status, or anomalies.`;
+        }
+
+        // ============================================================
+        //  CHATBOT UI
+        // ============================================================
+        document.getElementById('chatToggle').addEventListener('click', function() {
+            document.getElementById('chatbot').classList.toggle('open');
+        });
+
+        document.getElementById('chatClose').addEventListener('click', function() {
+            document.getElementById('chatbot').classList.remove('open');
+        });
+
+        document.querySelectorAll('#chatQuestions button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const q = this.dataset.q;
+                const body = document.getElementById('chatBody');
+                const userMsg = document.createElement('div');
+                userMsg.className = 'cb-msg user';
+                userMsg.textContent = this.textContent.trim();
+                body.appendChild(userMsg);
+                const botMsg = document.createElement('div');
+                botMsg.className = 'cb-msg bot';
+                botMsg.textContent = chatResponse(q);
+                body.appendChild(botMsg);
+                body.scrollTop = body.scrollHeight;
+            });
+        });
+
+        // ============================================================
+        //  MAP FILTERS
+        // ============================================================
+        document.getElementById('mapFilterAirline').addEventListener('change', function() {
+            // Simple filter: highlight or hide aircraft based on airline
+            const airline = this.value;
+            aircraftData.forEach(ac => {
+                if (ac.marker) {
+                    if (airline === 'all' || ac.airline === airline) {
+                        ac.marker.setOpacity(1);
+                    } else {
+                        ac.marker.setOpacity(0.15);
+                    }
+                }
+            });
+        });
+
+        document.getElementById('mapFilterStatus').addEventListener('change', function() {
+            // Show/hide based on status (all are "In Air" in simulation)
+            const status = this.value;
+            aircraftData.forEach(ac => {
+                if (ac.marker) {
+                    if (status === 'all' || (status === 'inair' && ac.progress > 0.05 && ac.progress < 0.95) ||
+                        (status === 'scheduled' && ac.progress < 0.05) ||
+                        (status === 'delayed' && Math.random() > 0.7)) {
+                        ac.marker.setOpacity(1);
+                    } else {
+                        ac.marker.setOpacity(0.15);
+                    }
+                }
+            });
+        });
+
+        document.getElementById('mapFilterDemand').addEventListener('change', function() {
+            // Filter airport markers by demand
+            const demand = this.value;
+            airportMarkers.forEach(({ marker, code }) => {
+                const ap = AIRPORTS[code];
+                if (!ap) return;
+                if (demand === 'all') {
+                    marker.setOpacity(1);
+                } else {
+                    const match = demand === 'high' ? (ap.demand === 'HIGH' || ap.demand === 'VERY HIGH') :
+                        demand === 'moderate' ? (ap.demand === 'MODERATE') :
+                        (ap.demand === 'LOW');
+                    marker.setOpacity(match ? 1 : 0.15);
+                }
+            });
+        });
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        function init() {
+            // Build map
+            const layers = initMap();
+
+            // Render charts
+            renderCharts();
+
+            // Start animation
+            lastFrameTime = 0;
+            animationFrameId = requestAnimationFrame(animateAircraft);
+
+            // Handle resize
+            let timer;
+            window.addEventListener('resize', function() {
+                clearTimeout(timer);
+                timer = setTimeout(() => { if (map) map.invalidateSize(); }, 300);
+            });
+
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden && map) {
+                    setTimeout(() => { if (map) map.invalidateSize(); }, 200);
+                }
+            });
+
+            // Update KPI values with some randomness
+            setInterval(() => {
+                const flights = 1200 + Math.floor(Math.random() * 170);
+                document.getElementById('kpiFlights').textContent = flights.toLocaleString();
+                const pressure = 10 + Math.floor(Math.random() * 6);
+                document.getElementById('kpiHighPressure').textContent = pressure;
+                const demand = 5 + Math.floor(Math.random() * 5);
+                document.getElementById('kpiHighDemand').textContent = demand;
+            }, 8000);
+
+            console.log('UDAAN National Airfare Heat Map loaded.');
+            console.log('Prototype • Simulated Live Feed');
+        }
+
+        // Handle leaflet heat plugin load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+</body>
+</html>

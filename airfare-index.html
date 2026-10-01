@@ -1,0 +1,3231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UDAAN — Airfare Price Index</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+    </script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ===== RESET & BASE ===== */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --navy: #0a1628;
+            --navy-light: #0f2440;
+            --navy-mid: #1a3a6a;
+            --blue: #2c6b9e;
+            --blue-light: #4a90d9;
+            --blue-pale: #e8f0fe;
+            --grey-bg: #f0f2f5;
+            --grey-border: #dce1e8;
+            --grey-text: #5a6a7a;
+            --grey-light: #8a9aa8;
+            --white: #ffffff;
+            --green: #0f973d;
+            --green-bg: #e6f7ed;
+            --amber: #d48c1c;
+            --amber-bg: #fef7e6;
+            --red: #c92a2a;
+            --red-bg: #fde8e8;
+            --shadow: 0 2px 8px rgba(10, 22, 40, 0.08);
+            --shadow-hover: 0 6px 24px rgba(10, 22, 40, 0.12);
+            --radius: 6px;
+            --sidebar-width: 220px;
+            --header-height: 70px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        html {
+            font-family: var(--font);
+            font-size: 14px;
+            background: var(--grey-bg);
+            color: #1a2634;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background: var(--grey-bg);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e8ecf0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #b0bcc8;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8a9aa8;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: var(--sidebar-width);
+            min-height: 100vh;
+            background: var(--navy);
+            color: #b0c4d8;
+            padding: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #1a3050;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding: 18px 20px 14px;
+            border-bottom: 1px solid #1a3050;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-brand .brand-icon {
+            font-size: 22px;
+            color: #4a90d9;
+        }
+
+        .sidebar-brand .brand-text {
+            font-weight: 700;
+            font-size: 18px;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+        .sidebar-brand .brand-text span {
+            color: #4a90d9;
+        }
+
+        .sidebar-brand .brand-sub {
+            font-size: 9px;
+            color: #6a8aaa;
+            letter-spacing: 0.3px;
+            font-weight: 400;
+            display: block;
+            margin-top: 1px;
+        }
+
+        .sidebar-nav {
+            padding: 12px 0 20px;
+            flex: 1;
+        }
+
+        .sidebar-nav .nav-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #4a6a8a;
+            padding: 10px 20px 6px;
+            font-weight: 600;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 20px;
+            color: #8aaac8;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 400;
+            transition: all 0.15s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a i {
+            width: 18px;
+            font-size: 14px;
+            text-align: center;
+            color: #5a7a9a;
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: #d0e4f8;
+        }
+        .sidebar-nav a:hover i {
+            color: #7aaad8;
+        }
+
+        .sidebar-nav a.active {
+            background: rgba(74, 144, 217, 0.12);
+            color: #fff;
+            border-left-color: #4a90d9;
+        }
+        .sidebar-nav a.active i {
+            color: #4a90d9;
+        }
+
+        .sidebar-footer {
+            padding: 14px 20px;
+            border-top: 1px solid #1a3050;
+            font-size: 10px;
+            color: #4a6a8a;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            background: var(--grey-bg);
+        }
+
+        /* ===== HEADER ===== */
+        .top-header {
+            background: var(--navy);
+            color: #c0d4e8;
+            padding: 0 28px;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            border-bottom: 1px solid #1a3050;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .top-header .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .top-header .header-left .gov-text {
+            font-size: 11px;
+            line-height: 1.3;
+            font-weight: 400;
+            color: #8aaac8;
+        }
+        .top-header .header-left .gov-text strong {
+            color: #d0e4f8;
+            font-weight: 500;
+        }
+
+        .top-header .header-center {
+            text-align: center;
+        }
+        .top-header .header-center .uda-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+        .top-header .header-center .uda-title span {
+            color: #4a90d9;
+        }
+        .top-header .header-center .uda-sub {
+            font-size: 10px;
+            color: #6a8aaa;
+            letter-spacing: 0.5px;
+            font-weight: 300;
+        }
+
+        .top-header .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .top-header .header-right .gov-hindi {
+            font-size: 11px;
+            color: #8aaac8;
+            line-height: 1.2;
+            text-align: right;
+        }
+        .top-header .header-right .gov-hindi strong {
+            color: #d0e4f8;
+            font-weight: 500;
+        }
+        .top-header .header-right .login-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid #2a4a6a;
+            color: #c0d4e8;
+            padding: 6px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            font-family: var(--font);
+        }
+        .top-header .header-right .login-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: #4a6a8a;
+            color: #fff;
+        }
+
+        /* ===== PAGE CONTENT ===== */
+        .page-content {
+            padding: 20px 28px 60px;
+            flex: 1;
+        }
+
+        /* ===== PAGE TITLE ===== */
+        .page-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .page-title-row .title-group h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0a1628;
+            letter-spacing: -0.3px;
+        }
+        .page-title-row .title-group .sub {
+            font-size: 13px;
+            color: var(--grey-text);
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        .page-title-row .status-group {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+        .page-title-row .status-group .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--green);
+            background: var(--green-bg);
+            padding: 4px 12px 4px 8px;
+            border-radius: 20px;
+        }
+        .page-title-row .status-group .live-badge .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            display: inline-block;
+            animation: pulse-dot 1.8s infinite;
+        }
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.4;
+                transform: scale(0.85);
+            }
+        }
+        .page-title-row .status-group .update-time {
+            font-size: 12px;
+            color: var(--grey-text);
+        }
+        .page-title-row .status-group .proto-badge {
+            font-size: 10px;
+            color: var(--grey-light);
+            background: #e8ecf0;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        /* ===== HERO CARD ===== */
+        .hero-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px 32px 24px;
+            margin-bottom: 22px;
+            border: 1px solid var(--grey-border);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+            gap: 20px 40px;
+        }
+
+        .hero-card .hero-index {
+            flex: 0 0 auto;
+            min-width: 200px;
+        }
+        .hero-card .hero-index .hero-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--grey-text);
+            letter-spacing: 0.3px;
+            margin-bottom: 2px;
+        }
+        .hero-card .hero-index .hero-number {
+            font-size: 56px;
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+        .hero-card .hero-index .hero-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--green);
+            background: var(--green-bg);
+            padding: 2px 14px 2px 10px;
+            border-radius: 20px;
+            margin-top: 4px;
+        }
+        .hero-card .hero-index .hero-change.down {
+            color: var(--red);
+            background: var(--red-bg);
+        }
+        .hero-card .hero-index .hero-compare {
+            font-size: 12px;
+            color: var(--grey-text);
+            margin-top: 6px;
+        }
+        .hero-card .hero-index .hero-compare strong {
+            color: var(--navy);
+        }
+        .hero-card .hero-index .hero-date {
+            font-size: 12px;
+            color: var(--grey-light);
+            margin-top: 2px;
+        }
+
+        .hero-card .hero-interp {
+            flex: 1;
+            min-width: 180px;
+            padding: 0 10px;
+            border-left: 2px solid var(--grey-border);
+        }
+        .hero-card .hero-interp .interp-text {
+            font-size: 15px;
+            color: var(--navy);
+            font-weight: 500;
+            line-height: 1.5;
+            max-width: 420px;
+        }
+        .hero-card .hero-interp .interp-text strong {
+            color: var(--blue);
+        }
+
+        .hero-card .hero-stats {
+            display: flex;
+            gap: 20px 32px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-left: auto;
+        }
+        .hero-card .hero-stats .stat-item {
+            text-align: center;
+        }
+        .hero-card .hero-stats .stat-item .stat-val {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        .hero-card .hero-stats .stat-item .stat-label {
+            font-size: 11px;
+            color: var(--grey-text);
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .hero-card .hero-stats .stat-item .stat-val .up {
+            color: var(--green);
+        }
+        .hero-card .hero-stats .stat-item .stat-val .down {
+            color: var(--red);
+        }
+
+        /* ===== INDEX MOVEMENT INDICATOR ===== */
+        .movement-indicator {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px 28px 20px;
+            margin-bottom: 22px;
+            border: 1px solid var(--grey-border);
+        }
+
+        .movement-indicator .movement-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 12px;
+            letter-spacing: 0.2px;
+        }
+
+        .movement-scale {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            padding: 0 4px;
+            height: 40px;
+            margin-bottom: 6px;
+        }
+
+        .movement-scale .tick {
+            font-size: 11px;
+            color: var(--grey-text);
+            font-weight: 400;
+            position: relative;
+            flex: 1;
+            text-align: center;
+        }
+        .movement-scale .tick::before {
+            content: '';
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            width: 1px;
+            height: 8px;
+            background: var(--grey-border);
+        }
+
+        .movement-scale .tick.current {
+            font-weight: 700;
+            color: var(--navy);
+        }
+        .movement-scale .tick.current::after {
+            content: '▼';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: var(--blue);
+        }
+        .movement-scale .tick.base {
+            font-weight: 600;
+            color: var(--grey-light);
+        }
+        .movement-scale .tick.base::after {
+            content: '◆';
+            position: absolute;
+            top: -26px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: var(--grey-light);
+        }
+
+        .movement-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 4px;
+            font-size: 11px;
+            color: var(--grey-text);
+        }
+        .movement-labels .ml-current {
+            font-weight: 600;
+            color: var(--blue);
+        }
+        .movement-labels .ml-base {
+            color: var(--grey-light);
+        }
+
+        /* ===== KPI ROW ===== */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .kpi-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 14px 16px;
+            border: 1px solid var(--grey-border);
+            text-align: center;
+        }
+        .kpi-card .kpi-val {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.2;
+        }
+        .kpi-card .kpi-val .small {
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--grey-text);
+        }
+        .kpi-card .kpi-label {
+            font-size: 11px;
+            color: var(--grey-text);
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+        }
+        .kpi-card .kpi-change {
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .kpi-card .kpi-change.up {
+            color: var(--green);
+        }
+        .kpi-card .kpi-change.down {
+            color: var(--red);
+        }
+
+        /* ===== SECTION TITLE ===== */
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 28px 0 12px;
+            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title .st-sub {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--grey-text);
+        }
+        .section-title .st-badge {
+            font-size: 10px;
+            background: var(--blue-pale);
+            color: var(--blue);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        /* ===== CHART CARD ===== */
+        .chart-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px 20px 16px;
+            border: 1px solid var(--grey-border);
+            margin-bottom: 18px;
+        }
+
+        .chart-card .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .chart-card .chart-header .chart-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--navy);
+        }
+        .chart-card .chart-header .chart-controls {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .chart-card .chart-header .chart-controls .btn {
+            background: var(--grey-bg);
+            border: 1px solid var(--grey-border);
+            padding: 3px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--grey-text);
+            cursor: pointer;
+            transition: 0.12s;
+            font-family: var(--font);
+        }
+        .chart-card .chart-header .chart-controls .btn:hover {
+            background: #dce1e8;
+        }
+        .chart-card .chart-header .chart-controls .btn.active {
+            background: var(--navy);
+            color: #fff;
+            border-color: var(--navy);
+        }
+
+        .chart-card .chart-wrap {
+            position: relative;
+            height: 260px;
+        }
+
+        /* ===== TWO COLUMN ===== */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+        @media (max-width: 820px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== ROUTE TABLE ===== */
+        .route-table-wrap {
+            overflow-x: auto;
+        }
+        .route-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .route-table th {
+            text-align: left;
+            padding: 8px 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--grey-text);
+            font-weight: 600;
+            border-bottom: 2px solid var(--grey-border);
+        }
+        .route-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #eef0f2;
+            color: var(--navy);
+        }
+        .route-table tr:hover td {
+            background: #f8fafc;
+            cursor: pointer;
+        }
+        .route-table .impact-high {
+            color: var(--red);
+            font-weight: 600;
+        }
+        .route-table .impact-moderate {
+            color: var(--amber);
+            font-weight: 600;
+        }
+        .route-table .impact-low {
+            color: var(--green);
+            font-weight: 600;
+        }
+        .route-table .up {
+            color: var(--green);
+        }
+        .route-table .down {
+            color: var(--red);
+        }
+
+        /* ===== AIRLINE LOGO ===== */
+        .airline-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .airline-logo img {
+            height: 22px;
+            width: auto;
+            object-fit: contain;
+        }
+        .airline-logo .fallback {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--navy);
+            background: var(--grey-bg);
+            padding: 0 6px;
+            border-radius: 3px;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        /* ===== GAUGE ===== */
+        .gauge-wrap {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            padding: 8px 0;
+        }
+        .gauge-bar {
+            flex: 1;
+            min-width: 160px;
+            height: 10px;
+            background: #e8ecf0;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        .gauge-bar .gauge-fill {
+            height: 100%;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #22c55e, #f59e0b, #ef4444);
+            width: 72%;
+        }
+        .gauge-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--grey-text);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+        .gauge-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--navy);
+            min-width: 80px;
+            text-align: center;
+        }
+        .gauge-value .gv-label {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--grey-text);
+            display: block;
+        }
+
+        /* ===== FORECAST ===== */
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .forecast-grid .fg-item {
+            background: var(--grey-bg);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            text-align: center;
+        }
+        .forecast-grid .fg-item .fg-val {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        .forecast-grid .fg-item .fg-label {
+            font-size: 11px;
+            color: var(--grey-text);
+            font-weight: 400;
+        }
+        .forecast-grid .fg-item .fg-dir {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--green);
+        }
+
+        /* ===== LIVE SIMULATION ===== */
+        .live-feed {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--grey-border);
+            padding: 14px 18px 12px;
+            margin-bottom: 18px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .live-feed .feed-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 3px 0;
+            border-bottom: 1px solid #f0f2f5;
+            color: var(--grey-text);
+        }
+        .live-feed .feed-item .feed-time {
+            color: var(--grey-light);
+            font-weight: 400;
+            min-width: 70px;
+        }
+        .live-feed .feed-item .feed-route {
+            font-weight: 500;
+            color: var(--navy);
+        }
+        .live-feed .feed-item .feed-fare {
+            font-weight: 600;
+            color: var(--navy);
+        }
+        .live-feed .feed-item .feed-update {
+            color: var(--green);
+            font-weight: 500;
+        }
+
+        /* ===== METHODOLOGY ===== */
+        .methodology-flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px 8px;
+            padding: 14px 0 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .methodology-flow .step {
+            background: var(--blue-pale);
+            color: var(--blue);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .methodology-flow .arrow {
+            color: var(--grey-light);
+            font-size: 14px;
+        }
+        .methodology-flow .step-final {
+            background: var(--navy);
+            color: #fff;
+            padding: 4px 18px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .formula-card {
+            background: var(--grey-bg);
+            border-radius: var(--radius);
+            padding: 14px 20px;
+            margin: 8px 0 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            color: var(--navy);
+            border-left: 3px solid var(--blue);
+        }
+        .formula-card .fc-label {
+            font-family: var(--font);
+            font-size: 11px;
+            color: var(--grey-text);
+            font-weight: 500;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 22, 40, 0.6);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.open {
+            display: flex;
+        }
+        .modal-box {
+            background: var(--white);
+            border-radius: var(--radius);
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 28px 32px 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--grey-border);
+        }
+        .modal-box .modal-close {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: var(--grey-text);
+            cursor: pointer;
+            padding: 0 4px;
+        }
+        .modal-box .modal-close:hover {
+            color: var(--navy);
+        }
+        .modal-box .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 12px;
+        }
+        .modal-box .modal-body {
+            font-size: 14px;
+            color: var(--grey-text);
+            line-height: 1.6;
+        }
+        .modal-box .modal-body .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        .modal-box .modal-body .detail-row .dr-label {
+            color: var(--grey-text);
+            font-weight: 400;
+        }
+        .modal-box .modal-body .detail-row .dr-value {
+            font-weight: 500;
+            color: var(--navy);
+        }
+
+        /* ===== ASSISTANT ===== */
+        .assistant-toggle {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 200;
+            background: var(--navy);
+            color: #fff;
+            border: none;
+            border-radius: 40px;
+            padding: 10px 20px 10px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: var(--font);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 16px rgba(10, 22, 40, 0.25);
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .assistant-toggle:hover {
+            background: #0f2440;
+            transform: scale(1.02);
+        }
+        .assistant-toggle i {
+            font-size: 16px;
+            color: #4a90d9;
+        }
+
+        .assistant-panel {
+            position: fixed;
+            bottom: 80px;
+            right: 24px;
+            width: 340px;
+            max-height: 440px;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+            border: 1px solid var(--grey-border);
+            display: none;
+            flex-direction: column;
+            z-index: 199;
+            overflow: hidden;
+        }
+        .assistant-panel.open {
+            display: flex;
+        }
+        .assistant-panel .ap-header {
+            background: var(--navy);
+            color: #fff;
+            padding: 12px 18px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .assistant-panel .ap-header .ap-close {
+            background: none;
+            border: none;
+            color: #8aaac8;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .assistant-panel .ap-body {
+            padding: 12px 16px;
+            overflow-y: auto;
+            flex: 1;
+            font-size: 13px;
+            color: var(--grey-text);
+            line-height: 1.5;
+            max-height: 280px;
+        }
+        .assistant-panel .ap-body .qa {
+            margin-bottom: 10px;
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+        .assistant-panel .ap-body .qa.q {
+            background: var(--blue-pale);
+            color: var(--navy);
+            font-weight: 500;
+        }
+        .assistant-panel .ap-body .qa.a {
+            background: var(--grey-bg);
+            color: var(--navy);
+        }
+        .assistant-panel .ap-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: 8px 16px 12px;
+            border-top: 1px solid var(--grey-border);
+        }
+        .assistant-panel .ap-questions button {
+            background: var(--grey-bg);
+            border: 1px solid var(--grey-border);
+            border-radius: 16px;
+            padding: 3px 12px;
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--grey-text);
+            cursor: pointer;
+            font-family: var(--font);
+            transition: 0.1s;
+        }
+        .assistant-panel .ap-questions button:hover {
+            background: #dce1e8;
+            color: var(--navy);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-primary {
+            background: var(--navy);
+            color: #fff;
+            border: none;
+            padding: 7px 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: var(--font);
+            cursor: pointer;
+            transition: 0.12s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary:hover {
+            background: #0f2440;
+        }
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+        .btn-secondary {
+            background: var(--grey-bg);
+            border: 1px solid var(--grey-border);
+            padding: 6px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: var(--font);
+            cursor: pointer;
+            transition: 0.12s;
+            color: var(--navy);
+        }
+        .btn-secondary:hover {
+            background: #dce1e8;
+        }
+
+        /* ===== SCENARIO ===== */
+        .scenario-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 24px;
+            padding: 10px 0 4px;
+        }
+        .scenario-controls .sc-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .scenario-controls .sc-group label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--grey-text);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .scenario-controls .sc-group input[type="range"] {
+            width: 100%;
+            accent-color: var(--navy);
+        }
+        .scenario-controls .sc-group select {
+            padding: 4px 8px;
+            border: 1px solid var(--grey-border);
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: var(--font);
+            background: var(--white);
+        }
+        .scenario-result {
+            background: var(--blue-pale);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px 30px;
+        }
+        .scenario-result .sr-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .scenario-result .sr-item .sr-label {
+            font-size: 10px;
+            color: var(--grey-text);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        .scenario-result .sr-item .sr-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        .scenario-result .sr-item .sr-value .up {
+            color: var(--green);
+        }
+        .scenario-result .sr-item .sr-value .down {
+            color: var(--red);
+        }
+
+        /* ===== ALERT ===== */
+        .alert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .alert-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--grey-bg);
+            padding: 8px 14px;
+            border-radius: var(--radius);
+            border-left: 3px solid var(--blue);
+            font-size: 13px;
+        }
+        .alert-item .alert-text {
+            color: var(--navy);
+        }
+        .alert-item .alert-text .alert-badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 1px 8px;
+            border-radius: 10px;
+            margin-right: 6px;
+        }
+        .alert-item .alert-text .alert-badge.index {
+            background: var(--blue-pale);
+            color: var(--blue);
+        }
+        .alert-item .alert-text .alert-badge.route {
+            background: var(--amber-bg);
+            color: var(--amber);
+        }
+        .alert-item .alert-text .alert-badge.anomaly {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+        .alert-item .alert-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .alert-item .alert-actions button {
+            background: none;
+            border: none;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--grey-text);
+            cursor: pointer;
+            font-family: var(--font);
+            padding: 2px 8px;
+            border-radius: 3px;
+        }
+        .alert-item .alert-actions button:hover {
+            background: #dce1e8;
+        }
+        .alert-item .alert-actions .view-btn {
+            color: var(--blue);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .top-header {
+                padding: 0 14px;
+                flex-wrap: wrap;
+                height: auto;
+                min-height: var(--header-height);
+                gap: 4px;
+            }
+            .top-header .header-left .gov-text {
+                font-size: 9px;
+            }
+            .top-header .header-center .uda-title {
+                font-size: 16px;
+            }
+            .top-header .header-right .gov-hindi {
+                font-size: 9px;
+            }
+            .page-content {
+                padding: 12px 14px 40px;
+            }
+            .hero-card {
+                padding: 18px;
+                flex-direction: column;
+            }
+            .hero-card .hero-interp {
+                border-left: none;
+                padding-left: 0;
+                border-top: 1px solid var(--grey-border);
+                padding-top: 12px;
+            }
+            .hero-card .hero-stats {
+                margin-left: 0;
+            }
+            .hero-card .hero-index .hero-number {
+                font-size: 40px;
+            }
+            .kpi-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+            .forecast-grid {
+                grid-template-columns: 1fr;
+            }
+            .scenario-controls {
+                grid-template-columns: 1fr;
+            }
+            .assistant-panel {
+                width: 290px;
+                right: 12px;
+                bottom: 72px;
+            }
+            .page-title-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .movement-scale .tick {
+                font-size: 9px;
+            }
+            .modal-box {
+                padding: 18px;
+                margin: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .kpi-card {
+                padding: 10px 8px;
+            }
+            .kpi-card .kpi-val {
+                font-size: 18px;
+            }
+            .hero-card .hero-index .hero-number {
+                font-size: 32px;
+            }
+            .top-header .header-center .uda-title {
+                font-size: 14px;
+            }
+        }
+
+        /* ===== MISC ===== */
+        .text-muted {
+            color: var(--grey-text);
+            font-size: 12px;
+        }
+        .mt-2 {
+            margin-top: 6px;
+        }
+        .mb-2 {
+            margin-bottom: 6px;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .gap-8 {
+            gap: 8px;
+        }
+        .fw-600 {
+            font-weight: 600;
+        }
+
+        /* Simulation status indicator */
+        .sim-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--green);
+        }
+        .sim-status .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse-dot 1.4s infinite;
+        }
+
+        /* Additional chart card for full width */
+        .chart-card.full {
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon"><i class="fas fa-plane-departure"></i></span>
+            <div>
+                <div class="brand-text">UDAAN<span>.</span></div>
+                <span class="brand-sub">National Statistical Office</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main</div>
+            <a href="#"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="#" class="active"><i class="fas fa-chart-line"></i> Airfare Index</a>
+            <a href="#"><i class="fas fa-route"></i> Route Analysis</a>
+            <a href="#"><i class="fas fa-building"></i> Airline Comparison</a>
+            <a href="#"><i class="fas fa-calendar-alt"></i> Advance Booking</a>
+            <a href="#"><i class="fas fa-fire"></i> Heat Map</a>
+            <a href="#"><i class="fas fa-chart-bar"></i> Price Forecast</a>
+            <div class="nav-label" style="margin-top:10px;">Data</div>
+            <a href="#"><i class="fas fa-database"></i> Data Explorer</a>
+            <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
+            <a href="#"><i class="fas fa-plug"></i> API Access</a>
+            <a href="#"><i class="fas fa-bell"></i> Alerts</a>
+            <div class="nav-label" style="margin-top:10px;">System</div>
+            <a href="#"><i class="fas fa-info-circle"></i> About UDAAN</a>
+        </nav>
+        <div class="sidebar-footer">v2.0 &bull; Prototype</div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+
+        <!-- ===== TOP HEADER ===== -->
+        <header class="top-header">
+            <div class="header-left">
+                <div class="gov-text">
+                    <strong>Government of India</strong><br />
+                    Ministry of Statistics &amp; Programme Implementation<br />
+                    National Statistical Office
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="uda-title">UDAAN<span>.</span></div>
+                <div class="uda-sub">Real-time Airfare Intelligence Portal</div>
+            </div>
+            <div class="header-right">
+                <div class="gov-hindi">
+                    <strong>भारत सरकार</strong><br />
+                    GOVERNMENT OF INDIA
+                </div>
+                <button class="login-btn"><i class="fas fa-user"></i> Login / Sign Up</button>
+            </div>
+        </header>
+
+        <!-- ===== PAGE CONTENT ===== -->
+        <div class="page-content">
+
+            <!-- Page Title -->
+            <div class="page-title-row">
+                <div class="title-group">
+                    <h1>Airfare Price Index</h1>
+                    <div class="sub">India's real-time indicator of domestic airfare movement across monitored routes and carriers.</div>
+                </div>
+                <div class="status-group">
+                    <span class="live-badge"><span class="dot"></span> LIVE DATA</span>
+                    <span class="update-time">Last Updated: <strong id="lastUpdateTime">31 Aug 2026, 11:18 PM</strong></span>
+                    <span class="proto-badge">Prototype • Simulated Data Feed</span>
+                </div>
+            </div>
+
+            <!-- ===== HERO CARD ===== -->
+            <div class="hero-card" id="heroCard">
+                <div class="hero-index">
+                    <div class="hero-label">UDAAN Airfare Price Index</div>
+                    <div class="hero-number" id="heroNumber">129.06</div>
+                    <div class="hero-change" id="heroChange"><i class="fas fa-arrow-up"></i> +4.82%</div>
+                    <div class="hero-compare">Compared with: <strong>Base Period 2019 = 100</strong></div>
+                    <div class="hero-date">As on: <strong>31 Aug 2026</strong></div>
+                </div>
+                <div class="hero-interp">
+                    <div class="interp-text">
+                        <strong>Interpretation:</strong><br />
+                        "Domestic airfare prices are currently <strong>29.06%</strong> above the 2019 base-period level."
+                    </div>
+                    <div style="margin-top:6px;display:flex;gap:16px;flex-wrap:wrap;font-size:13px;">
+                        <span><span style="color:var(--grey-text);">Index Status:</span> <strong style="color:var(--amber);">Rising</strong></span>
+                        <span><span style="color:var(--grey-text);">Pressure:</span> <strong style="color:var(--amber);">Moderate–High</strong></span>
+                        <span><span style="color:var(--grey-text);">Confidence:</span> <strong style="color:var(--green);">High</strong></span>
+                    </div>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-val">50</div>
+                        <div class="stat-label">Routes Covered</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-val">10</div>
+                        <div class="stat-label">Airlines</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-val" id="dailyObsCount">125,365</div>
+                        <div class="stat-label">Daily Observations</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-val">15</div>
+                        <div class="stat-label">Data Sources</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== INDEX MOVEMENT INDICATOR ===== -->
+            <div class="movement-indicator">
+                <div class="movement-title">Index Movement Indicator</div>
+                <div class="movement-scale" id="movementScale">
+                    <span class="tick">80</span>
+                    <span class="tick">90</span>
+                    <span class="tick base">100</span>
+                    <span class="tick">110</span>
+                    <span class="tick">120</span>
+                    <span class="tick current">129.06</span>
+                    <span class="tick">140</span>
+                    <span class="tick">150</span>
+                </div>
+                <div class="movement-labels">
+                    <span></span>
+                    <span></span>
+                    <span class="ml-base">Base Period</span>
+                    <span></span>
+                    <span></span>
+                    <span class="ml-current">Current Index</span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+
+            <!-- ===== KPI ROW ===== -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-val">129.06</div>
+                    <div class="kpi-label">Current Index</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val"><span class="kpi-change up">+1.24%</span></div>
+                    <div class="kpi-label">Daily Change</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val"><span class="kpi-change up">+3.18%</span></div>
+                    <div class="kpi-label">7-Day Change</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val"><span class="kpi-change up">+4.82%</span></div>
+                    <div class="kpi-label">Monthly Change</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val"><span class="kpi-change up">+8.64%</span></div>
+                    <div class="kpi-label">YoY Change</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">50</div>
+                    <div class="kpi-label">Routes Covered</div>
+                </div>
+            </div>
+
+            <!-- ===== FILTERS ===== -->
+            <div class="chart-card" style="padding:12px 18px;">
+                <div style="display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;">
+                    <span style="font-size:12px;font-weight:600;color:var(--grey-text);">Filters:</span>
+                    <select id="filterGeography" style="padding:4px 8px;border:1px solid var(--grey-border);border-radius:4px;font-size:12px;font-family:var(--font);background:var(--white);">
+                        <option value="all">All India</option>
+                        <option value="north">North</option>
+                        <option value="south">South</option>
+                        <option value="east">East</option>
+                        <option value="west">West</option>
+                        <option value="ne">Northeast</option>
+                    </select>
+                    <select id="filterAirline" style="padding:4px 8px;border:1px solid var(--grey-border);border-radius:4px;font-size:12px;font-family:var(--font);background:var(--white);">
+                        <option value="all">All Airlines</option>
+                        <option value="ai">Air India</option>
+                        <option value="6e">IndiGo</option>
+                        <option value="akasa">Akasa Air</option>
+                        <option value="sg">SpiceJet</option>
+                        <option value="ix">Air India Express</option>
+                    </select>
+                    <select id="filterCabin" style="padding:4px 8px;border:1px solid var(--grey-border);border-radius:4px;font-size:12px;font-family:var(--font);background:var(--white);">
+                        <option value="all">All Cabins</option>
+                        <option value="economy">Economy</option>
+                        <option value="business">Business</option>
+                    </select>
+                    <select id="filterTravel" style="padding:4px 8px;border:1px solid var(--grey-border);border-radius:4px;font-size:12px;font-family:var(--font);background:var(--white);">
+                        <option value="all">All Travel</option>
+                        <option value="business">Business</option>
+                        <option value="leisure">Leisure</option>
+                    </select>
+                    <select id="filterTime" style="padding:4px 8px;border:1px solid var(--grey-border);border-radius:4px;font-size:12px;font-family:var(--font);background:var(--white);">
+                        <option value="today">Today</option>
+                        <option value="7d">7 Days</option>
+                        <option value="30d" selected>30 Days</option>
+                        <option value="90d">90 Days</option>
+                        <option value="1y">1 Year</option>
+                    </select>
+                    <select id="filterMetric" style="padding:4px 8px;border:1px solid var(--grey-border);border-radius:4px;font-size:12px;font-family:var(--font);background:var(--white);">
+                        <option value="index">Index</option>
+                        <option value="fare">Average Fare</option>
+                        <option value="change">Fare Change</option>
+                        <option value="pressure">Fare Pressure</option>
+                    </select>
+                    <button class="btn-secondary" id="applyFiltersBtn" style="padding:4px 14px;"><i class="fas fa-sliders-h"></i> Apply</button>
+                </div>
+            </div>
+
+            <!-- ===== MAIN INDEX TREND ===== -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="chart-title">India Airfare Price Index — Historical Trend</span>
+                    <div class="chart-controls">
+                        <button class="btn active" data-period="1m">1 Month</button>
+                        <button class="btn" data-period="3m">3 Months</button>
+                        <button class="btn" data-period="6m">6 Months</button>
+                        <button class="btn" data-period="1y">1 Year</button>
+                        <button class="btn" data-period="5y">5 Years</button>
+                    </div>
+                </div>
+                <div class="chart-wrap">
+                    <canvas id="trendChart"></canvas>
+                </div>
+                <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:var(--grey-text);">
+                    <span><span style="display:inline-block;width:12px;height:3px;background:var(--blue);border-radius:2px;margin-right:4px;"></span> UDAAN Index</span>
+                    <span><span style="display:inline-block;width:12px;height:3px;background:var(--grey-light);border-radius:2px;margin-right:4px;border-top:2px dashed var(--grey-light);"></span> Historical Baseline</span>
+                    <span><span style="display:inline-block;width:12px;height:3px;background:var(--amber);border-radius:2px;margin-right:4px;"></span> Moving Average</span>
+                </div>
+            </div>
+
+            <!-- ===== TWO COLUMN: WHY + ROUTE ===== -->
+            <div class="two-col">
+
+                <!-- Why did the Index move? -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Why did the Index move?</span>
+                        <span style="font-size:11px;color:var(--grey-text);">Today's contribution</span>
+                    </div>
+                    <div style="height:200px;">
+                        <canvas id="waterfallChart"></canvas>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;margin-top:8px;font-size:13px;font-weight:500;padding:6px 4px 0;border-top:1px solid var(--grey-border);">
+                        <span>Net Change: <strong style="color:var(--green);">+4.56</strong> points</span>
+                        <span style="font-size:12px;font-weight:400;color:var(--grey-text);">Index: 124.50 → 129.06</span>
+                    </div>
+                </div>
+
+                <!-- Route Contribution -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Route Contribution</span>
+                        <span style="font-size:11px;color:var(--grey-text);">Top routes by impact</span>
+                    </div>
+                    <div class="route-table-wrap">
+                        <table class="route-table" id="routeTable">
+                            <thead>
+                                <tr><th>Route</th><th>Weight</th><th>Fare</th><th>Change</th><th>Contrib.</th><th>Impact</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr data-route="DEL-BOM"><td><strong>DEL → BOM</strong></td><td>12.4%</td><td>₹7,240</td><td class="up">+18.2%</td><td class="up">+2.26</td><td class="impact-high">High</td></tr>
+                                <tr data-route="DEL-BLR"><td><strong>DEL → BLR</strong></td><td>10.8%</td><td>₹6,180</td><td class="up">+9.4%</td><td class="up">+1.02</td><td class="impact-moderate">Moderate</td></tr>
+                                <tr data-route="DEL-MAA"><td><strong>DEL → MAA</strong></td><td>8.6%</td><td>₹6,820</td><td class="up">+14.8%</td><td class="up">+1.27</td><td class="impact-high">High</td></tr>
+                                <tr data-route="BOM-BLR"><td><strong>BOM → BLR</strong></td><td>7.9%</td><td>₹5,240</td><td class="up">+4.2%</td><td class="up">+0.33</td><td class="impact-low">Low</td></tr>
+                                <tr data-route="DEL-HYD"><td><strong>DEL → HYD</strong></td><td>7.4%</td><td>₹5,740</td><td class="up">+6.8%</td><td class="up">+0.51</td><td class="impact-moderate">Moderate</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top:6px;font-size:11px;color:var(--grey-text);"><i class="fas fa-mouse-pointer"></i> Click a route for detailed analysis</div>
+                </div>
+            </div>
+
+            <!-- ===== AIRLINE CONTRIBUTION ===== -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="chart-title">Airline Contribution to Airfare Movement</span>
+                    <span style="font-size:11px;color:var(--grey-text);">Weighted by market share</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" id="airlineContributionGrid">
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                        <div style="display:flex;justify-content:space-between;padding:4px 6px;background:var(--grey-bg);border-radius:4px;">
+                            <span class="airline-logo"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/98/Air_India_Logo.svg/120px-Air_India_Logo.svg.png" alt="Air India" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';" /><span class="fallback" style="display:none;">AI</span> Air India</span>
+                            <span>26.4%</span>
+                            <span>₹5,980</span>
+                            <span class="up">+7.8%</span>
+                            <span class="up">+1.31</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 6px;background:var(--grey-bg);border-radius:4px;">
+                            <span class="airline-logo"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/9b/IndiGo_Logo.svg/120px-IndiGo_Logo.svg.png" alt="IndiGo" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';" /><span class="fallback" style="display:none;">6E</span> IndiGo</span>
+                            <span>38.2%</span>
+                            <span>₹5,240</span>
+                            <span class="up">+5.6%</span>
+                            <span class="up">+1.42</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 6px;background:var(--grey-bg);border-radius:4px;">
+                            <span class="airline-logo"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/18/Akasa_Air_logo.svg/120px-Akasa_Air_logo.svg.png" alt="Akasa Air" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';" /><span class="fallback" style="display:none;">AK</span> Akasa Air</span>
+                            <span>12.1%</span>
+                            <span>₹4,620</span>
+                            <span class="up">+2.8%</span>
+                            <span class="up">+0.18</span>
+                        </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                        <div style="display:flex;justify-content:space-between;padding:4px 6px;background:var(--grey-bg);border-radius:4px;">
+                            <span class="airline-logo"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/64/SpiceJet_logo.svg/120px-SpiceJet_logo.svg.png" alt="SpiceJet" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';" /><span class="fallback" style="display:none;">SG</span> SpiceJet</span>
+                            <span>9.8%</span>
+                            <span>₹4,100</span>
+                            <span class="down">-1.4%</span>
+                            <span class="down">-0.12</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 6px;background:var(--grey-bg);border-radius:4px;">
+                            <span class="airline-logo"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/55/Air_India_Express_Logo.svg/120px-Air_India_Express_Logo.svg.png" alt="Air India Express" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';" /><span class="fallback" style="display:none;">IX</span> Air India Express</span>
+                            <span>7.4%</span>
+                            <span>₹4,300</span>
+                            <span class="up">+4.1%</span>
+                            <span class="up">+0.21</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 6px;background:var(--grey-bg);border-radius:4px;font-size:11px;color:var(--grey-text);margin-top:4px;">
+                            <span><i class="fas fa-info-circle"></i> Click any airline row for details</span>
+                            <span>Market weight &bull; Avg fare &bull; Change &bull; Contribution</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== CITY-WISE + TRAVEL PURPOSE ===== -->
+            <div class="two-col">
+
+                <!-- City-wise Index -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">City-wise Airfare Index</span>
+                        <span style="font-size:11px;color:var(--grey-text);">Click city for details</span>
+                    </div>
+                    <div style="height:180px;">
+                        <canvas id="cityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Travel Purpose -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Fare Movement by Travel Segment</span>
+                        <span style="font-size:11px;color:var(--grey-text);">Index &amp; change</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px;padding:4px 0;">
+                        <div style="display:flex;justify-content:space-between;padding:4px 8px;background:var(--grey-bg);border-radius:4px;">
+                            <span><strong>Business Corridors</strong></span>
+                            <span><span class="up">+6.8%</span> &bull; 131.4</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 8px;background:var(--grey-bg);border-radius:4px;">
+                            <span><strong>Leisure Corridors</strong></span>
+                            <span><span class="up">+4.2%</span> &bull; 126.8</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 8px;background:var(--grey-bg);border-radius:4px;">
+                            <span><strong>Tier-2 Connectivity</strong></span>
+                            <span><span class="up">+3.1%</span> &bull; 122.4</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 8px;background:var(--grey-bg);border-radius:4px;">
+                            <span><strong>Metro-to-Metro</strong></span>
+                            <span><span class="up">+5.9%</span> &bull; 128.6</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 8px;background:var(--grey-bg);border-radius:4px;">
+                            <span><strong>Tourism Routes</strong></span>
+                            <span><span class="up">+7.2%</span> &bull; 133.2</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== BASE PERIOD COMPARISON ===== -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="chart-title">Since Base Period — 2019</span>
+                    <span style="font-size:11px;color:var(--grey-text);">Long-term index movement</span>
+                </div>
+                <div class="chart-wrap" style="height:180px;">
+                    <canvas id="basePeriodChart"></canvas>
+                </div>
+                <div style="margin-top:6px;font-size:14px;font-weight:500;color:var(--navy);">
+                    Current index is <strong style="color:var(--blue);">29.06%</strong> above the selected base period.
+                </div>
+            </div>
+
+            <!-- ===== AIRFARE INFLATION ===== -->
+            <div class="two-col">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Airfare Inflation Monitor</span>
+                        <span style="font-size:11px;color:var(--grey-text);">Headline &amp; core</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                        <div style="background:var(--grey-bg);padding:8px 12px;border-radius:4px;text-align:center;">
+                            <div style="font-size:11px;color:var(--grey-text);">Headline</div>
+                            <div style="font-size:20px;font-weight:700;color:var(--red);">+8.64%</div>
+                        </div>
+                        <div style="background:var(--grey-bg);padding:8px 12px;border-radius:4px;text-align:center;">
+                            <div style="font-size:11px;color:var(--grey-text);">Core (ex-volatile)</div>
+                            <div style="font-size:20px;font-weight:700;color:var(--amber);">+6.92%</div>
+                        </div>
+                        <div style="background:var(--grey-bg);padding:8px 12px;border-radius:4px;text-align:center;">
+                            <div style="font-size:11px;color:var(--grey-text);">Short-term Pressure</div>
+                            <div style="font-size:20px;font-weight:700;color:var(--amber);">+4.82%</div>
+                        </div>
+                        <div style="background:var(--grey-bg);padding:8px 12px;border-radius:4px;text-align:center;">
+                            <div style="font-size:11px;color:var(--grey-text);">Annualized Movement</div>
+                            <div style="font-size:20px;font-weight:700;color:var(--red);">+8.64%</div>
+                        </div>
+                    </div>
+                    <div class="chart-wrap" style="height:100px;">
+                        <canvas id="inflationChart"></canvas>
+                    </div>
+                    <div style="margin-top:4px;font-size:11px;color:var(--grey-text);">
+                        <i class="fas fa-info-circle"></i> UDAAN Airfare Inflation vs General CPI benchmark (reference)
+                    </div>
+                </div>
+
+                <!-- Price Pressure Gauge -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Price Pressure Gauge</span>
+                        <span style="font-size:11px;color:var(--grey-text);">Current: Moderate–High</span>
+                    </div>
+                    <div class="gauge-wrap">
+                        <div class="gauge-value">
+                            72
+                            <span class="gv-label">/ 100</span>
+                        </div>
+                        <div style="flex:1;">
+                            <div class="gauge-bar">
+                                <div class="gauge-fill" style="width:72%;"></div>
+                            </div>
+                            <div class="gauge-labels">
+                                <span>LOW</span>
+                                <span>MODERATE</span>
+                                <span>HIGH</span>
+                                <span>VERY HIGH</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="font-size:12px;color:var(--grey-text);margin-top:4px;">
+                        Price pressure reflects deviation from historical route-level fare behaviour.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== FORECAST ===== -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="chart-title">Airfare Price Index Forecast <span style="font-size:11px;font-weight:400;color:var(--grey-text);">Prototype Forecast</span></span>
+                    <div class="chart-controls">
+                        <button class="btn active" data-forecast="24h">24 Hours</button>
+                        <button class="btn" data-forecast="7d">7 Days</button>
+                        <button class="btn" data-forecast="30d">30 Days</button>
+                    </div>
+                </div>
+                <div class="chart-wrap" style="height:180px;">
+                    <canvas id="forecastChart"></canvas>
+                </div>
+                <div class="forecast-grid">
+                    <div class="fg-item">
+                        <div class="fg-label">Current</div>
+                        <div class="fg-val">129.06</div>
+                    </div>
+                    <div class="fg-item">
+                        <div class="fg-label">7-Day Forecast</div>
+                        <div class="fg-val">131.2</div>
+                        <div class="fg-dir"><i class="fas fa-arrow-up"></i> Rising</div>
+                    </div>
+                    <div class="fg-item">
+                        <div class="fg-label">30-Day Forecast</div>
+                        <div class="fg-val">133.8</div>
+                        <div class="fg-dir"><i class="fas fa-arrow-up"></i> Rising</div>
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--grey-text);margin-top:6px;">
+                    <span>Forecast Direction: <strong style="color:var(--amber);">↑ Rising</strong></span>
+                    <span>Confidence: <strong>82%</strong></span>
+                    <span><i class="fas fa-flask"></i> Prototype Forecast — not production ML</span>
+                </div>
+            </div>
+
+            <!-- ===== LIVE INDEX SIMULATION ===== -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="chart-title">Live Index Monitor <span style="font-size:11px;font-weight:400;color:var(--grey-text);">Simulated Data Stream</span></span>
+                    <span class="sim-status"><span class="dot"></span> PROCESSING</span>
+                </div>
+                <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:10px;">
+                    <div><span style="color:var(--grey-text);">Index:</span> <strong id="simIndex" style="font-size:20px;">129.06</strong></div>
+                    <div><span style="color:var(--grey-text);">Observations:</span> <strong id="simObs">125,365</strong></div>
+                    <div><span style="color:var(--grey-text);">Last:</span> <strong id="simLast">31 Aug 2026 11:18 PM</strong></div>
+                </div>
+                <div class="live-feed" id="liveFeed">
+                    <div class="feed-item"><span class="feed-time">11:18:02</span><span class="feed-route">DEL → BOM</span><span class="feed-fare">₹6,240</span><span class="feed-update">New observation</span></div>
+                    <div class="feed-item"><span class="feed-time">11:18:04</span><span class="feed-route">BOM → BLR</span><span class="feed-fare">₹4,920</span><span class="feed-update">New observation</span></div>
+                    <div class="feed-item"><span class="feed-time">11:18:06</span><span class="feed-route">DEL → BLR</span><span class="feed-fare">₹6,180</span><span class="feed-update">New observation</span></div>
+                    <div class="feed-item"><span class="feed-time">11:18:08</span><span class="feed-route">DEL → MAA</span><span class="feed-fare">₹6,820</span><span class="feed-update">New observation</span></div>
+                </div>
+                <div style="font-size:11px;color:var(--grey-text);margin-top:4px;">
+                    <i class="fas fa-info-circle"></i> Simulated data stream — not connected to live airline APIs
+                </div>
+            </div>
+
+            <!-- ===== HOW INDEX IS CALCULATED ===== -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="chart-title">How UDAAN Calculates the Airfare Price Index</span>
+                    <span style="font-size:11px;color:var(--grey-text);">Statistical pipeline</span>
+                </div>
+                <div class="methodology-flow">
+                    <span class="step">Airfare Observations</span>
+                    <span class="arrow">→</span>
+                    <span class="step">Data Cleaning</span>
+                    <span class="arrow">→</span>
+                    <span class="step">Route &amp; Airline Normalization</span>
+                    <span class="arrow">→</span>
+                    <span class="step">Outlier Detection</span>
+                    <span class="arrow">→</span>
+                    <span class="step">Weighted Average Fare</span>
+                    <span class="arrow">→</span>
+                    <span class="step">Route-Level Indices</span>
+                    <span class="arrow">→</span>
+                    <span class="step">National Aggregation</span>
+                    <span class="arrow">→</span>
+                    <span class="step-final">UDAAN Airfare Price Index</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;">
+                    <div>
+                        <div style="font-size:12px;font-weight:600;color:var(--navy);">Base Period</div>
+                        <div style="font-size:13px;">2019 = 100</div>
+                        <div style="font-size:12px;color:var(--grey-text);margin-top:2px;">Current Index = Current weighted airfare / Base-period weighted airfare × 100</div>
+                    </div>
+                    <div>
+                        <div style="font-size:12px;font-weight:600;color:var(--navy);">Production Methodology</div>
+                        <div style="font-size:12px;color:var(--grey-text);">Route weights • Airline weights • Cabin class • Booking window • Travel date • Fare type • Availability</div>
+                        <div style="font-size:11px;color:var(--grey-light);margin-top:2px;"><i class="fas fa-flask"></i> Prototype methodology — subject to refinement</div>
+                    </div>
+                </div>
+                <div class="formula-card">
+                    <span class="fc-label">Index Formula (simplified)</span>
+                    Index = ( Σ (w<sub>r</sub> × Fare<sub>r</sub>) / Σ (w<sub>r</sub> × Fare<sub>r,base</sub>) ) × 100
+                </div>
+            </div>
+
+            <!-- ===== DATA QUALITY ===== -->
+            <div class="two-col">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Data Quality &amp; Coverage</span>
+                        <span style="font-size:11px;color:var(--grey-text);">Validation metrics</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;">
+                        <div><span style="color:var(--grey-text);">Records Received</span> <strong>125,365</strong></div>
+                        <div><span style="color:var(--grey-text);">Records Validated</span> <strong>121,842</strong></div>
+                        <div><span style="color:var(--grey-text);">Validation Rate</span> <strong style="color:var(--green);">97.2%</strong></div>
+                        <div><span style="color:var(--grey-text);">Outliers Removed</span> <strong>3,523</strong></div>
+                        <div><span style="color:var(--grey-text);">Routes Covered</span> <strong>50</strong></div>
+                        <div><span style="color:var(--grey-text);">Airlines Covered</span> <strong>10</strong></div>
+                        <div><span style="color:var(--grey-text);">Sources</span> <strong>15</strong></div>
+                        <div><span style="color:var(--grey-text);">Data Freshness</span> <strong style="color:var(--green);">&lt; 5 min</strong></div>
+                    </div>
+                    <div style="margin-top:8px;">
+                        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--grey-text);"><span>Validation</span><span>97.2%</span></div>
+                        <div style="height:6px;background:#e8ecf0;border-radius:4px;overflow:hidden;"><div style="height:100%;width:97.2%;background:var(--green);border-radius:4px;"></div></div>
+                        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--grey-text);margin-top:4px;"><span>Coverage</span><span>92%</span></div>
+                        <div style="height:6px;background:#e8ecf0;border-radius:4px;overflow:hidden;"><div style="height:100%;width:92%;background:var(--blue);border-radius:4px;"></div></div>
+                    </div>
+                </div>
+
+                <!-- Anomaly Detection -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Unusual Fare Movements</span>
+                        <span style="font-size:11px;color:var(--grey-text);">Anomaly detection</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                        <div style="display:flex;justify-content:space-between;padding:4px 8px;background:var(--red-bg);border-radius:4px;cursor:pointer;" data-anomaly="DEL-BOM">
+                            <span><strong>DEL → BOM</strong></span>
+                            <span style="color:var(--red);font-weight:600;">+18.2%</span>
+                            <span style="color:var(--red);font-weight:600;">HIGH</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 8px;background:var(--red-bg);border-radius:4px;cursor:pointer;" data-anomaly="DEL-MAA">
+                            <span><strong>DEL → MAA</strong></span>
+                            <span style="color:var(--red);font-weight:600;">+14.8%</span>
+                            <span style="color:var(--red);font-weight:600;">HIGH</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 8px;background:var(--green-bg);border-radius:4px;cursor:pointer;" data-anomaly="BOM-BLR">
+                            <span><strong>BOM → BLR</strong></span>
+                            <span style="color:var(--green);font-weight:600;">-6.4%</span>
+                            <span style="color:var(--green);font-weight:600;">LOW</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 8px;background:var(--amber-bg);border-radius:4px;cursor:pointer;" data-anomaly="BLR-HYD">
+                            <span><strong>BLR → HYD</strong></span>
+                            <span style="color:var(--amber);font-weight:600;">+9.1%</span>
+                            <span style="color:var(--amber);font-weight:600;">MODERATE</span>
+                        </div>
+                    </div>
+                    <div style="margin-top:6px;font-size:11px;color:var(--grey-text);"><i class="fas fa-mouse-pointer"></i> Click anomaly for details</div>
+                </div>
+            </div>
+
+            <!-- ===== INDEX ALERTS ===== -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="chart-title">Index Alerts</span>
+                    <span style="font-size:11px;color:var(--grey-text);">Real-time notifications</span>
+                </div>
+                <div class="alert-list">
+                    <div class="alert-item">
+                        <span class="alert-text"><span class="alert-badge index">INDEX</span> National index crossed 125.</span>
+                        <span class="alert-actions"><button class="view-btn">View</button><button>Dismiss</button></span>
+                    </div>
+                    <div class="alert-item">
+                        <span class="alert-text"><span class="alert-badge route">ROUTE</span> DEL–BOM fare pressure above threshold.</span>
+                        <span class="alert-actions"><button class="view-btn">View</button><button>Dismiss</button></span>
+                    </div>
+                    <div class="alert-item">
+                        <span class="alert-text"><span class="alert-badge route">AIRLINE</span> Airline contribution changed significantly.</span>
+                        <span class="alert-actions"><button class="view-btn">View</button><button>Dismiss</button></span>
+                    </div>
+                    <div class="alert-item">
+                        <span class="alert-text"><span class="alert-badge anomaly">ANOMALY</span> Unusual fare movement detected.</span>
+                        <span class="alert-actions"><button class="view-btn">View</button><button>Dismiss</button></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SCENARIO SIMULATOR ===== -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="chart-title">Airfare Scenario Simulator</span>
+                    <span style="font-size:11px;color:var(--grey-text);">What-if analysis</span>
+                </div>
+                <div class="scenario-controls">
+                    <div class="sc-group">
+                        <label>Demand <span id="demandVal">+10%</span></label>
+                        <input type="range" id="demandSlider" min="-20" max="30" value="10" />
+                    </div>
+                    <div class="sc-group">
+                        <label>Seat Availability <span id="availVal">-10%</span></label>
+                        <input type="range" id="availSlider" min="-30" max="30" value="-10" />
+                    </div>
+                    <div class="sc-group">
+                        <label>Advance Booking <span id="bookingVal">30 Days</span></label>
+                        <input type="range" id="bookingSlider" min="0" max="90" value="30" />
+                    </div>
+                    <div class="sc-group">
+                        <label>Airline Competition</label>
+                        <select id="competitionSelect">
+                            <option value="low">Low</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="sc-group">
+                        <label>Seasonality</label>
+                        <select id="seasonalitySelect">
+                            <option value="low">Low</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="sc-group" style="justify-content:flex-end;">
+                        <button class="btn-primary" id="simulateBtn"><i class="fas fa-calculator"></i> Simulate Impact</button>
+                    </div>
+                </div>
+                <div class="scenario-result" id="scenarioResult">
+                    <div class="sr-item">
+                        <span class="sr-label">Current Index</span>
+                        <span class="sr-value">129.06</span>
+                    </div>
+                    <div class="sr-item">
+                        <span class="sr-label">Scenario Index</span>
+                        <span class="sr-value" id="scenarioIndexVal">134.72</span>
+                    </div>
+                    <div class="sr-item">
+                        <span class="sr-label">Estimated Change</span>
+                        <span class="sr-value"><span class="up" id="scenarioChangeVal">+4.38%</span></span>
+                    </div>
+                    <div class="sr-item" style="flex:1;min-width:140px;">
+                        <span class="sr-label">Explanation</span>
+                        <span style="font-size:13px;color:var(--navy);" id="scenarioExplanation">Under the selected scenario, increased demand combined with tighter availability produces upward fare pressure.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== POLICY INSIGHT ===== -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="chart-title">UDAAN Intelligence</span>
+                    <span style="font-size:11px;color:var(--grey-text);">Policy &amp; analyst insights</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <div style="padding:8px 12px;background:var(--blue-pale);border-radius:4px;border-left:3px solid var(--blue);">
+                        <i class="fas fa-lightbulb" style="color:var(--blue);margin-right:6px;"></i>
+                        Airfare pressure is currently concentrated across major metro corridors. <strong>DEL–BOM</strong> and <strong>DEL–MAA</strong> are contributing disproportionately to the current national index movement.
+                    </div>
+                    <div style="padding:8px 12px;background:var(--green-bg);border-radius:4px;border-left:3px solid var(--green);">
+                        <i class="fas fa-balance-scale" style="color:var(--green);margin-right:6px;"></i>
+                        Airline competition is partially offsetting upward fare pressure on selected routes.
+                    </div>
+                    <div style="padding:8px 12px;background:var(--amber-bg);border-radius:4px;border-left:3px solid var(--amber);">
+                        <i class="fas fa-chart-line" style="color:var(--amber);margin-right:6px;"></i>
+                        Near-term fare movement indicates stronger pressure than the 30-day historical average.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== REPORT ===== -->
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin:18px 0 10px;">
+                <button class="btn-primary" id="generateReportBtn"><i class="fas fa-file-pdf"></i> Generate Index Report</button>
+                <button class="btn-secondary" id="printReportBtn"><i class="fas fa-print"></i> Print Report</button>
+            </div>
+
+            <!-- ===== METHODOLOGY PANEL ===== -->
+            <div class="chart-card" style="margin-top:10px;">
+                <div class="chart-header">
+                    <span class="chart-title">Index Methodology <span style="font-size:11px;font-weight:400;color:var(--grey-text);">Prototype methodology — subject to refinement</span></span>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;">
+                    <div><span style="color:var(--grey-text);font-size:11px;">Base Period</span><br /><strong>2019 = 100</strong></div>
+                    <div><span style="color:var(--grey-text);font-size:11px;">Coverage</span><br /><strong>Domestic monitored routes</strong></div>
+                    <div><span style="color:var(--grey-text);font-size:11px;">Frequency</span><br /><strong>Daily / Weekly / Monthly</strong></div>
+                    <div><span style="color:var(--grey-text);font-size:11px;">Aggregation</span><br /><strong>Weighted route-level aggregation</strong></div>
+                    <div><span style="color:var(--grey-text);font-size:11px;">Inputs</span><br /><strong>Fare, Route, Airline, Cabin, Booking window, Travel date, Availability</strong></div>
+                    <div><span style="color:var(--grey-text);font-size:11px;">Quality Controls</span><br /><strong>Duplicate detection, Outlier filtering, Missing-data validation</strong></div>
+                </div>
+                <div style="margin-top:8px;font-size:12px;color:var(--grey-text);">
+                    <i class="fas fa-flask"></i> Prototype methodology — subject to refinement and validation before production deployment.
+                </div>
+            </div>
+
+            <!-- ===== DATA TRANSPARENCY ===== -->
+            <div style="text-align:center;padding:14px 0 6px;font-size:11px;color:var(--grey-light);border-top:1px solid var(--grey-border);margin-top:12px;">
+                <p><strong>Prototype • Simulated Data Feed</strong></p>
+                <p>Values shown for demonstration purposes. Production deployment would connect approved airfare data sources and validated statistical methodology.</p>
+                <p style="margin-top:4px;">UDAAN — National Statistical Office, Ministry of Statistics &amp; Programme Implementation, Government of India</p>
+            </div>
+
+        </div><!-- /page-content -->
+    </div><!-- /main -->
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-box">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-title" id="modalTitle">Route Detail</div>
+            <div class="modal-body" id="modalBody">
+                <div class="detail-row"><span class="dr-label">Route</span><span class="dr-value" id="mRoute">DEL → BOM</span></div>
+                <div class="detail-row"><span class="dr-label">Airline</span><span class="dr-value" id="mAirline">IndiGo</span></div>
+                <div class="detail-row"><span class="dr-label">Fare</span><span class="dr-value" id="mFare">₹6,240</span></div>
+                <div class="detail-row"><span class="dr-label">Cabin</span><span class="dr-value" id="mCabin">Economy</span></div>
+                <div class="detail-row"><span class="dr-label">Booking Lead</span><span class="dr-value" id="mBooking">14 days</span></div>
+                <div class="detail-row"><span class="dr-label">Travel Date</span><span class="dr-value" id="mTravel">15 Sep 2026</span></div>
+                <div class="detail-row"><span class="dr-label">Timestamp</span><span class="dr-value" id="mTimestamp">31 Aug 2026 11:18:02</span></div>
+                <div class="detail-row"><span class="dr-label">Availability</span><span class="dr-value" id="mAvailability">Limited</span></div>
+                <div class="detail-row"><span class="dr-label">Historical Percentile</span><span class="dr-value" id="mPercentile">87th</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== REPORT MODAL ===== -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal-box">
+            <button class="modal-close" id="reportModalClose">&times;</button>
+            <div class="modal-title">UDAAN Airfare Price Index Report</div>
+            <div class="modal-body">
+                <div class="detail-row"><span class="dr-label">Current Index</span><span class="dr-value">129.06</span></div>
+                <div class="detail-row"><span class="dr-label">Monthly Change</span><span class="dr-value" style="color:var(--green);">+4.82%</span></div>
+                <div class="detail-row"><span class="dr-label">YoY</span><span class="dr-value" style="color:var(--green);">+8.64%</span></div>
+                <div class="detail-row"><span class="dr-label">Top Upward Contributor</span><span class="dr-value">DEL → BOM</span></div>
+                <div class="detail-row"><span class="dr-label">Top Downward Contributor</span><span class="dr-value">BOM → BLR</span></div>
+                <div class="detail-row"><span class="dr-label">Report Status</span><span class="dr-value" style="color:var(--green);"><i class="fas fa-check-circle"></i> Generated</span></div>
+                <div style="margin-top:14px;text-align:center;">
+                    <button class="btn-primary" id="printReportFromModal"><i class="fas fa-print"></i> Print Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ASSISTANT ===== -->
+    <button class="assistant-toggle" id="assistantToggle"><i class="fas fa-robot"></i> UDAAN Assistant</button>
+    <div class="assistant-panel" id="assistantPanel">
+        <div class="ap-header">
+            <span><i class="fas fa-robot" style="margin-right:6px;color:#4a90d9;"></i> UDAAN Assistant</span>
+            <button class="ap-close" id="assistantClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="ap-body" id="assistantBody">
+            <div class="qa q">Hello, I'm UDAAN Assistant. Ask me about the airfare index.</div>
+            <div class="qa a">I can help you understand the current index, its movement, route contributions, and more.</div>
+        </div>
+        <div class="ap-questions">
+            <button data-q="What is the current airfare index?">Current Index</button>
+            <button data-q="Why did the index increase?">Why up?</button>
+            <button data-q="Which route contributed most?">Top route</button>
+            <button data-q="Which airline is pushing prices up?">Airline</button>
+            <button data-q="What is the forecast?">Forecast</button>
+            <button data-q="How is the index calculated?">Methodology</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  DATA
+        // ============================================================
+        const INDEX_DATA = {
+            current: 129.06,
+            base: 100,
+            baseYear: 2019,
+            asOn: '31 Aug 2026',
+            monthlyChange: 4.82,
+            yoyChange: 8.64,
+            dailyChange: 1.24,
+            sevenDayChange: 3.18,
+            routes: 50,
+            airlines: 10,
+            observations: 125365,
+            sources: 15,
+            status: 'Rising',
+            pressure: 'Moderate–High',
+            confidence: 'High'
+        };
+
+        // Historical trend data (monthly)
+        const trendData = {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            index: [112.4, 113.8, 115.2, 116.7, 118.9, 122.1, 124.8, 129.06, 130.2, 131.8, 133.4, 135.0],
+            baseline: Array(12).fill(100),
+            movingAvg: [112.4, 113.1, 113.8, 114.8, 115.9, 117.2, 118.6, 120.2, 121.8, 123.4, 125.0, 126.6]
+        };
+
+        // Waterfall data
+        const waterfallData = {
+            labels: ['Route Demand', 'Fuel / Operating', 'Limited Availability', 'Seasonality', 'Airline Competition',
+                'Other'
+            ],
+            values: [1.82, 0.74, 1.16, 0.58, -0.42, 0.68],
+            net: 4.56
+        };
+
+        // City data
+        const cityData = {
+            labels: ['Delhi', 'Mumbai', 'Bengaluru', 'Hyderabad', 'Chennai', 'Kolkata', 'Goa', 'Ahmedabad', 'Pune',
+                'Kochi'
+            ],
+            index: [132.4, 128.8, 124.6, 126.2, 130.1, 121.4, 127.8, 122.6, 123.2, 125.4],
+            change: [6.2, 4.8, 3.1, 5.4, 4.2, 2.8, 5.1, 3.8, 3.4, 4.6]
+        };
+
+        // Base period long-term
+        const basePeriodData = {
+            labels: ['2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026'],
+            values: [100, 98.2, 102.6, 104.8, 111.6, 117.9, 123.2, 129.06]
+        };
+
+        // Inflation comparison
+        const inflationData = {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+            uda: [5.2, 5.8, 6.1, 6.8, 7.4, 8.2, 8.6, 8.64],
+            cpi: [4.1, 4.3, 4.5, 4.6, 4.8, 5.0, 5.2, 5.3]
+        };
+
+        // Forecast data
+        const forecastData = {
+            labels: ['Now', '1d', '2d', '3d', '4d', '5d', '6d', '7d'],
+            actual: [129.06, 129.3, 129.7, 130.0, 130.4, 130.7, 131.0, 131.2],
+            forecast: [129.06, 129.4, 129.9, 130.3, 130.8, 131.2, 131.6, 131.2],
+            upper: [129.06, 129.7, 130.3, 130.8, 131.4, 131.9, 132.4, 132.0],
+            lower: [129.06, 129.1, 129.5, 129.8, 130.2, 130.5, 130.8, 130.4]
+        };
+
+        // ============================================================
+        //  STATE
+        // ============================================================
+        let currentPeriod = '1m';
+        let currentForecast = '24h';
+        let simInterval = null;
+        let feedCount = 0;
+
+        // ============================================================
+        //  CHARTS
+        // ============================================================
+        let trendChartInstance = null;
+        let waterfallChartInstance = null;
+        let cityChartInstance = null;
+        let basePeriodChartInstance = null;
+        let inflationChartInstance = null;
+        let forecastChartInstance = null;
+
+        // ============================================================
+        //  UTILITY
+        // ============================================================
+        function formatCurrency(num) {
+            return '₹' + Number(num).toLocaleString('en-IN');
+        }
+
+        function getRandomFare(min, max) {
+            return Math.round((Math.random() * (max - min) + min) / 10) * 10;
+        }
+
+        function getTimeString() {
+            const d = new Date();
+            return d.toTimeString().slice(0, 8);
+        }
+
+        function updateLastUpdate() {
+            const d = new Date();
+            const opts = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('lastUpdateTime').textContent = d.toLocaleDateString('en-IN', opts);
+            document.getElementById('simLast').textContent = d.toLocaleDateString('en-IN', opts);
+        }
+
+        // ============================================================
+        //  TREND CHART
+        // ============================================================
+        function renderTrend(period) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            let labels, indexData, baselineData, maData;
+
+            // Generate data based on period
+            const months = ['May', 'Jun', 'Jul', 'Aug'];
+            const idx = [119, 123, 128, 129.06];
+            const bl = [100, 100, 100, 100];
+            const ma = [119, 121, 124, 127];
+
+            if (period === '1m') {
+                labels = ['1 Aug', '6 Aug', '11 Aug', '16 Aug', '21 Aug', '26 Aug', '31 Aug'];
+                indexData = [126.2, 127.0, 127.5, 128.1, 128.7, 129.0, 129.06];
+                baselineData = Array(7).fill(100);
+                maData = [126.2, 126.6, 127.0, 127.4, 127.8, 128.2, 128.6];
+            } else if (period === '3m') {
+                labels = ['Jun', 'Jul', 'Aug'];
+                indexData = [123, 128, 129.06];
+                baselineData = [100, 100, 100];
+                maData = [123, 125, 127];
+            } else if (period === '6m') {
+                labels = ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
+                indexData = [114.2, 117.8, 119, 123, 128, 129.06];
+                baselineData = Array(6).fill(100);
+                maData = [114.2, 116.0, 117.0, 118.5, 120.0, 122.0];
+            } else if (period === '1y') {
+                labels = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
+                indexData = [110.2, 111.8, 113.0, 114.2, 115.6, 116.8, 118.2, 119.6, 121.0, 123.0, 128.0, 129.06];
+                baselineData = Array(12).fill(100);
+                maData = [110.2, 111.0, 111.8, 112.6, 113.4, 114.2, 115.0, 115.8, 116.6, 117.8, 119.0, 120.5];
+            } else { // 5y
+                labels = ['2022', '2023', '2024', '2025', '2026'];
+                indexData = [104.8, 111.6, 117.9, 123.2, 129.06];
+                baselineData = Array(5).fill(100);
+                maData = [104.8, 108.2, 111.6, 115.2, 118.8];
+            }
+
+            if (trendChartInstance) {
+                trendChartInstance.destroy();
+            }
+
+            trendChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'UDAAN Index',
+                        data: indexData,
+                        borderColor: '#2c6b9e',
+                        backgroundColor: 'rgba(44,107,158,0.08)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 2,
+                        pointBackgroundColor: '#2c6b9e',
+                        borderWidth: 2
+                    }, {
+                        label: 'Historical Baseline',
+                        data: baselineData,
+                        borderColor: '#8a9aa8',
+                        borderDash: [5, 5],
+                        borderWidth: 1.5,
+                        pointRadius: 0,
+                        fill: false,
+                        tension: 0
+                    }, {
+                        label: 'Moving Average',
+                        data: maData,
+                        borderColor: '#d48c1c',
+                        backgroundColor: 'rgba(212,140,28,0.05)',
+                        fill: false,
+                        tension: 0.3,
+                        pointRadius: 0,
+                        borderWidth: 1.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                afterBody: function(tooltipItems) {
+                                    const idx = tooltipItems[0].dataIndex;
+                                    const change = ((indexData[idx] - indexData[idx - 1]) / indexData[idx - 1] * 100) ||
+                                        0;
+                                    const fare = getRandomFare(3800, 7200);
+                                    return [
+                                        'Change: ' + (change >= 0 ? '+' : '') + change.toFixed(2) + '%',
+                                        'Avg Fare: ₹' + fare.toLocaleString(),
+                                        'Observations: ' + (Math.floor(Math.random() * 2000 + 8000)).toLocaleString()
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 80,
+                            max: 150,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { font: { size: 10 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================================
+        //  WATERFALL CHART
+        // ============================================================
+        function renderWaterfall() {
+            const ctx = document.getElementById('waterfallChart').getContext('2d');
+            const values = waterfallData.values;
+            const labels = waterfallData.labels;
+            const colors = values.map(v => v >= 0 ? 'rgba(44,107,158,0.7)' : 'rgba(201,42,42,0.7)');
+            const borderColors = values.map(v => v >= 0 ? '#2c6b9e' : '#c92a2a');
+
+            if (waterfallChartInstance) {
+                waterfallChartInstance.destroy();
+            }
+
+            waterfallChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderColor: borderColors,
+                        borderWidth: 1,
+                        borderRadius: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return (context.parsed.y >= 0 ? '+' : '') + context.parsed.y.toFixed(2) +
+                                        ' points';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: {
+                                font: { size: 9 },
+                                callback: function(value) {
+                                    return (value >= 0 ? '+' : '') + value.toFixed(1);
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================================
+        //  CITY CHART
+        // ============================================================
+        function renderCityChart() {
+            const ctx = document.getElementById('cityChart').getContext('2d');
+            const colors = cityData.index.map(v => v >= 130 ? '#c92a2a' : v >= 125 ? '#d48c1c' : '#2c6b9e');
+
+            if (cityChartInstance) {
+                cityChartInstance.destroy();
+            }
+
+            cityChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: cityData.labels,
+                    datasets: [{
+                        label: 'Index',
+                        data: cityData.index,
+                        backgroundColor: colors,
+                        borderColor: colors.map(c => c),
+                        borderWidth: 1,
+                        borderRadius: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    const idx = context.dataIndex;
+                                    return 'Change: +' + cityData.change[idx] + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 100,
+                            max: 150,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { font: { size: 9 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 8 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================================
+        //  BASE PERIOD CHART
+        // ============================================================
+        function renderBasePeriod() {
+            const ctx = document.getElementById('basePeriodChart').getContext('2d');
+
+            if (basePeriodChartInstance) {
+                basePeriodChartInstance.destroy();
+            }
+
+            basePeriodChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: basePeriodData.labels,
+                    datasets: [{
+                        label: 'UDAAN Index',
+                        data: basePeriodData.values,
+                        borderColor: '#2c6b9e',
+                        backgroundColor: 'rgba(44,107,158,0.10)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#2c6b9e',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Index: ' + context.parsed.y.toFixed(1);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 90,
+                            max: 140,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { font: { size: 9 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================================
+        //  INFLATION CHART
+        // ============================================================
+        function renderInflation() {
+            const ctx = document.getElementById('inflationChart').getContext('2d');
+
+            if (inflationChartInstance) {
+                inflationChartInstance.destroy();
+            }
+
+            inflationChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: inflationData.labels,
+                    datasets: [{
+                        label: 'UDAAN Airfare Inflation',
+                        data: inflationData.uda,
+                        borderColor: '#c92a2a',
+                        backgroundColor: 'rgba(201,42,42,0.05)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 1,
+                        borderWidth: 2
+                    }, {
+                        label: 'CPI Benchmark (ref)',
+                        data: inflationData.cpi,
+                        borderColor: '#8a9aa8',
+                        borderDash: [4, 4],
+                        borderWidth: 1.5,
+                        pointRadius: 0,
+                        fill: false,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { boxWidth: 12, font: { size: 9 } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: {
+                                font: { size: 8 },
+                                callback: function(value) { return value + '%'; }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 8 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================================
+        //  FORECAST CHART
+        // ============================================================
+        function renderForecast(period) {
+            const ctx = document.getElementById('forecastChart').getContext('2d');
+            let labels, actual, forecast, upper, lower;
+
+            if (period === '24h') {
+                labels = ['Now', '2h', '4h', '6h', '8h', '10h', '12h', '18h', '24h'];
+                actual = [129.06, 129.1, 129.2, 129.3, 129.4, 129.5, 129.6, 129.8, 129.9];
+                forecast = [129.06, 129.2, 129.4, 129.5, 129.7, 129.9, 130.1, 130.3, 130.5];
+                upper = [129.06, 129.5, 129.8, 130.0, 130.3, 130.6, 130.9, 131.2, 131.5];
+                lower = [129.06, 128.9, 129.0, 129.0, 129.1, 129.2, 129.3, 129.4, 129.5];
+            } else if (period === '7d') {
+                labels = ['Now', '1d', '2d', '3d', '4d', '5d', '6d', '7d'];
+                actual = [129.06, 129.3, 129.7, 130.0, 130.4, 130.7, 131.0, 131.2];
+                forecast = [129.06, 129.4, 129.9, 130.3, 130.8, 131.2, 131.6, 131.2];
+                upper = [129.06, 129.7, 130.3, 130.8, 131.4, 131.9, 132.4, 132.0];
+                lower = [129.06, 129.1, 129.5, 129.8, 130.2, 130.5, 130.8, 130.4];
+            } else { // 30d
+                labels = ['Now', '5d', '10d', '15d', '20d', '25d', '30d'];
+                actual = [129.06, 129.8, 130.4, 131.0, 131.6, 132.2, 132.8];
+                forecast = [129.06, 130.2, 131.0, 131.8, 132.6, 133.2, 133.8];
+                upper = [129.06, 130.8, 131.8, 132.8, 133.8, 134.4, 135.0];
+                lower = [129.06, 129.6, 130.2, 130.8, 131.4, 132.0, 132.6];
+            }
+
+            if (forecastChartInstance) {
+                forecastChartInstance.destroy();
+            }
+
+            forecastChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Actual',
+                        data: actual,
+                        borderColor: '#2c6b9e',
+                        backgroundColor: 'rgba(44,107,158,0.08)',
+                        fill: false,
+                        tension: 0.3,
+                        pointRadius: 2,
+                        borderWidth: 2
+                    }, {
+                        label: 'Forecast',
+                        data: forecast,
+                        borderColor: '#d48c1c',
+                        backgroundColor: 'rgba(212,140,28,0.05)',
+                        fill: false,
+                        tension: 0.3,
+                        pointRadius: 2,
+                        borderWidth: 2,
+                        borderDash: [4, 3]
+                    }, {
+                        label: 'Confidence Band',
+                        data: upper,
+                        borderColor: 'rgba(212,140,28,0.2)',
+                        backgroundColor: 'rgba(212,140,28,0.10)',
+                        fill: '+1',
+                        tension: 0.3,
+                        pointRadius: 0,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { boxWidth: 12, font: { size: 9 } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 125,
+                            max: 138,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { font: { size: 9 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 8 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================================
+        //  LIVE SIMULATION
+        // ============================================================
+        function startSimulation() {
+            if (simInterval) clearInterval(simInterval);
+
+            const routes = [
+                ['DEL', 'BOM'],
+                ['BOM', 'BLR'],
+                ['DEL', 'BLR'],
+                ['DEL', 'MAA'],
+                ['BLR', 'HYD'],
+                ['MAA', 'BLR'],
+                ['DEL', 'CCU'],
+                ['BOM', 'HYD']
+            ];
+            const airlines = ['IndiGo', 'Air India', 'Akasa Air', 'SpiceJet', 'Air India Express'];
+
+            let idx = 129.06;
+            let obs = 125365;
+
+            simInterval = setInterval(function() {
+                const route = routes[Math.floor(Math.random() * routes.length)];
+                const fare = getRandomFare(3800, 7400);
+                const airline = airlines[Math.floor(Math.random() * airlines.length)];
+                const time = getTimeString();
+
+                // Small random index movement
+                const delta = (Math.random() - 0.48) * 0.04;
+                idx = Math.round((idx + delta) * 100) / 100;
+                obs += Math.floor(Math.random() * 3) + 1;
+
+                // Update UI
+                document.getElementById('simIndex').textContent = idx.toFixed(2);
+                document.getElementById('simObs').textContent = obs.toLocaleString();
+                document.getElementById('heroNumber').textContent = idx.toFixed(2);
+                document.getElementById('simLast').textContent = new Date().toLocaleString('en-IN', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+
+                // Add to feed
+                const feed = document.getElementById('liveFeed');
+                const item = document.createElement('div');
+                item.className = 'feed-item';
+                item.innerHTML =
+                    `<span class="feed-time">${time}</span><span class="feed-route">${route[0]} → ${route[1]}</span><span class="feed-fare">₹${fare.toLocaleString()}</span><span class="feed-update">${airline}</span>`;
+                feed.insertBefore(item, feed.firstChild);
+                if (feed.children.length > 20) {
+                    feed.removeChild(feed.lastChild);
+                }
+
+                feedCount++;
+            }, 2500);
+        }
+
+        // ============================================================
+        //  ASSISTANT
+        // ============================================================
+        function assistantAnswer(question) {
+            const body = document.getElementById('assistantBody');
+            const qDiv = document.createElement('div');
+            qDiv.className = 'qa q';
+            qDiv.textContent = question;
+            body.appendChild(qDiv);
+
+            const aDiv = document.createElement('div');
+            aDiv.className = 'qa a';
+
+            const qLower = question.toLowerCase();
+            if (qLower.includes('current') && qLower.includes('index')) {
+                aDiv.textContent =
+                    `The current UDAAN Airfare Price Index is 129.06, which is 29.06% above the 2019 base period (100). The index has risen +4.82% over the past month.`;
+            } else if (qLower.includes('why') && qLower.includes('increase')) {
+                aDiv.textContent =
+                    `The index increased mainly because DEL–BOM and DEL–MAA recorded above-baseline fare movements, while higher near-term demand reduced availability. Route demand contributed +1.82 points, and limited availability added +1.16 points.`;
+            } else if (qLower.includes('route') && qLower.includes('contributed')) {
+                aDiv.textContent =
+                    `DEL → BOM is the top contributing route with a +18.2% fare change, adding +2.26 points to the national index. DEL → MAA follows with +14.8% and +1.27 points contribution.`;
+            } else if (qLower.includes('airline') && qLower.includes('pushing')) {
+                aDiv.textContent =
+                    `IndiGo is the largest contributor to upward pressure with a +5.6% fare change, adding +1.42 points to the index. Air India follows with +7.8% change and +1.31 points contribution.`;
+            } else if (qLower.includes('forecast')) {
+                aDiv.textContent =
+                    `The 7-day forecast projects the index to reach 131.2, with a rising trend and 82% confidence. The 30-day forecast indicates 133.8. This is a prototype forecast based on current trends.`;
+            } else if (qLower.includes('calculated') || qLower.includes('methodology')) {
+                aDiv.textContent =
+                    `The index is calculated as a weighted average of route-level fares, normalized against the 2019 base period. The formula is: Index = (Σ(wᵣ × Fareᵣ) / Σ(wᵣ × Fareᵣ,base)) × 100. We incorporate route weights, airline weights, cabin class, booking window, travel date, fare type, and availability.`;
+            } else {
+                aDiv.textContent =
+                    `I can help with questions about the current index, why it moved, route contributions, airline impacts, forecasts, and methodology. Please ask a specific question.`;
+            }
+
+            body.appendChild(aDiv);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        // ============================================================
+        //  SCENARIO SIMULATOR
+        // ============================================================
+        function runScenario() {
+            const demand = parseInt(document.getElementById('demandSlider').value);
+            const avail = parseInt(document.getElementById('availSlider').value);
+            const booking = parseInt(document.getElementById('bookingSlider').value);
+            const competition = document.getElementById('competitionSelect').value;
+            const seasonality = document.getElementById('seasonalitySelect').value;
+
+            // Calculate demo impact
+            let base = 129.06;
+            let impact = 0;
+
+            // Demand: -20 to +30 → impact -2.0 to +4.5
+            impact += (demand / 30) * 4.5;
+
+            // Availability: -30 to +30 → impact -3.0 to +3.0 (negative availability = higher prices)
+            impact -= (avail / 30) * 2.5;
+
+            // Booking: 0-90 → impact -1.0 to +2.0
+            impact += (booking / 90) * 2.0;
+
+            // Competition
+            if (competition === 'low') impact += 1.2;
+            else if (competition === 'high') impact -= 0.8;
+
+            // Seasonality
+            if (seasonality === 'high') impact += 1.4;
+            else if (seasonality === 'low') impact -= 0.6;
+
+            // Random noise
+            impact += (Math.random() - 0.5) * 0.4;
+
+            const newIndex = Math.round((base + impact) * 100) / 100;
+            const changePct = ((newIndex - base) / base * 100);
+            const sign = changePct >= 0 ? '+' : '';
+
+            document.getElementById('scenarioIndexVal').textContent = newIndex.toFixed(2);
+            document.getElementById('scenarioChangeVal').textContent = sign + changePct.toFixed(2) + '%';
+            document.getElementById('scenarioChangeVal').className = changePct >= 0 ? 'up' : 'down';
+
+            let explanation = '';
+            if (demand > 10 && avail < -5) {
+                explanation =
+                    'Under the selected scenario, increased demand combined with tighter availability produces upward fare pressure.';
+            } else if (demand < -5 && avail > 5) {
+                explanation =
+                    'Reduced demand and improved availability are creating downward fare pressure in this scenario.';
+            } else if (competition === 'high' && demand < 5) {
+                explanation =
+                    'Strong airline competition is helping to moderate fare increases despite other pressures.';
+            } else if (seasonality === 'high' && demand > 10) {
+                explanation =
+                    'Seasonal travel demand is amplifying fare pressure across monitored routes.';
+            } else {
+                explanation =
+                    'The scenario reflects a balanced market with moderate fare movement across the network.';
+            }
+            document.getElementById('scenarioExplanation').textContent = explanation;
+        }
+
+        // ============================================================
+        //  MODALS
+        // ============================================================
+        function openDetailModal(data) {
+            document.getElementById('mRoute').textContent = data.route || 'DEL → BOM';
+            document.getElementById('mAirline').textContent = data.airline || 'IndiGo';
+            document.getElementById('mFare').textContent = formatCurrency(data.fare || 6240);
+            document.getElementById('mCabin').textContent = data.cabin || 'Economy';
+            document.getElementById('mBooking').textContent = data.booking || '14 days';
+            document.getElementById('mTravel').textContent = data.travel || '15 Sep 2026';
+            document.getElementById('mTimestamp').textContent = data.timestamp || '31 Aug 2026 11:18:02';
+            document.getElementById('mAvailability').textContent = data.availability || 'Limited';
+            document.getElementById('mPercentile').textContent = data.percentile || '87th';
+            document.getElementById('modalTitle').textContent = data.title || 'Route Detail';
+            document.getElementById('detailModal').classList.add('open');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('open');
+        }
+
+        function openReportModal() {
+            document.getElementById('reportModal').classList.add('open');
+        }
+
+        function closeReportModal() {
+            document.getElementById('reportModal').classList.remove('open');
+        }
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Render all charts
+            renderTrend('1m');
+            renderWaterfall();
+            renderCityChart();
+            renderBasePeriod();
+            renderInflation();
+            renderForecast('7d');
+
+            // Update time
+            updateLastUpdate();
+            setInterval(updateLastUpdate, 30000);
+
+            // Start live simulation
+            startSimulation();
+
+            // ===== TREND CONTROLS =====
+            document.querySelectorAll('#trendChart').forEach(el => {
+                // Use parent .chart-controls
+            });
+            const trendControls = document.querySelector('.chart-card .chart-controls');
+            if (trendControls) {
+                trendControls.querySelectorAll('.btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        trendControls.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        const period = this.dataset.period;
+                        currentPeriod = period;
+                        renderTrend(period);
+                    });
+                });
+            }
+
+            // ===== FORECAST CONTROLS =====
+            const forecastControls = document.querySelectorAll('.chart-card')[12]?.querySelector('.chart-controls');
+            if (forecastControls) {
+                forecastControls.querySelectorAll('.btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        forecastControls.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        const period = this.dataset.forecast;
+                        currentForecast = period;
+                        renderForecast(period);
+                    });
+                });
+            }
+
+            // ===== ROUTE TABLE CLICKS =====
+            document.querySelectorAll('#routeTable tbody tr').forEach(row => {
+                row.addEventListener('click', function() {
+                    const route = this.dataset.route || 'DEL-BOM';
+                    const fare = this.querySelectorAll('td')[2]?.textContent || '₹6,240';
+                    const change = this.querySelectorAll('td')[3]?.textContent || '+12%';
+                    openDetailModal({
+                        route: route.replace('-', ' → '),
+                        airline: 'IndiGo',
+                        fare: parseInt(fare.replace(/[₹,]/g, '')),
+                        title: 'Route: ' + route.replace('-', ' → '),
+                        booking: '12 days',
+                        travel: '18 Sep 2026',
+                        timestamp: new Date().toLocaleString('en-IN'),
+                        availability: 'Limited',
+                        percentile: '82nd'
+                    });
+                });
+            });
+
+            // ===== AIRLINE ROW CLICKS =====
+            document.querySelectorAll('#airlineContributionGrid .airline-logo').forEach(el => {
+                const parent = el.closest('div[style*="background:var(--grey-bg)"]');
+                if (parent) {
+                    parent.style.cursor = 'pointer';
+                    parent.addEventListener('click', function() {
+                        const name = this.querySelector('.airline-logo')?.textContent?.trim() || 'Airline';
+                        const fare = this.querySelectorAll('span')[2]?.textContent || '₹5,240';
+                        openDetailModal({
+                            route: '—',
+                            airline: name.trim(),
+                            fare: parseInt(fare.replace(/[₹,]/g, '')),
+                            title: 'Airline: ' + name.trim(),
+                            booking: '10 days',
+                            travel: '20 Sep 2026',
+                            timestamp: new Date().toLocaleString('en-IN'),
+                            availability: 'Moderate',
+                            percentile: '74th'
+                        });
+                    });
+                }
+            });
+
+            // ===== ANOMALY CLICKS =====
+            document.querySelectorAll('[data-anomaly]').forEach(el => {
+                el.addEventListener('click', function() {
+                    const route = this.dataset.anomaly;
+                    const parts = route.split('-');
+                    openDetailModal({
+                        route: parts[0] + ' → ' + parts[1],
+                        airline: 'Various',
+                        fare: getRandomFare(4200, 7200),
+                        title: 'Anomaly: ' + parts[0] + ' → ' + parts[1],
+                        booking: '5 days',
+                        travel: '12 Sep 2026',
+                        timestamp: new Date().toLocaleString('en-IN'),
+                        availability: 'Very Limited',
+                        percentile: '94th'
+                    });
+                });
+            });
+
+            // ===== CITY CHART CLICKS =====
+            document.getElementById('cityChart')?.addEventListener('click', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const width = rect.width;
+                const idx = Math.floor((x / width) * cityData.labels.length);
+                if (idx >= 0 && idx < cityData.labels.length) {
+                    const city = cityData.labels[idx];
+                    openDetailModal({
+                        route: city,
+                        airline: 'Multiple',
+                        fare: getRandomFare(4000, 7000),
+                        title: 'City: ' + city,
+                        booking: '14 days',
+                        travel: '22 Sep 2026',
+                        timestamp: new Date().toLocaleString('en-IN'),
+                        availability: 'Moderate',
+                        percentile: '68th'
+                    });
+                }
+            });
+
+            // ===== MODAL CONTROLS =====
+            document.getElementById('modalClose').addEventListener('click', closeDetailModal);
+            document.getElementById('detailModal').addEventListener('click', function(e) {
+                if (e.target === this) closeDetailModal();
+            });
+            document.getElementById('reportModalClose').addEventListener('click', closeReportModal);
+            document.getElementById('reportModal').addEventListener('click', function(e) {
+                if (e.target === this) closeReportModal();
+            });
+
+            // ===== REPORT =====
+            document.getElementById('generateReportBtn').addEventListener('click', function() {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+                this.disabled = true;
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-file-pdf"></i> Generate Index Report';
+                    this.disabled = false;
+                    openReportModal();
+                }, 600);
+            });
+
+            document.getElementById('printReportBtn').addEventListener('click', function() {
+                window.print();
+            });
+            document.getElementById('printReportFromModal').addEventListener('click', function() {
+                window.print();
+            });
+
+            // ===== SCENARIO =====
+            document.getElementById('demandSlider').addEventListener('input', function() {
+                document.getElementById('demandVal').textContent = (this.value >= 0 ? '+' : '') + this.value + '%';
+            });
+            document.getElementById('availSlider').addEventListener('input', function() {
+                document.getElementById('availVal').textContent = (this.value >= 0 ? '+' : '') + this.value + '%';
+            });
+            document.getElementById('bookingSlider').addEventListener('input', function() {
+                document.getElementById('bookingVal').textContent = this.value + ' Days';
+            });
+            document.getElementById('simulateBtn').addEventListener('click', function() {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Recalculating...';
+                this.disabled = true;
+                setTimeout(() => {
+                    runScenario();
+                    this.innerHTML = '<i class="fas fa-calculator"></i> Simulate Impact';
+                    this.disabled = false;
+                }, 500);
+            });
+            // Run initial scenario
+            setTimeout(runScenario, 100);
+
+            // ===== ASSISTANT =====
+            document.getElementById('assistantToggle').addEventListener('click', function() {
+                const panel = document.getElementById('assistantPanel');
+                panel.classList.toggle('open');
+            });
+            document.getElementById('assistantClose').addEventListener('click', function() {
+                document.getElementById('assistantPanel').classList.remove('open');
+            });
+            document.querySelectorAll('.ap-questions button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const q = this.dataset.q;
+                    assistantAnswer(q);
+                });
+            });
+
+            // ===== FILTERS =====
+            document.getElementById('applyFiltersBtn').addEventListener('click', function() {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Applying...';
+                this.disabled = true;
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-sliders-h"></i> Apply';
+                    this.disabled = false;
+                    // Just a visual update - we're not actually filtering real data
+                    const geo = document.getElementById('filterGeography').value;
+                    const airline = document.getElementById('filterAirline').value;
+                    const cabin = document.getElementById('filterCabin').value;
+                    const travel = document.getElementById('filterTravel').value;
+                    const time = document.getElementById('filterTime').value;
+                    const metric = document.getElementById('filterMetric').value;
+
+                    // Update the hero card to reflect "filtered" state subtly
+                    const heroInterp = document.querySelector('.hero-interp .interp-text');
+                    if (geo !== 'all') {
+                        heroInterp.innerHTML =
+                            `<strong>Filtered view:</strong> Showing data for <strong>${geo.toUpperCase()}</strong> region. Current index: <strong>129.06</strong>`;
+                    } else if (airline !== 'all') {
+                        heroInterp.innerHTML =
+                            `<strong>Filtered view:</strong> Showing data for <strong>${airline}</strong>. Current index: <strong>129.06</strong>`;
+                    } else {
+                        heroInterp.innerHTML =
+                            `<strong>Interpretation:</strong><br /> "Domestic airfare prices are currently <strong>29.06%</strong> above the 2019 base-period level."`;
+                    }
+
+                    // Update the chart title to reflect filter
+                    const chartTitle = document.querySelector('.chart-card .chart-title');
+                    if (chartTitle) {
+                        const baseText = 'India Airfare Price Index — Historical Trend';
+                        if (geo !== 'all' || airline !== 'all') {
+                            let label = 'India';
+                            if (geo !== 'all') label = geo.toUpperCase();
+                            if (airline !== 'all') label += ' • ' + airline;
+                            chartTitle.textContent = label + ' Airfare Price Index — Historical Trend';
+                        } else {
+                            chartTitle.textContent = baseText;
+                        }
+                    }
+
+                    // Re-render trend with slight variation
+                    renderTrend(currentPeriod);
+                }, 500);
+            });
+
+            // ===== KEYBOARD SHORTCUTS =====
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeDetailModal();
+                    closeReportModal();
+                    document.getElementById('assistantPanel').classList.remove('open');
+                }
+                if (e.key === 'Enter' && e.target.closest('.ap-questions button')) {
+                    // handled by click
+                }
+            });
+
+            // ===== LOGO FALLBACK =====
+            document.querySelectorAll('.airline-logo img').forEach(img => {
+                img.addEventListener('error', function() {
+                    this.style.display = 'none';
+                    const fallback = this.nextElementSibling;
+                    if (fallback && fallback.classList.contains('fallback')) {
+                        fallback.style.display = 'inline';
+                    }
+                });
+            });
+
+            console.log('UDAAN Airfare Price Index initialized.');
+            console.log('Prototype • Simulated Data Feed');
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,3755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Airline Comparison — UDAAN | Real-time Airfare Intelligence Portal</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* =========================================================
+       UDAAN — REAL-TIME AIRFARE INTELLIGENCE PORTAL
+       MODULE: AIRLINE COMPARISON (pages/airline-comparison.html)
+    ========================================================= */
+
+    /* ================= 1. GLOBAL RESETS & VARIABLES ================= */
+    :root {
+      --primary-navy: #051937;
+      --secondary-navy: #001f3f;
+      --deep-dark: #030d1c;
+      --sidebar-bg: #0b1e36;
+      --sidebar-active: #1d4ed8;
+      --sidebar-hover: rgba(255, 255, 255, 0.08);
+      --bg-slate: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #eef2f6;
+      --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+      --card-hover-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --green-trend: #16a34a;
+      --green-light: #dcfce7;
+      --green-text: #15803d;
+      --red-trend: #dc2626;
+      --red-light: #fee2e2;
+      --red-text: #b91c1c;
+      --orange-accent: #ea580c;
+      --orange-light: #fff7ed;
+      --yellow-accent: #eab308;
+      --yellow-light: #fef9c3;
+      --purple-accent: #8b5cf6;
+      --purple-light: #f5f3ff;
+      --blue-accent: #2563eb;
+      --blue-light: #eff6ff;
+      --pink-accent: #ec4899;
+      --pink-light: #fdf2f8;
+      --cyan-accent: #06b6d4;
+      --gold-accent: #e5a823;
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-serif: 'Cinzel', Georgia, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-slate);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* ================= 2. TOP GOVERNMENT HEADER ================= */
+    .gov-banner {
+      width: 100%;
+      height: 84px;
+      background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 50%, var(--deep-dark) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      color: #ffffff;
+      position: relative;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      flex-shrink: 0;
+      z-index: 30;
+    }
+
+    .banner-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .emblem-img {
+      height: 50px;
+      width: auto;
+      filter: brightness(0) invert(1);
+      object-fit: contain;
+    }
+
+    .ministry-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.35;
+    }
+
+    .govt-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .ministry-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.1px;
+    }
+
+    .office-name {
+      font-size: 11.5px;
+      color: var(--text-light);
+    }
+
+    .banner-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .wing-icon {
+      width: 48px;
+      height: 22px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    .portal-brand-text {
+      font-family: var(--font-serif);
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .portal-tagline {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #cbd5e1;
+      letter-spacing: 0.4px;
+      margin-top: 2px;
+    }
+
+    .banner-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .flag-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .flag-img {
+      width: 36px;
+      height: auto;
+      border-radius: 3px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .flag-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+    }
+
+    .hindi-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .eng-text {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #cbd5e1;
+    }
+
+    .login-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 8px 18px;
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .login-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    /* ================= 3. APP LAYOUT & SIDEBAR ================= */
+    .app-layout {
+      display: flex;
+      flex: 1;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 240px;
+      background-color: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 18px 12px;
+      flex-shrink: 0;
+      overflow-y: auto;
+      border-right: 1px solid #1e293b;
+    }
+
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 9px 14px;
+      border-radius: 8px;
+      color: var(--text-light);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item i {
+      font-size: 14.5px;
+      width: 18px;
+      text-align: center;
+    }
+
+    .nav-item:hover {
+      background: var(--sidebar-hover);
+      color: #f1f5f9;
+    }
+
+    .nav-item.active {
+      background: var(--sidebar-active);
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.35);
+    }
+
+    .sidebar-status-card {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 14px;
+      text-align: center;
+      color: #ffffff;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .status-label {
+      font-size: 11px;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .status-timestamp {
+      font-size: 12px;
+      font-weight: 700;
+      color: #f8fafc;
+      margin: 4px 0 8px 0;
+    }
+
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--green-trend);
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .dot-blink {
+      width: 6px;
+      height: 6px;
+      background: #ffffff;
+      border-radius: 50%;
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    .next-update-wrap {
+      margin-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 10px;
+    }
+
+    .nu-label {
+      font-size: 10.5px;
+      color: var(--text-light);
+    }
+
+    .countdown-digits {
+      font-family: var(--font-main);
+      font-size: 16px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 1.5px;
+      margin-top: 3px;
+    }
+
+    .countdown-units {
+      font-size: 9px;
+      color: #64748b;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* ================= 4. MAIN CONTENT AREA ================= */
+    .main-content {
+      flex: 1;
+      padding: 24px 32px 36px 32px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .module-header-panel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      padding: 16px 20px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .module-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .module-icon-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: var(--blue-light);
+      color: var(--blue-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .module-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .module-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .telemetry-badge-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 6px 14px;
+      border-radius: 8px;
+    }
+
+    .telemetry-live-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--green-light);
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+
+    .live-indicator-dot {
+      width: 7px;
+      height: 7px;
+      background-color: var(--green-trend);
+      border-radius: 50%;
+      animation: pulse 1.6s infinite;
+    }
+
+    .live-text-label {
+      font-size: 9.5px;
+      font-weight: 800;
+      color: var(--green-text);
+      letter-spacing: 0.5px;
+    }
+
+    .telemetry-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .telemetry-label {
+      font-size: 10px;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    .telemetry-timestamp {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    /* 4.2 Telemetry Strip */
+    .telemetry-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #ffffff;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      padding: 12px 20px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .telemetry-metric-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tm-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .tm-icon.blue { background: var(--blue-light); color: var(--blue-accent); }
+    .tm-icon.orange { background: var(--orange-light); color: var(--orange-accent); }
+    .tm-icon.pink { background: var(--pink-light); color: var(--pink-accent); }
+    .tm-icon.green { background: var(--green-light); color: var(--green-trend); }
+
+    .tm-data {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tm-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .tm-val {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .telemetry-divider {
+      width: 1px;
+      height: 28px;
+      background-color: #e2e8f0;
+    }
+
+    /* ================= 5. COMPARISON FILTER PANEL ================= */
+    .dashboard-panel {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-title h3 {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .panel-title-icon {
+      font-size: 14px;
+      color: var(--blue-accent);
+    }
+
+    .filter-title-icon {
+      font-size: 14px;
+      color: var(--sidebar-bg);
+    }
+
+    .filter-tip {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .panel-tag-live {
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--blue-light);
+      color: var(--blue-accent);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr) 1.6fr;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .select-wrapper, .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .select-icon, .input-icon {
+      position: absolute;
+      left: 10px;
+      font-size: 12px;
+      color: var(--text-light);
+      pointer-events: none;
+    }
+
+    .form-select, .form-input {
+      width: 100%;
+      padding: 8px 10px 8px 30px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      background-color: #ffffff;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .form-select:focus, .form-input:focus {
+      border-color: var(--sidebar-active);
+    }
+
+    .filter-actions-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--primary-navy);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--sidebar-active);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: var(--text-main);
+      border: 1px solid #cbd5e1;
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-danger-outline {
+      background: #fff;
+      color: var(--red-trend);
+      border: 1px solid #fca5a5;
+    }
+
+    .btn-danger-outline:hover {
+      background: var(--red-light);
+    }
+
+    .btn-block {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* ================= 6. AIRLINE SUMMARY CARDS ================= */
+    .airline-cards-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .section-title-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-heading {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .section-subtext {
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .airline-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+
+    .airline-summary-card {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      padding: 16px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .airline-summary-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--card-hover-shadow);
+      border-color: #cbd5e1;
+    }
+
+    .asc-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .asc-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .asc-logo {
+      height: 138px;
+      max-width: 140px;
+      object-fit: contain;
+    }
+
+    .asc-name {
+      font-size: 3.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .asc-type {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .asc-trend-badge {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+    }
+
+    .asc-trend-badge.up {
+      background: var(--green-light);
+      color: var(--green-text);
+    }
+
+    .asc-trend-badge.down {
+      background: var(--red-light);
+      color: var(--red-text);
+    }
+
+    .asc-pricing-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #f1f5f9;
+    }
+
+    .asc-price-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .asc-price-block.right {
+      align-items: flex-end;
+    }
+
+    .asc-metric-label {
+      font-size: 9.5px;
+      font-weight: 600;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .asc-price-val {
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--text-main);
+    }
+
+    .asc-price-sub {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text-muted);
+    }
+
+    .asc-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .asc-kpi-item {
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      padding: 4px 6px;
+      border-radius: 6px;
+    }
+
+    .asc-kpi-lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .asc-kpi-val {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-top: 1px;
+    }
+
+    .asc-kpi-val.green { color: var(--green-trend); }
+    .asc-kpi-val.orange { color: var(--orange-accent); }
+
+    .star-filled {
+      color: var(--gold-accent);
+    }
+
+    .tag-good { color: var(--green-trend); }
+    .tag-high { color: var(--blue-accent); }
+    .tag-moderate { color: var(--orange-accent); }
+
+    .asc-action-btn {
+      width: 100%;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: var(--text-main);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .asc-action-btn:hover {
+      background: var(--primary-navy);
+      color: #ffffff;
+      border-color: var(--primary-navy);
+    }
+
+    /* ================= 7. PASSENGER PREFERENCE SECTION ================= */
+    .preference-layout-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 20px;
+    }
+
+    .preference-highlights-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .pref-kpi-card {
+      background: #ffffff;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+    }
+
+    .pref-kpi-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .pref-kpi-icon.blue { background: var(--blue-light); color: var(--blue-accent); }
+    .pref-kpi-icon.yellow { background: var(--yellow-light); color: var(--yellow-accent); }
+    .pref-kpi-icon.green { background: var(--green-light); color: var(--green-trend); }
+    .pref-kpi-icon.purple { background: var(--purple-light); color: var(--purple-accent); }
+    .pref-kpi-icon.orange { background: var(--orange-light); color: var(--orange-accent); }
+
+    .pref-kpi-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pref-kpi-label {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .pref-kpi-val {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 1px 0;
+    }
+
+    .pref-kpi-sub {
+      font-size: 9.5px;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .preference-bars-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #f8fafc;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid #eef2f6;
+    }
+
+    .pref-bars-heading {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .share-bar-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .sb-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+    }
+
+    .sb-brand {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sb-logo-small {
+      height: 14px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .sb-other-badge {
+      font-size: 8.5px;
+      font-weight: 800;
+      background: #64748b;
+      color: #fff;
+      padding: 1px 4px;
+      border-radius: 2px;
+    }
+
+    .sb-name {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .sb-pct {
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .sb-track {
+      height: 7px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .sb-fill {
+      height: 100%;
+      border-radius: 4px;
+    }
+
+    .igo-fill { background: #1d4ed8; }
+    .ai-fill { background: #dc2626; }
+    .qp-fill { background: #ea580c; }
+    .sg-fill { background: #ef4444; }
+    .other-fill { background: #64748b; }
+
+    /* ================= 8. AIRLINE COMPARISON TABLE ================= */
+    .table-responsive-container {
+      overflow-x: auto;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .data-table th {
+      background: #f8fafc;
+      padding: 10px 12px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      border-bottom: 1px solid #e2e8f0;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .data-table td {
+      padding: 12px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+      color: var(--text-main);
+    }
+
+    .table-row-clickable {
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+
+    .table-row-clickable:hover {
+      background-color: #f8fafc;
+    }
+
+    .tbl-airline-name {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tbl-airline-name strong {
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .tbl-airline-name small {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .tbl-logo {
+      height: 20px;
+      max-width: 50px;
+      object-fit: contain;
+    }
+
+    .fare-highlight {
+      font-size: 13.5px;
+      font-weight: 900;
+      color: var(--text-main);
+    }
+
+    .rating-cell {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 800;
+    }
+
+    .otp-high { color: var(--blue-accent); font-weight: 800; }
+    .otp-good { color: var(--green-trend); font-weight: 800; }
+    .otp-moderate { color: var(--orange-accent); font-weight: 800; }
+
+    .badge-status {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    .badge-status.good { background: var(--green-light); color: var(--green-text); }
+    .badge-status.high { background: var(--blue-light); color: var(--blue-accent); }
+    .badge-status.moderate { background: var(--orange-light); color: var(--orange-accent); }
+
+    .trend-up {
+      color: var(--green-trend);
+      font-weight: 800;
+      font-size: 11.5px;
+    }
+
+    .trend-down {
+      color: var(--red-trend);
+      font-weight: 800;
+      font-size: 11.5px;
+    }
+
+    .btn-table-action {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: var(--text-main);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-table-action:hover {
+      background: var(--primary-navy);
+      color: #ffffff;
+      border-color: var(--primary-navy);
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    /* ================= 9. THREE-COLUMN ANALYTICAL SECTION ================= */
+    .analytics-row-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .badge-panel-metric {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .chart-container-wrap {
+      position: relative;
+      width: 100%;
+      height: 210px;
+    }
+
+    .chart-footer-legend {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 8px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .legend-color {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+    }
+
+    .legend-color.ai { background: #dc2626; }
+    .legend-color.igo { background: #1d4ed8; }
+    .legend-color.qp { background: #ea580c; }
+    .legend-color.sg { background: #ef4444; }
+    .legend-color.aix { background: #db2777; }
+
+    /* 9.2 Rating Bars */
+    .rating-categories-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-top: 4px;
+    }
+
+    .rating-cat-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .rc-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+
+    .rc-name {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .rc-score {
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .rc-bar-track {
+      height: 6px;
+      background: #f1f5f9;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .rc-bar-fill {
+      height: 100%;
+      background: var(--blue-accent);
+      border-radius: 3px;
+    }
+
+    /* 9.3 Operational Performance Grid */
+    .ops-indicators-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .ops-stat-tile {
+      background: #f8fafc;
+      border: 1px solid #eef2f6;
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ops-stat-tile.full-width {
+      grid-column: span 2;
+    }
+
+    .ops-stat-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ops-lbl {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .icon-green { color: var(--green-trend); font-size: 12px; }
+    .icon-red { color: var(--red-trend); font-size: 12px; }
+    .icon-orange { color: var(--orange-accent); font-size: 12px; }
+    .icon-blue { color: var(--blue-accent); font-size: 12px; }
+
+    .ops-val {
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--text-main);
+      margin: 3px 0 1px 0;
+    }
+
+    .ops-val-inline {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .ops-sub {
+      font-size: 9.5px;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    .ops-sub.green { color: var(--green-text); }
+
+    .ops-load-track {
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      margin: 6px 0 4px 0;
+      overflow: hidden;
+    }
+
+    .ops-load-fill {
+      height: 100%;
+      background: var(--primary-navy);
+      border-radius: 4px;
+    }
+
+    .ops-load-legend {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9.5px;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    /* ================= 10. PASSENGER ISSUES / FEEDBACK ================= */
+    .feedback-layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 18px;
+    }
+
+    .feedback-status-overview {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .feedback-status-card {
+      background: #f8fafc;
+      border: 1px solid #eef2f6;
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feedback-status-card.green { border-left: 3px solid var(--green-trend); }
+    .feedback-status-card.orange { border-left: 3px solid var(--orange-accent); }
+    .feedback-status-card.red { border-left: 3px solid var(--red-trend); }
+
+    .fsc-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .fsc-val {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--text-main);
+      margin: 2px 0;
+    }
+
+    .fsc-val.green { color: var(--green-trend); }
+    .fsc-val.orange { color: var(--orange-accent); }
+    .fsc-val.red { color: var(--red-trend); }
+
+    .fsc-sub {
+      font-size: 10px;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .feedback-categories-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #f8fafc;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid #eef2f6;
+    }
+
+    .fbc-heading {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .fbc-row {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .fbc-labels {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+
+    .fbc-name {
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .fbc-name i {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .fbc-pct {
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .fbc-bar-track {
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .fbc-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    .fbc-bar-fill.orange { background: var(--orange-accent); }
+    .fbc-bar-fill.red { background: var(--red-trend); }
+    .fbc-bar-fill.purple { background: var(--purple-accent); }
+    .fbc-bar-fill.blue { background: var(--blue-accent); }
+    .fbc-bar-fill.yellow { background: var(--yellow-accent); }
+    .fbc-bar-fill.slate { background: #64748b; }
+
+    /* ================= 11. FOOTER ================= */
+    .app-footer {
+      height: 36px;
+      background: #07192f;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-links a {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    .footer-sep {
+      color: #475569;
+    }
+
+    /* ================= 12. MODAL SYSTEM ================= */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 13, 28, 0.65);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 1;
+      visibility: visible;
+      transition: all 0.25s ease;
+      padding: 20px;
+    }
+
+    .modal-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .modal-dialog {
+      background: #ffffff;
+      width: 100%;
+      max-width: 540px;
+      border-radius: 12px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      max-height: 90vh;
+      animation: modalScale 0.25s ease-out;
+    }
+
+    .modal-dialog.modal-lg {
+      max-width: 680px;
+    }
+
+    @keyframes modalScale {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+    }
+
+    .modal-airline-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-logo {
+      height: 28px;
+      max-width: 60px;
+      object-fit: contain;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .modal-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .modal-title-with-icon {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      color: var(--text-muted);
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-close-btn:hover {
+      color: var(--text-main);
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-quick-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #eef2f6;
+    }
+
+    .mq-stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mq-lbl {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .mq-val {
+      font-size: 14.5px;
+      font-weight: 900;
+      color: var(--text-main);
+      margin-top: 2px;
+    }
+
+    .mq-val.green { color: var(--green-trend); }
+
+    .modal-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .modal-sec-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .modal-sec-title i {
+      color: var(--blue-accent);
+      font-size: 11px;
+    }
+
+    .modal-text {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-muted);
+    }
+
+    .modal-rating-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      background: #f8fafc;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+    }
+
+    .mrg-item {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-main);
+    }
+
+    .mrg-item strong {
+      font-weight: 800;
+    }
+
+    .modal-grievance-box {
+      display: flex;
+      justify-content: space-between;
+      background: #f8fafc;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .modal-grievance-box strong {
+      color: var(--text-main);
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #f8fafc;
+    }
+
+    /* Report Form in Modal */
+    .report-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .form-textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .form-textarea:focus {
+      border-color: var(--sidebar-active);
+    }
+
+    .text-danger { color: var(--red-trend); }
+    .text-muted { color: var(--text-light); }
+
+    .alert-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 8px;
+    }
+
+    .success-alert {
+      background: var(--green-light);
+      border: 1px solid #86efac;
+      color: var(--green-text);
+    }
+
+    .alert-icon {
+      font-size: 16px;
+      margin-top: 2px;
+    }
+
+    .alert-title {
+      font-size: 12.5px;
+      font-weight: 800;
+    }
+
+    .alert-desc {
+      font-size: 11.5px;
+      margin-top: 2px;
+    }
+
+    /* ================= 13. UDAAN ASSISTANT CHATBOT ================= */
+    .udaan-assistant-widget {
+      position: fixed;
+      bottom: 48px;
+      right: 28px;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .assistant-trigger-btn {
+      background: linear-gradient(135deg, var(--primary-navy) 0%, var(--sidebar-active) 100%);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+      transition: all 0.25s ease;
+    }
+
+    .assistant-trigger-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .assistant-online-dot {
+      width: 7px;
+      height: 7px;
+      background-color: #22c55e;
+      border-radius: 50%;
+      animation: pulse 1.6s infinite;
+    }
+
+    .assistant-chat-window {
+      width: 360px;
+      height: 480px;
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      margin-bottom: 12px;
+      animation: modalScale 0.2s ease-out;
+    }
+
+    .assistant-chat-window.hidden {
+      display: none;
+    }
+
+    .chat-header {
+      background: var(--primary-navy);
+      color: #ffffff;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    .chat-title {
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .chat-status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      color: #cbd5e1;
+    }
+
+    .status-dot-green {
+      width: 5px;
+      height: 5px;
+      background: #22c55e;
+      border-radius: 50%;
+    }
+
+    .chat-close-btn {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      color: #cbd5e1;
+      cursor: pointer;
+    }
+
+    .chat-messages-area {
+      flex: 1;
+      padding: 14px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #f8fafc;
+    }
+
+    .chat-message {
+      max-width: 85%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .bot-message {
+      background: #ffffff;
+      color: var(--text-main);
+      border: 1px solid #e2e8f0;
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+    }
+
+    .user-message {
+      background: var(--primary-navy);
+      color: #ffffff;
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+    }
+
+    .message-time {
+      font-size: 9px;
+      color: var(--text-light);
+      align-self: flex-end;
+    }
+
+    .user-message .message-time {
+      color: #cbd5e1;
+    }
+
+    .chat-quick-suggestions {
+      padding: 8px 12px;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      background: #ffffff;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .suggestion-chip {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: var(--text-main);
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .suggestion-chip:hover {
+      background: var(--blue-light);
+      border-color: var(--blue-accent);
+      color: var(--blue-accent);
+    }
+
+    .chat-input-area {
+      padding: 10px 12px;
+      background: #ffffff;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 7px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      font-size: 12px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .chat-input:focus {
+      border-color: var(--sidebar-active);
+    }
+
+    .chat-send-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary-navy);
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: background 0.2s;
+    }
+
+    .chat-send-btn:hover {
+      background: var(--sidebar-active);
+    }
+
+    /* ================= 14. RESPONSIVE MEDIA QUERIES ================= */
+    @media (max-width: 1400px) {
+      .airline-cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .filters-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .filter-actions-group {
+        grid-column: span 3;
+        justify-content: flex-end;
+      }
+    }
+
+    @media (max-width: 1200px) {
+      .analytics-row-3 {
+        grid-template-columns: 1fr;
+      }
+      .preference-layout-grid,
+      .feedback-layout-grid {
+        grid-template-columns: 1fr;
+      }
+      .preference-highlights-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="gov-banner" id="govBanner">
+    <div class="banner-left">
+      <div class="emblem-container">
+        <img 
+          src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" 
+          alt="State Emblem of India" 
+          class="emblem-img"
+        />
+      </div>
+      <div class="ministry-text">
+        <span class="govt-title">Government of India</span>
+        <span class="ministry-name">Ministry of Statistics &amp; Programme Implementation</span>
+        <span class="office-name">National Statistical Office</span>
+      </div>
+    </div>
+
+    <div class="banner-center">
+      <div class="brand-title-wrap">
+        <svg class="wing-icon left-wing" viewBox="0 0 100 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M95,30 C70,30 40,25 10,5 C35,12 65,18 90,20 Z" fill="#E5A823"/>
+          <path d="M95,33 C65,33 35,28 5,14 C30,20 60,25 90,26 Z" fill="#E5A823"/>
+          <path d="M95,36 C60,37 30,34 0,23 C25,28 55,32 90,32 Z" fill="#E5A823"/>
+        </svg>
+        <h1 class="portal-brand-text">UDAAN</h1>
+        <svg class="wing-icon right-wing" viewBox="0 0 100 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5,30 C30,30 60,25 90,5 C65,12 35,18 10,20 Z" fill="#E5A823"/>
+          <path d="M5,33 C35,33 65,28 95,14 C70,20 40,25 10,26 Z" fill="#E5A823"/>
+          <path d="M5,36 C40,37 70,34 100,23 C75,28 45,32 10,32 Z" fill="#E5A823"/>
+        </svg>
+      </div>
+      <p class="portal-tagline">Real-time Airfare Intelligence Portal</p>
+    </div>
+
+    <div class="banner-right">
+      <div class="flag-section">
+        <img 
+          src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" 
+          alt="Indian National Flag" 
+          class="flag-img"
+        />
+        <div class="flag-text">
+          <span class="hindi-text">भारत सरकार</span>
+          <span class="eng-text">GOVERNMENT OF INDIA</span>
+        </div>
+      </div>
+      <button class="login-btn" id="loginOpenBtn" type="button">
+        <i class="fa-regular fa-user user-icon"></i>
+        <span>Login / Sign Up</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-layout">
+
+    <aside class="sidebar" id="mainSidebar">
+      <nav class="nav-menu">
+        <a href="../index.html" class="nav-item">
+          <i class="fa-solid fa-house"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="airfare-index.html" class="nav-item">
+          <i class="fa-solid fa-chart-column"></i>
+          <span>Airfare Index</span>
+        </a>
+        <a href="route-analysis.html" class="nav-item">
+          <i class="fa-solid fa-route"></i>
+          <span>Route Analysis</span>
+        </a>
+        <a href="airline-comparison.html" class="nav-item active">
+          <i class="fa-solid fa-plane-departure"></i>
+          <span>Airline Comparison</span>
+        </a>
+        <a href="advance-booking.html" class="nav-item">
+          <i class="fa-regular fa-calendar-days"></i>
+          <span>Advance Booking Analysis</span>
+        </a>
+        <a href="heat-map.html" class="nav-item">
+          <i class="fa-solid fa-location-dot"></i>
+          <span>Heat Map</span>
+        </a>
+        <a href="price-forecast.html" class="nav-item">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Price Forecast</span>
+        </a>
+        <a href="data-explorer.html" class="nav-item">
+          <i class="fa-solid fa-database"></i>
+          <span>Data Explorer</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <i class="fa-regular fa-file-lines"></i>
+          <span>Reports</span>
+        </a>
+        <a href="https://esankhyiki.mospi.gov.in" target="_blank" rel="noopener noreferrer" class="nav-item">
+          <i class="fa-solid fa-code"></i>
+          <span>API Access</span>
+        </a>
+        <a href="alerts.html" class="nav-item">
+          <i class="fa-regular fa-bell"></i>
+          <span>Alerts</span>
+        </a>
+        <a href="about.html" class="nav-item">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>About UDAAN</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-status-card" id="sidebarStatusCard">
+        <p class="status-label">Data Last Updated</p>
+        <p class="status-timestamp" id="sidebarLastUpdated">31 Aug 2026, 08:30 AM</p>
+        <div class="live-pill">
+          <span class="dot-blink"></span>
+          <span>Live</span>
+        </div>
+        <div class="next-update-wrap">
+          <span class="nu-label">Next Update In</span>
+          <div class="countdown-digits" id="sidebarCountdown">02 : 14 : 37</div>
+          <span class="countdown-units">Hrs &nbsp; Mins &nbsp; Secs</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content" id="mainContentArea">
+
+      <section class="module-header-panel" id="moduleHeaderPanel">
+        <div class="module-header-left">
+          <div class="module-title-wrap">
+            <div class="module-icon-badge">
+              <i class="fa-solid fa-plane-departure"></i>
+            </div>
+            <div>
+              <h2 class="module-title">Airline Comparison</h2>
+              <p class="module-subtitle">Compare airfare, service performance, passenger preferences, availability and operational indicators across monitored airlines.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="module-header-right">
+          <div class="telemetry-badge-container">
+            <div class="telemetry-live-chip">
+              <span class="live-indicator-dot"></span>
+              <span class="live-text-label">LIVE DATA</span>
+            </div>
+            <div class="telemetry-details">
+              <span class="telemetry-label">Data Last Updated</span>
+              <strong class="telemetry-timestamp" id="pageHeaderTimestamp">31 Aug 2026, 08:30 AM</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="telemetry-strip" id="telemetryStrip">
+        <div class="telemetry-metric-item">
+          <div class="tm-icon blue"><i class="fa-solid fa-plane"></i></div>
+          <div class="tm-data">
+            <span class="tm-label">Airlines Monitored</span>
+            <strong class="tm-val" id="metaAirlinesCount">10 Carriers</strong>
+          </div>
+        </div>
+        <div class="telemetry-divider"></div>
+        <div class="telemetry-metric-item">
+          <div class="tm-icon orange"><i class="fa-solid fa-coins"></i></div>
+          <div class="tm-data">
+            <span class="tm-label">Records Processed Today</span>
+            <strong class="tm-val" id="metaPriceQuotes">125,340 Quotes</strong>
+          </div>
+        </div>
+        <div class="telemetry-divider"></div>
+        <div class="telemetry-metric-item">
+          <div class="tm-icon pink"><i class="fa-solid fa-server"></i></div>
+          <div class="tm-data">
+            <span class="tm-label">Active Data Sources</span>
+            <strong class="tm-val" id="metaDataSources">15 Direct + OTAs</strong>
+          </div>
+        </div>
+        <div class="telemetry-divider"></div>
+        <div class="telemetry-metric-item">
+          <div class="tm-icon green"><i class="fa-solid fa-route"></i></div>
+          <div class="tm-data">
+            <span class="tm-label">Monitored Routes</span>
+            <strong class="tm-val" id="metaRoutesCount">50 Key City Pairs</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-panel filter-control-card" id="filterControlPanel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <i class="fa-solid fa-sliders filter-title-icon"></i>
+            <h3>Airline Comparison Filters</h3>
+          </div>
+          <span class="filter-tip">Configure sector and schedule to evaluate carrier metrics</span>
+        </div>
+
+        <form class="filters-grid" id="airlineFilterForm">
+          <div class="form-group">
+            <label class="form-label" for="filterOrigin">Origin Airport</label>
+            <div class="select-wrapper">
+              <i class="fa-solid fa-plane-departure select-icon"></i>
+              <select class="form-select" id="filterOrigin" name="origin">
+                <option value="DEL" selected>DEL — Delhi</option>
+                <option value="BOM">BOM — Mumbai</option>
+                <option value="BLR">BLR — Bengaluru</option>
+                <option value="HYD">HYD — Hyderabad</option>
+                <option value="CCU">CCU — Kolkata</option>
+                <option value="MAA">MAA — Chennai</option>
+                <option value="GOI">GOI — Goa</option>
+                <option value="AMD">AMD — Ahmedabad</option>
+                <option value="PNQ">PNQ — Pune</option>
+                <option value="LKO">LKO — Lucknow</option>
+                <option value="PAT">PAT — Patna</option>
+                <option value="JAI">JAI — Jaipur</option>
+                <option value="GAU">GAU — Guwahati</option>
+                <option value="COK">COK — Kochi</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="filterDestination">Destination Airport</label>
+            <div class="select-wrapper">
+              <i class="fa-solid fa-plane-arrival select-icon"></i>
+              <select class="form-select" id="filterDestination" name="destination">
+                <option value="DEL">DEL — Delhi</option>
+                <option value="BOM" selected>BOM — Mumbai</option>
+                <option value="BLR">BLR — Bengaluru</option>
+                <option value="HYD">HYD — Hyderabad</option>
+                <option value="CCU">CCU — Kolkata</option>
+                <option value="MAA">MAA — Chennai</option>
+                <option value="GOI">GOI — Goa</option>
+                <option value="AMD">AMD — Ahmedabad</option>
+                <option value="PNQ">PNQ — Pune</option>
+                <option value="LKO">LKO — Lucknow</option>
+                <option value="PAT">PAT — Patna</option>
+                <option value="JAI">JAI — Jaipur</option>
+                <option value="GAU">GAU — Guwahati</option>
+                <option value="COK">COK — Kochi</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="filterTravelDate">Travel Date</label>
+            <div class="input-wrapper">
+              <i class="fa-regular fa-calendar input-icon"></i>
+              <input type="date" class="form-input" id="filterTravelDate" name="travelDate" value="2026-08-31" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="filterCabinClass">Cabin Class</label>
+            <div class="select-wrapper">
+              <i class="fa-solid fa-couch select-icon"></i>
+              <select class="form-select" id="filterCabinClass" name="cabinClass">
+                <option value="Economy" selected>Economy</option>
+                <option value="Premium Economy">Premium Economy</option>
+                <option value="Business">Business</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="filterTripType">Trip Type</label>
+            <div class="select-wrapper">
+              <i class="fa-solid fa-arrow-right-arrow-left select-icon"></i>
+              <select class="form-select" id="filterTripType" name="tripType">
+                <option value="One Way" selected>One Way</option>
+                <option value="Round Trip">Round Trip</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="filterPassengers">Passengers</label>
+            <div class="select-wrapper">
+              <i class="fa-solid fa-user-group select-icon"></i>
+              <select class="form-select" id="filterPassengers" name="passengers">
+                <option value="1" selected>1 Passenger</option>
+                <option value="2">2 Passengers</option>
+                <option value="3">3 Passengers</option>
+                <option value="4">4 Passengers</option>
+                <option value="5+">5+ Passengers</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-actions-group">
+            <button type="submit" class="btn btn-primary" id="btnCompareAirlines">
+              <i class="fa-solid fa-chart-simple"></i>
+              <span>Compare Airlines</span>
+            </button>
+            <button type="reset" class="btn btn-secondary" id="btnResetFilters">
+              <i class="fa-solid fa-rotate-left"></i>
+              <span>Reset Filters</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="airline-cards-container" id="airlineCardsContainer">
+        <div class="section-title-bar">
+          <h3 class="section-heading">Monitored Indian Carriers Overview</h3>
+          <span class="section-subtext">Click on any airline card to inspect granular operational metrics</span>
+        </div>
+
+        <div class="airline-cards-grid" id="airlineCardsGrid">
+          
+          <article class="airline-summary-card" id="cardAirIndia" data-airline="Air India" data-code="AI" data-support-url="https://www.airindia.com/in/en/contact-us.html">
+            <div class="asc-header">
+              <div class="asc-brand">
+                <img 
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCvAM04AF4IqtDnbsN2kYp5W5ag7-dKoFd6Cze4UxaRQ&s=10" 
+                  alt="Air India logo" 
+                  class="asc-logo" 
+                />
+                <div>
+                  <h4 class="asc-name"></h4>
+                  <span class="asc-type"></span>
+                </div>
+              </div>
+              <span class="asc-trend-badge up">
+                <i class="fa-solid fa-caret-up"></i> 4.8%
+              </span>
+            </div>
+
+            <div class="asc-pricing-row">
+              <div class="asc-price-block">
+                <span class="asc-metric-label">Average Fare</span>
+                <strong class="asc-price-val">₹5,980</strong>
+              </div>
+              <div class="asc-price-block right">
+                <span class="asc-metric-label">Lowest Fare</span>
+                <strong class="asc-price-sub">₹4,210</strong>
+              </div>
+            </div>
+
+            <div class="asc-kpi-grid">
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">User Rating</span>
+                <strong class="asc-kpi-val"><i class="fa-solid fa-star star-filled"></i> 4.2 <small>/5</small></strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">On-Time %</span>
+                <strong class="asc-kpi-val green">82.6%</strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">Flights Today</span>
+                <strong class="asc-kpi-val">24</strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">Availability</span>
+                <strong class="asc-kpi-val tag-good">Good</strong>
+              </div>
+            </div>
+
+            <button type="button" class="asc-action-btn" data-airline-trigger="Air India">
+              <span>View Detailed Analysis</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </article>
+
+          <article class="airline-summary-card" id="cardIndiGo" data-airline="IndiGo" data-code="6E" data-support-url="https://www.goindigo.in/contact-us.html">
+            <div class="asc-header">
+              <div class="asc-brand">
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/commons/6/69/IndiGo_Airlines_logo.svg" 
+                  alt="IndiGo logo" 
+                  class="asc-logo" 
+                />
+                <div>
+                  <h4 class="asc-name"></h4>
+                  <span class="asc-type"></span>
+                </div>
+              </div>
+              <span class="asc-trend-badge up">
+                <i class="fa-solid fa-caret-up"></i> 2.1%
+              </span>
+            </div>
+
+            <div class="asc-pricing-row">
+              <div class="asc-price-block">
+                <span class="asc-metric-label">Average Fare</span>
+                <strong class="asc-price-val">₹5,240</strong>
+              </div>
+              <div class="asc-price-block right">
+                <span class="asc-metric-label">Lowest Fare</span>
+                <strong class="asc-price-sub">₹3,890</strong>
+              </div>
+            </div>
+
+            <div class="asc-kpi-grid">
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">User Rating</span>
+                <strong class="asc-kpi-val"><i class="fa-solid fa-star star-filled"></i> 4.4 <small>/5</small></strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">On-Time %</span>
+                <strong class="asc-kpi-val green">88.4%</strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">Flights Today</span>
+                <strong class="asc-kpi-val">42</strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">Availability</span>
+                <strong class="asc-kpi-val tag-high">High</strong>
+              </div>
+            </div>
+
+            <button type="button" class="asc-action-btn" data-airline-trigger="IndiGo">
+              <span>View Detailed Analysis</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </article>
+
+          <article class="airline-summary-card" id="cardAkasaAir" data-airline="Akasa Air" data-code="QP" data-support-url="https://www.akasaair.com/contact-us">
+            <div class="asc-header">
+              <div class="asc-brand">
+                <img 
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcG8p7auoJCySfroyYxP3HG7T5TPveHZ2iIOZ0joCclQ&s=10" 
+                  alt="Akasa Air logo" 
+                  class="asc-logo" 
+                />
+                <div>
+                  <h4 class="asc-name"></h4>
+                  <span class="asc-type"></span>
+                </div>
+              </div>
+              <span class="asc-trend-badge down">
+                <i class="fa-solid fa-caret-down"></i> 1.4%
+              </span>
+            </div>
+
+            <div class="asc-pricing-row">
+              <div class="asc-price-block">
+                <span class="asc-metric-label">Average Fare</span>
+                <strong class="asc-price-val">₹4,620</strong>
+              </div>
+              <div class="asc-price-block right">
+                <span class="asc-metric-label">Lowest Fare</span>
+                <strong class="asc-price-sub">₹3,450</strong>
+              </div>
+            </div>
+
+            <div class="asc-kpi-grid">
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">User Rating</span>
+                <strong class="asc-kpi-val"><i class="fa-solid fa-star star-filled"></i> 4.5 <small>/5</small></strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">On-Time %</span>
+                <strong class="asc-kpi-val green">86.2%</strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">Flights Today</span>
+                <strong class="asc-kpi-val">16</strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">Availability</span>
+                <strong class="asc-kpi-val tag-moderate">Moderate</strong>
+              </div>
+            </div>
+
+            <button type="button" class="asc-action-btn" data-airline-trigger="Akasa Air">
+              <span>View Detailed Analysis</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </article>
+
+          <article class="airline-summary-card" id="cardSpiceJet" data-airline="SpiceJet" data-code="SG" data-support-url="https://www.spicejet.com/contactus">
+            <div class="asc-header">
+              <div class="asc-brand">
+                <img 
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGkW8oB8nknqyPZZCx9L1hz30s5fzqi_OveJygfCJchIwdFrwKuVAn2XE&s=10" 
+                  alt="SpiceJet logo" 
+                  class="asc-logo" 
+                />
+                <div>
+                  <h4 class="asc-name"></h4>
+                  <span class="asc-type"></span>
+                </div>
+              </div>
+              <span class="asc-trend-badge down">
+                <i class="fa-solid fa-caret-down"></i> 3.2%
+              </span>
+            </div>
+
+            <div class="asc-pricing-row">
+              <div class="asc-price-block">
+                <span class="asc-metric-label">Average Fare</span>
+                <strong class="asc-price-val">₹4,100</strong>
+              </div>
+              <div class="asc-price-block right">
+                <span class="asc-metric-label">Lowest Fare</span>
+                <strong class="asc-price-sub">₹3,120</strong>
+              </div>
+            </div>
+
+            <div class="asc-kpi-grid">
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">User Rating</span>
+                <strong class="asc-kpi-val"><i class="fa-solid fa-star star-filled"></i> 3.8 <small>/5</small></strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">On-Time %</span>
+                <strong class="asc-kpi-val orange">71.8%</strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">Flights Today</span>
+                <strong class="asc-kpi-val">12</strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">Availability</span>
+                <strong class="asc-kpi-val tag-moderate">Moderate</strong>
+              </div>
+            </div>
+
+            <button type="button" class="asc-action-btn" data-airline-trigger="SpiceJet">
+              <span>View Detailed Analysis</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </article>
+
+          <article class="airline-summary-card" id="cardAIX" data-airline="Air India Express" data-code="IX" data-support-url="https://www.airindiaexpress.com/support/contact-us">
+            <div class="asc-header">
+              <div class="asc-brand">
+                <img 
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiugAyVJUmMPLbIyL2fXsDAbKZGjxFxXas_lR2KP9x&s" 
+                  alt="Air India Express logo" 
+                  class="asc-logo" 
+                />
+                <div>
+                  <h4 class="asc-name"></h4>
+                  <span class="asc-type"></span>
+                </div>
+              </div>
+              <span class="asc-trend-badge up">
+                <i class="fa-solid fa-caret-up"></i> 0.8%
+              </span>
+            </div>
+
+            <div class="asc-pricing-row">
+              <div class="asc-price-block">
+                <span class="asc-metric-label">Average Fare</span>
+                <strong class="asc-price-val">₹4,300</strong>
+              </div>
+              <div class="asc-price-block right">
+                <span class="asc-metric-label">Lowest Fare</span>
+                <strong class="asc-price-sub">₹3,290</strong>
+              </div>
+            </div>
+
+            <div class="asc-kpi-grid">
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">User Rating</span>
+                <strong class="asc-kpi-val"><i class="fa-solid fa-star star-filled"></i> 4.1 <small>/5</small></strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">On-Time %</span>
+                <strong class="asc-kpi-val green">81.4%</strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">Flights Today</span>
+                <strong class="asc-kpi-val">14</strong>
+              </div>
+              <div class="asc-kpi-item">
+                <span class="asc-kpi-lbl">Availability</span>
+                <strong class="asc-kpi-val tag-good">Good</strong>
+              </div>
+            </div>
+
+            <button type="button" class="asc-action-btn" data-airline-trigger="Air India Express">
+              <span>View Detailed Analysis</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </article>
+
+        </div>
+      </section>
+
+      <section class="dashboard-panel" id="passengerPreferenceSection">
+        <div class="panel-header">
+          <div class="panel-title">
+            <i class="fa-solid fa-users-viewfinder panel-title-icon"></i>
+            <h3>Passenger Preference &amp; Market Distribution</h3>
+            <i class="fa-regular fa-circle-question info-tooltip" title="Aggregated market preference based on booking queries, consumer ratings, and search volume"></i>
+          </div>
+          <span class="panel-tag-live">Current Sector: DEL ➔ BOM</span>
+        </div>
+
+        <div class="preference-layout-grid">
+          <div class="preference-highlights-grid">
+            <div class="pref-kpi-card">
+              <div class="pref-kpi-icon blue"><i class="fa-solid fa-award"></i></div>
+              <div class="pref-kpi-content">
+                <span class="pref-kpi-label">Most Preferred Airline</span>
+                <strong class="pref-kpi-val" id="kpiMostPreferred">IndiGo</strong>
+                <span class="pref-kpi-sub">38.4% Traveler Share</span>
+              </div>
+            </div>
+
+            <div class="pref-kpi-card">
+              <div class="pref-kpi-icon yellow"><i class="fa-solid fa-star"></i></div>
+              <div class="pref-kpi-content">
+                <span class="pref-kpi-label">Highest Rated Airline</span>
+                <strong class="pref-kpi-val" id="kpiHighestRated">Akasa Air</strong>
+                <span class="pref-kpi-sub">4.5 / 5.0 Rating Index</span>
+              </div>
+            </div>
+
+            <div class="pref-kpi-card">
+              <div class="pref-kpi-icon green"><i class="fa-solid fa-tags"></i></div>
+              <div class="pref-kpi-content">
+                <span class="pref-kpi-label">Lowest Fare Airline</span>
+                <strong class="pref-kpi-val" id="kpiLowestFare">SpiceJet</strong>
+                <span class="pref-kpi-sub">₹4,100 Avg on Selected Sector</span>
+              </div>
+            </div>
+
+            <div class="pref-kpi-card">
+              <div class="pref-kpi-icon purple"><i class="fa-solid fa-stopwatch"></i></div>
+              <div class="pref-kpi-content">
+                <span class="pref-kpi-label">Best On-Time Performance</span>
+                <strong class="pref-kpi-val" id="kpiBestOTP">IndiGo</strong>
+                <span class="pref-kpi-sub">88.4% Punctuality Score</span>
+              </div>
+            </div>
+
+            <div class="pref-kpi-card">
+              <div class="pref-kpi-icon orange"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+              <div class="pref-kpi-content">
+                <span class="pref-kpi-label">Most Searched Airline</span>
+                <strong class="pref-kpi-val" id="kpiMostSearched">Air India</strong>
+                <span class="pref-kpi-sub">41.2K Sector Query Vol.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="preference-bars-container">
+            <h4 class="pref-bars-heading">Market Share &amp; Booking Preference Ratio</h4>
+            
+            <div class="share-bar-item">
+              <div class="sb-header">
+                <div class="sb-brand">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IndiGo_Airlines_logo.svg" alt="IndiGo logo" class="sb-logo-small" />
+                  <span class="sb-name">IndiGo</span>
+                </div>
+                <strong class="sb-pct">38.4%</strong>
+              </div>
+              <div class="sb-track"><div class="sb-fill igo-fill" style="width: 38.4%;"></div></div>
+            </div>
+
+            <div class="share-bar-item">
+              <div class="sb-header">
+                <div class="sb-brand">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/Air_India_2023.svg" alt="Air India logo" class="sb-logo-small" />
+                  <span class="sb-name">Air India</span>
+                </div>
+                <strong class="sb-pct">24.7%</strong>
+              </div>
+              <div class="sb-track"><div class="sb-fill ai-fill" style="width: 24.7%;"></div></div>
+            </div>
+
+            <div class="share-bar-item">
+              <div class="sb-header">
+                <div class="sb-brand">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/Akasa_Air_Logo.svg" alt="Akasa Air logo" class="sb-logo-small" />
+                  <span class="sb-name">Akasa Air</span>
+                </div>
+                <strong class="sb-pct">15.8%</strong>
+              </div>
+              <div class="sb-track"><div class="sb-fill qp-fill" style="width: 15.8%;"></div></div>
+            </div>
+
+            <div class="share-bar-item">
+              <div class="sb-header">
+                <div class="sb-brand">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/SpiceJet_logo.svg" alt="SpiceJet logo" class="sb-logo-small" />
+                  <span class="sb-name">SpiceJet</span>
+                </div>
+                <strong class="sb-pct">11.2%</strong>
+              </div>
+              <div class="sb-track"><div class="sb-fill sg-fill" style="width: 11.2%;"></div></div>
+            </div>
+
+            <div class="share-bar-item">
+              <div class="sb-header">
+                <div class="sb-brand">
+                  <span class="sb-other-badge">OTH</span>
+                  <span class="sb-name">Other Carriers (AIX / Regional)</span>
+                </div>
+                <strong class="sb-pct">9.9%</strong>
+              </div>
+              <div class="sb-track"><div class="sb-fill other-fill" style="width: 9.9%;"></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-panel" id="comparisonTableSection">
+        <div class="panel-header">
+          <div class="panel-title">
+            <i class="fa-solid fa-table-list panel-title-icon"></i>
+            <h3>Comprehensive Airline Comparison Matrix</h3>
+          </div>
+          <div class="table-tools">
+            <span class="table-records-counter">Displaying 5 Monitored Commercial Carriers</span>
+          </div>
+        </div>
+
+        <div class="table-responsive-container">
+          <table class="data-table" id="airlineComparisonMatrix">
+            <thead>
+              <tr>
+                <th>Airline</th>
+                <th>Brand Logo</th>
+                <th>Avg Fare</th>
+                <th>Lowest Fare</th>
+                <th>Highest Fare</th>
+                <th>User Rating</th>
+                <th>On-Time %</th>
+                <th>Flights Today</th>
+                <th>Availability</th>
+                <th>Preference</th>
+                <th>Price Trend</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-row-clickable" data-airline="Air India" id="rowAirIndia">
+                <td>
+                  <div class="tbl-airline-name">
+                    <strong>Air India</strong>
+                    <small>FSC</small>
+                  </div>
+                </td>
+                <td>
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/Air_India_2023.svg" alt="Air India logo" class="tbl-logo" />
+                </td>
+                <td><strong class="fare-highlight">₹5,980</strong></td>
+                <td>₹4,210</td>
+                <td>₹9,450</td>
+                <td>
+                  <div class="rating-cell">
+                    <i class="fa-solid fa-star star-filled"></i>
+                    <strong>4.2</strong>
+                  </div>
+                </td>
+                <td><strong class="otp-good">82.6%</strong></td>
+                <td><strong>24</strong></td>
+                <td><span class="badge-status good">Good</span></td>
+                <td><strong>24.7%</strong></td>
+                <td><span class="trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +4.8%</span></td>
+                <td class="text-center">
+                  <button type="button" class="btn-table-action" data-airline-trigger="Air India">
+                    <span>View Analysis</span>
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="table-row-clickable" data-airline="IndiGo" id="rowIndiGo">
+                <td>
+                  <div class="tbl-airline-name">
+                    <strong>IndiGo</strong>
+                    <small>LCC</small>
+                  </div>
+                </td>
+                <td>
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IndiGo_Airlines_logo.svg" alt="IndiGo logo" class="tbl-logo" />
+                </td>
+                <td><strong class="fare-highlight">₹5,240</strong></td>
+                <td>₹3,890</td>
+                <td>₹8,120</td>
+                <td>
+                  <div class="rating-cell">
+                    <i class="fa-solid fa-star star-filled"></i>
+                    <strong>4.4</strong>
+                  </div>
+                </td>
+                <td><strong class="otp-high">88.4%</strong></td>
+                <td><strong>42</strong></td>
+                <td><span class="badge-status high">High</span></td>
+                <td><strong>38.4%</strong></td>
+                <td><span class="trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +2.1%</span></td>
+                <td class="text-center">
+                  <button type="button" class="btn-table-action" data-airline-trigger="IndiGo">
+                    <span>View Analysis</span>
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="table-row-clickable" data-airline="Akasa Air" id="rowAkasaAir">
+                <td>
+                  <div class="tbl-airline-name">
+                    <strong>Akasa Air</strong>
+                    <small>LCC</small>
+                  </div>
+                </td>
+                <td>
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/Akasa_Air_Logo.svg" alt="Akasa Air logo" class="tbl-logo" />
+                </td>
+                <td><strong class="fare-highlight">₹4,620</strong></td>
+                <td>₹3,450</td>
+                <td>₹7,200</td>
+                <td>
+                  <div class="rating-cell">
+                    <i class="fa-solid fa-star star-filled"></i>
+                    <strong>4.5</strong>
+                  </div>
+                </td>
+                <td><strong class="otp-good">86.2%</strong></td>
+                <td><strong>16</strong></td>
+                <td><span class="badge-status moderate">Moderate</span></td>
+                <td><strong>15.8%</strong></td>
+                <td><span class="trend-down"><i class="fa-solid fa-arrow-trend-down"></i> -1.4%</span></td>
+                <td class="text-center">
+                  <button type="button" class="btn-table-action" data-airline-trigger="Akasa Air">
+                    <span>View Analysis</span>
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="table-row-clickable" data-airline="SpiceJet" id="rowSpiceJet">
+                <td>
+                  <div class="tbl-airline-name">
+                    <strong>SpiceJet</strong>
+                    <small>LCC</small>
+                  </div>
+                </td>
+                <td>
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/SpiceJet_logo.svg" alt="SpiceJet logo" class="tbl-logo" />
+                </td>
+                <td><strong class="fare-highlight">₹4,100</strong></td>
+                <td>₹3,120</td>
+                <td>₹6,800</td>
+                <td>
+                  <div class="rating-cell">
+                    <i class="fa-solid fa-star star-filled"></i>
+                    <strong>3.8</strong>
+                  </div>
+                </td>
+                <td><strong class="otp-moderate">71.8%</strong></td>
+                <td><strong>12</strong></td>
+                <td><span class="badge-status moderate">Moderate</span></td>
+                <td><strong>11.2%</strong></td>
+                <td><span class="trend-down"><i class="fa-solid fa-arrow-trend-down"></i> -3.2%</span></td>
+                <td class="text-center">
+                  <button type="button" class="btn-table-action" data-airline-trigger="SpiceJet">
+                    <span>View Analysis</span>
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="table-row-clickable" data-airline="Air India Express" id="rowAIX">
+                <td>
+                  <div class="tbl-airline-name">
+                    <strong>Air India Express</strong>
+                    <small>LCC</small>
+                  </div>
+                </td>
+                <td>
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Air_India_Express_2023_Logo.svg" alt="Air India Express logo" class="tbl-logo" />
+                </td>
+                <td><strong class="fare-highlight">₹4,300</strong></td>
+                <td>₹3,290</td>
+                <td>₹6,950</td>
+                <td>
+                  <div class="rating-cell">
+                    <i class="fa-solid fa-star star-filled"></i>
+                    <strong>4.1</strong>
+                  </div>
+                </td>
+                <td><strong class="otp-good">81.4%</strong></td>
+                <td><strong>14</strong></td>
+                <td><span class="badge-status good">Good</span></td>
+                <td><strong>9.9%</strong></td>
+                <td><span class="trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +0.8%</span></td>
+                <td class="text-center">
+                  <button type="button" class="btn-table-action" data-airline-trigger="Air India Express">
+                    <span>View Analysis</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 7. THREE-COLUMN ANALYTICAL SECTION (FARES, RATINGS, OPS) -->
+      <section class="analytics-row-3" id="analyticalDeepDiveSection">
+        
+        <!-- 7.1 Fare Comparison Chart Panel -->
+        <div class="dashboard-panel" id="panelFareComparison">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="fa-solid fa-chart-column panel-title-icon"></i>
+              <h3>Average Fare Comparison</h3>
+            </div>
+            <span class="badge-panel-metric">INR (₹)</span>
+          </div>
+          <div class="chart-container-wrap">
+            <canvas id="fareComparisonChart"></canvas>
+          </div>
+          <div class="chart-footer-legend">
+            <span class="legend-item"><span class="legend-color ai"></span> Air India</span>
+            <span class="legend-item"><span class="legend-color igo"></span> IndiGo</span>
+            <span class="legend-item"><span class="legend-color qp"></span> Akasa</span>
+            <span class="legend-item"><span class="legend-color sg"></span> SpiceJet</span>
+            <span class="legend-item"><span class="legend-color aix"></span> AIX</span>
+          </div>
+        </div>
+
+        <!-- 7.2 Passenger Rating Analysis Panel -->
+        <div class="dashboard-panel" id="panelRatingAnalysis">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="fa-solid fa-star-half-stroke panel-title-icon"></i>
+              <h3>Passenger Rating Analysis</h3>
+            </div>
+            <span class="badge-panel-metric">Scale 1.0 – 5.0</span>
+          </div>
+
+          <div class="rating-categories-list" id="ratingCategoriesList">
+            <div class="rating-cat-row">
+              <div class="rc-label-row">
+                <span class="rc-name">Overall Experience</span>
+                <strong class="rc-score">4.4 <small>/ 5.0</small></strong>
+              </div>
+              <div class="rc-bar-track"><div class="rc-bar-fill" style="width: 88%;"></div></div>
+            </div>
+
+            <div class="rating-cat-row">
+              <div class="rc-label-row">
+                <span class="rc-name">Punctuality</span>
+                <strong class="rc-score">4.2 <small>/ 5.0</small></strong>
+              </div>
+              <div class="rc-bar-track"><div class="rc-bar-fill" style="width: 84%;"></div></div>
+            </div>
+
+            <div class="rating-cat-row">
+              <div class="rc-label-row">
+                <span class="rc-name">Cabin Service</span>
+                <strong class="rc-score">4.1 <small>/ 5.0</small></strong>
+              </div>
+              <div class="rc-bar-track"><div class="rc-bar-fill" style="width: 82%;"></div></div>
+            </div>
+
+            <div class="rating-cat-row">
+              <div class="rc-label-row">
+                <span class="rc-name">Staff Behaviour</span>
+                <strong class="rc-score">4.3 <small>/ 5.0</small></strong>
+              </div>
+              <div class="rc-bar-track"><div class="rc-bar-fill" style="width: 86%;"></div></div>
+            </div>
+
+            <div class="rating-cat-row">
+              <div class="rc-label-row">
+                <span class="rc-name">Value for Money</span>
+                <strong class="rc-score">4.5 <small>/ 5.0</small></strong>
+              </div>
+              <div class="rc-bar-track"><div class="rc-bar-fill" style="width: 90%;"></div></div>
+            </div>
+
+            <div class="rating-cat-row">
+              <div class="rc-label-row">
+                <span class="rc-name">Baggage Handling</span>
+                <strong class="rc-score">4.0 <small>/ 5.0</small></strong>
+              </div>
+              <div class="rc-bar-track"><div class="rc-bar-fill" style="width: 80%;"></div></div>
+            </div>
+
+            <div class="rating-cat-row">
+              <div class="rc-label-row">
+                <span class="rc-name">Booking Experience</span>
+                <strong class="rc-score">4.6 <small>/ 5.0</small></strong>
+              </div>
+              <div class="rc-bar-track"><div class="rc-bar-fill" style="width: 92%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7.3 Operational Performance Panel -->
+        <div class="dashboard-panel" id="panelOperationalPerformance">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="fa-solid fa-gauge-high panel-title-icon"></i>
+              <h3>Operational Performance</h3>
+            </div>
+            <span class="badge-panel-metric">Sector Averages</span>
+          </div>
+
+          <div class="ops-indicators-grid" id="opsIndicatorsGrid">
+            <div class="ops-stat-tile">
+              <div class="ops-stat-head">
+                <span class="ops-lbl">On-Time Performance</span>
+                <i class="fa-solid fa-plane-circle-check icon-green"></i>
+              </div>
+              <strong class="ops-val">84.1%</strong>
+              <span class="ops-sub green">▲ +2.4% vs last week</span>
+            </div>
+
+            <div class="ops-stat-tile">
+              <div class="ops-stat-head">
+                <span class="ops-lbl">Cancellation Rate</span>
+                <i class="fa-solid fa-plane-circle-xmark icon-red"></i>
+              </div>
+              <strong class="ops-val">1.2%</strong>
+              <span class="ops-sub green">▼ 0.4% improvement</span>
+            </div>
+
+            <div class="ops-stat-tile">
+              <div class="ops-stat-head">
+                <span class="ops-lbl">Average Delay Duration</span>
+                <i class="fa-solid fa-clock-rotate-left icon-orange"></i>
+              </div>
+              <strong class="ops-val">18.4 <small>mins</small></strong>
+              <span class="ops-sub">On delayed departures</span>
+            </div>
+
+            <div class="ops-stat-tile">
+              <div class="ops-stat-head">
+                <span class="ops-lbl">Flight Completion Rate</span>
+                <i class="fa-solid fa-check-double icon-blue"></i>
+              </div>
+              <strong class="ops-val">98.8%</strong>
+              <span class="ops-sub">Across 108 sector flights</span>
+            </div>
+
+            <div class="ops-stat-tile full-width">
+              <div class="ops-stat-head">
+                <span class="ops-lbl">Aggregate Seat Availability (Load Factor Estimate)</span>
+                <strong class="ops-val-inline">88.6% Load</strong>
+              </div>
+              <div class="ops-load-track">
+                <div class="ops-load-fill" style="width: 88.6%;"></div>
+              </div>
+              <div class="ops-load-legend">
+                <span>Available Seats: 11.4%</span>
+                <span>Occupied: 88.6%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- 8. PASSENGER ISSUES / FEEDBACK SECTION -->
+      <section class="dashboard-panel" id="passengerFeedbackSection">
+        <div class="panel-header">
+          <div class="panel-title">
+            <i class="fa-solid fa-bullhorn panel-title-icon"></i>
+            <h3>Passenger Feedback &amp; Reported Issues</h3>
+            <i class="fa-regular fa-circle-question info-tooltip" title="Public grievances, consumer feedback tracking, and grievance redressal telemetry"></i>
+          </div>
+          <button type="button" class="btn btn-danger-outline" id="btnOpenReportIssueModal">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Report an Issue</span>
+          </button>
+        </div>
+
+        <div class="feedback-layout-grid">
+          <div class="feedback-status-overview">
+            <div class="feedback-status-card">
+              <span class="fsc-label">Total Reported Issues</span>
+              <strong class="fsc-val" id="countReportedIssues">1,428</strong>
+              <span class="fsc-sub">Past 30 Days</span>
+            </div>
+            <div class="feedback-status-card green">
+              <span class="fsc-label">Resolved by Airlines</span>
+              <strong class="fsc-val green" id="countResolvedIssues">1,184</strong>
+              <span class="fsc-sub">82.9% Resolution Rate</span>
+            </div>
+            <div class="feedback-status-card orange">
+              <span class="fsc-label">Under Active Review</span>
+              <strong class="fsc-val orange" id="countUnderReviewIssues">182</strong>
+              <span class="fsc-sub">Average SLA: 48 Hours</span>
+            </div>
+            <div class="feedback-status-card red">
+              <span class="fsc-label">Escalated to DGCA / MoCA</span>
+              <strong class="fsc-val red" id="countEscalatedIssues">62</strong>
+              <span class="fsc-sub">Regulatory Follow-up</span>
+            </div>
+          </div>
+
+          <div class="feedback-categories-card">
+            <h4 class="fbc-heading">Grievance Distribution by Category</h4>
+            
+            <div class="fbc-row">
+              <div class="fbc-labels">
+                <span class="fbc-name"><i class="fa-solid fa-clock"></i> Flight Delay</span>
+                <strong class="fbc-pct">34.2% (488)</strong>
+              </div>
+              <div class="fbc-bar-track"><div class="fbc-bar-fill orange" style="width: 34.2%;"></div></div>
+            </div>
+
+            <div class="fbc-row">
+              <div class="fbc-labels">
+                <span class="fbc-name"><i class="fa-solid fa-ban"></i> Cancellation &amp; Rescheduling</span>
+                <strong class="fbc-pct">22.4% (320)</strong>
+              </div>
+              <div class="fbc-bar-track"><div class="fbc-bar-fill red" style="width: 22.4%;"></div></div>
+            </div>
+
+            <div class="fbc-row">
+              <div class="fbc-labels">
+                <span class="fbc-name"><i class="fa-solid fa-receipt"></i> Refund &amp; Price Disputes</span>
+                <strong class="fbc-pct">18.6% (265)</strong>
+              </div>
+              <div class="fbc-bar-track"><div class="fbc-bar-fill purple" style="width: 18.6%;"></div></div>
+            </div>
+
+            <div class="fbc-row">
+              <div class="fbc-labels">
+                <span class="fbc-name"><i class="fa-solid fa-suitcase"></i> Baggage Mishandling</span>
+                <strong class="fbc-pct">11.8% (168)</strong>
+              </div>
+              <div class="fbc-bar-track"><div class="fbc-bar-fill blue" style="width: 11.8%;"></div></div>
+            </div>
+
+            <div class="fbc-row">
+              <div class="fbc-labels">
+                <span class="fbc-name"><i class="fa-solid fa-headset"></i> Customer Service / Staff</span>
+                <strong class="fbc-pct">8.2% (117)</strong>
+              </div>
+              <div class="fbc-bar-track"><div class="fbc-bar-fill yellow" style="width: 8.2%;"></div></div>
+            </div>
+
+            <div class="fbc-row">
+              <div class="fbc-labels">
+                <span class="fbc-name"><i class="fa-solid fa-ticket"></i> Booking &amp; Web Portal Issues</span>
+                <strong class="fbc-pct">4.8% (70)</strong>
+              </div>
+              <div class="fbc-bar-track"><div class="fbc-bar-fill slate" style="width: 4.8%;"></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="app-footer" id="appFooter">
+    <div class="footer-left">
+      <span>&copy; 2026 UDAAN - Real-time Airfare Intelligence Portal. All Rights Reserved.</span>
+    </div>
+    <div class="footer-links">
+      <a href="about.html">Privacy Policy</a>
+      <span class="footer-sep">|</span>
+      <a href="about.html">Terms of Use</a>
+      <span class="footer-sep">|</span>
+      <a href="about.html">Disclaimer</a>
+      <span class="footer-sep">|</span>
+      <a href="about.html">Contact Us</a>
+    </div>
+  </footer>
+
+  <!-- ================= MODAL: AIRLINE DETAIL INSPECTION ================= -->
+  <div class="modal-overlay hidden" id="airlineDetailModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="dialog" aria-labelledby="modalAirlineTitle">
+      <div class="modal-header">
+        <div class="modal-airline-brand">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/Air_India_2023.svg" alt="Airline logo" class="modal-logo" id="modalAirlineLogo" />
+          <div>
+            <h3 class="modal-title" id="modalAirlineTitle">Air India</h3>
+            <span class="modal-subtitle" id="modalAirlineType">Full Service Carrier (FSC) &bull; Monitored Fleet Carrier</span>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" id="modalCloseBtn" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-quick-stats">
+          <div class="mq-stat">
+            <span class="mq-lbl">Average Fare</span>
+            <strong class="mq-val" id="modalAvgFare">₹5,980</strong>
+          </div>
+          <div class="mq-stat">
+            <span class="mq-lbl">Consumer Rating</span>
+            <strong class="mq-val" id="modalRating"><i class="fa-solid fa-star star-filled"></i> 4.2 / 5</strong>
+          </div>
+          <div class="mq-stat">
+            <span class="mq-lbl">On-Time Performance</span>
+            <strong class="mq-val green" id="modalOTP">82.6%</strong>
+          </div>
+          <div class="mq-stat">
+            <span class="mq-lbl">Scheduled Flights Today</span>
+            <strong class="mq-val" id="modalFlightsToday">24 Flights</strong>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <h4 class="modal-sec-title"><i class="fa-solid fa-chart-line"></i> Fare Volatility &amp; Trend Insights</h4>
+          <p class="modal-text" id="modalFareTrendText">
+            Air India exhibits moderate airfare volatility on primary trunk routes with an average lead-time discount of 18% when booked at least 15 days prior to departure. Spot pricing within 24 hours reflects higher peak loads.
+          </p>
+        </div>
+
+        <div class="modal-section">
+          <h4 class="modal-sec-title"><i class="fa-solid fa-star-half-stroke"></i> Passenger Satisfaction Breakdown</h4>
+          <div class="modal-rating-grid" id="modalRatingGrid">
+            <div class="mrg-item"><span>Cabin Comfort:</span> <strong>4.3/5</strong></div>
+            <div class="mrg-item"><span>In-Flight Service:</span> <strong>4.1/5</strong></div>
+            <div class="mrg-item"><span>Punctuality:</span> <strong>4.2/5</strong></div>
+            <div class="mrg-item"><span>Baggage Experience:</span> <strong>4.0/5</strong></div>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <h4 class="modal-sec-title"><i class="fa-solid fa-shield-halved"></i> Operational &amp; Safety Compliance</h4>
+          <p class="modal-text" id="modalOpsText">
+            Monitored flight completion rate is 99.1% with cancellation index at 0.9%. Ground turnaround averages 42 minutes across category A metro airports.
+          </p>
+        </div>
+
+        <div class="modal-section">
+          <h4 class="modal-sec-title"><i class="fa-solid fa-clipboard-check"></i> Consumer Grievance Resolution Telemetry</h4>
+          <div class="modal-grievance-box">
+            <span>Resolution SLA: <strong>92.4% Resolved &lt; 72 Hours</strong></span>
+            <span>Escalation Ratio: <strong>1.4% of total complaints</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <a href="https://www.airindia.com/in/en/contact-us.html" target="_blank" rel="noopener noreferrer" class="btn btn-primary" id="modalContactAirlineBtn">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          <span>Contact Official Airline Support</span>
+        </a>
+        <button type="button" class="btn btn-danger-outline" id="modalReportIssueBtn">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Report an Issue</span>
+        </button>
+        <button type="button" class="btn btn-secondary" id="modalDismissBtn">
+          <span>Close</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: REPORT AN ISSUE FORM ================= -->
+  <div class="modal-overlay hidden" id="reportIssueModal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-labelledby="reportModalTitle">
+      <div class="modal-header">
+        <div class="modal-title-with-icon">
+          <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+          <div>
+            <h3 class="modal-title" id="reportModalTitle">Report an Aviation Issue</h3>
+            <span class="modal-subtitle">Direct intake for consumer airfare &amp; operational grievances</span>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" id="reportModalCloseBtn" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="alert-box success-alert hidden" id="reportSuccessAlert">
+          <i class="fa-solid fa-circle-check alert-icon"></i>
+          <div>
+            <strong class="alert-title">Issue Logged Successfully</strong>
+            <p class="alert-desc">Your grievance has been recorded in the UDAAN repository. Grievance Reference: <strong id="generatedRefCode">UDAAN-2026-8941</strong>.</p>
+          </div>
+        </div>
+
+        <form class="report-form" id="aviationIssueForm">
+          <div class="form-group">
+            <label class="form-label" for="reportAirlineSelect">Select Airline *</label>
+            <select class="form-select" id="reportAirlineSelect" name="airline" required>
+              <option value="" disabled selected>Choose Carrier...</option>
+              <option value="Air India">Air India</option>
+              <option value="IndiGo">IndiGo</option>
+              <option value="Akasa Air">Akasa Air</option>
+              <option value="SpiceJet">SpiceJet</option>
+              <option value="Air India Express">Air India Express</option>
+              <option value="Other">Other Domestic Carrier</option>
+            </select>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="reportIssueType">Issue Type *</label>
+              <select class="form-select" id="reportIssueType" name="issueType" required>
+                <option value="" disabled selected>Select Category...</option>
+                <option value="Flight Delay">Flight Delay</option>
+                <option value="Cancellation">Cancellation / Rescheduling</option>
+                <option value="Refund">Refund / Unfair Price Surge</option>
+                <option value="Baggage">Baggage Mishandling / Loss</option>
+                <option value="Customer Service">Customer Service / Staff</option>
+                <option value="Booking Issue">Booking &amp; Ticketing Discrepancy</option>
+                <option value="Other">Other Operational Grievance</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reportFlightNumber">Flight Number</label>
+              <input type="text" class="form-input" id="reportFlightNumber" name="flightNumber" placeholder="e.g. AI-805, 6E-204" />
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="reportTravelDate">Travel Date *</label>
+              <input type="date" class="form-input" id="reportTravelDate" name="travelDate" required value="2026-08-31" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reportPNR">PNR / Booking Reference <small class="text-muted">(Optional)</small></label>
+              <input type="text" class="form-input" id="reportPNR" name="pnr" placeholder="6-character alphanumeric PNR" maxlength="10" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reportContactEmail">Contact Email Address *</label>
+            <input type="email" class="form-input" id="reportContactEmail" name="email" placeholder="official.contact@domain.gov.in" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reportDescription">Grievance Description *</label>
+            <textarea class="form-textarea" id="reportDescription" name="description" rows="4" placeholder="Provide factual details regarding the flight schedule, airfare discrepancy, or airline response..." required></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block" id="btnSubmitIssue">
+              <i class="fa-solid fa-paper-plane"></i>
+              <span>Submit Issue to Repository</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= FLOATING UDAAN ASSISTANT CHATBOT ================= -->
+  <div class="udaan-assistant-widget" id="udaanAssistantWidget">
+    <button type="button" class="assistant-trigger-btn" id="assistantToggleBtn" aria-label="Open UDAAN Assistant">
+      <i class="fa-solid fa-robot assistant-icon"></i>
+      <span class="assistant-btn-label">UDAAN Assistant</span>
+      <span class="assistant-online-dot"></span>
+    </button>
+
+    <div class="assistant-chat-window hidden" id="assistantChatWindow">
+      <div class="chat-header">
+        <div class="chat-header-brand">
+          <div class="chat-avatar">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div>
+            <h4 class="chat-title">UDAAN Intelligence Assistant</h4>
+            <div class="chat-status-indicator">
+              <span class="status-dot-green"></span>
+              <span>Online &bull; Sector Analytics Bot</span>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="chat-close-btn" id="chatCloseBtn" aria-label="Close Chat">&times;</button>
+      </div>
+
+      <div class="chat-messages-area" id="chatMessagesArea">
+        <div class="chat-message bot-message">
+          <p>Greetings! I am the UDAAN Aviation Intelligence Assistant. Ask me anything regarding airline price trends, on-time punctuality scores, or passenger preferences across domestic routes.</p>
+          <span class="message-time">08:30 AM</span>
+        </div>
+      </div>
+
+      <div class="chat-quick-suggestions" id="chatQuickSuggestions">
+        <button type="button" class="suggestion-chip" data-query="Which airline is cheapest?">Which airline is cheapest?</button>
+        <button type="button" class="suggestion-chip" data-query="Which airline has the best rating?">Which airline has the best rating?</button>
+        <button type="button" class="suggestion-chip" data-query="Which airline is most preferred?">Which airline is most preferred?</button>
+        <button type="button" class="suggestion-chip" data-query="Which airline has the best on-time performance?">Which airline has the best on-time performance?</button>
+      </div>
+
+      <form class="chat-input-area" id="chatInputForm">
+        <input type="text" class="chat-input" id="chatInputField" placeholder="Ask about airlines, fares, punctuality..." autocomplete="off" required />
+        <button type="submit" class="chat-send-btn" id="chatSendBtn" aria-label="Send query">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= EMBEDDED JAVASCRIPT ENGINE ================= -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // 1. Live Time & Dynamic Update System
+      function syncPortalClock() {
+        const now = new Date();
+        const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+        const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+        const formattedDate = now.toLocaleDateString('en-GB', dateOptions);
+        const formattedTime = now.toLocaleTimeString('en-GB', timeOptions).toUpperCase();
+
+        const timestampStr = `${formattedDate}, ${formattedTime}`;
+        const headerStamp = document.getElementById('pageHeaderTimestamp');
+        const sidebarStamp = document.getElementById('sidebarLastUpdated');
+
+        if (headerStamp) headerStamp.textContent = timestampStr;
+        if (sidebarStamp) sidebarStamp.textContent = timestampStr;
+      }
+      syncPortalClock();
+      setInterval(syncPortalClock, 1000);
+
+      // 2. Countdown Timer
+      let countdownSeconds = 8077;
+      setInterval(() => {
+        if (countdownSeconds > 0) countdownSeconds--;
+        const hrs = String(Math.floor(countdownSeconds / 3600)).padStart(2, '0');
+        const mins = String(Math.floor((countdownSeconds % 3600) / 60)).padStart(2, '0');
+        const secs = String(countdownSeconds % 60).padStart(2, '0');
+        const countEl = document.getElementById('sidebarCountdown');
+        if (countEl) countEl.textContent = `${hrs} : ${mins} : ${secs}`;
+      }, 1000);
+
+      // 3. Simulated Quote Processing Telemetry
+      let baseQuotes = 125340;
+      setInterval(() => {
+        baseQuotes += Math.floor(Math.random() * 5);
+        const quotesEl = document.getElementById('metaPriceQuotes');
+        if (quotesEl) quotesEl.textContent = `${baseQuotes.toLocaleString('en-IN')} Quotes`;
+      }, 3500);
+
+      // 4. Functional Chart.js: Fare Comparison
+      const fareCtx = document.getElementById('fareComparisonChart');
+      if (fareCtx) {
+        new Chart(fareCtx.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: ['Air India', 'IndiGo', 'Akasa Air', 'SpiceJet', 'AI Express'],
+            datasets: [{
+              label: 'Average Fare (INR)',
+              data: [5980, 5240, 4620, 4100, 4300],
+              backgroundColor: ['#dc2626', '#1d4ed8', '#ea580c', '#ef4444', '#db2777'],
+              borderRadius: 4,
+              barThickness: 24
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#0f172a',
+                callbacks: {
+                  label: (ctx) => ` Average Fare: ₹${ctx.parsed.y.toLocaleString('en-IN')}`
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 8000,
+                ticks: {
+                  callback: (val) => val === 0 ? '0' : '₹' + (val / 1000) + 'K',
+                  color: '#64748b',
+                  font: { size: 10.5 }
+                },
+                grid: { color: '#f1f5f9' }
+              },
+              x: {
+                ticks: { color: '#64748b', font: { size: 10.5, weight: '600' } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      // 5. Airline Modal Data Repository & Modal Controllers
+      const airlineDataset = {
+        'Air India': {
+          type: 'Full Service Carrier (FSC) • Star Alliance Member',
+          logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Air_India_2023.svg',
+          avgFare: '₹5,980',
+          rating: '4.2 / 5',
+          otp: '82.6%',
+          flights: '24 Flights',
+          supportUrl: 'https://www.airindia.com/in/en/contact-us.html',
+          trendText: 'Air India exhibits moderate airfare volatility with stable baseline pricing. Corporate heavy demand on metro routes maintains premium economy yields.',
+          ratings: { comfort: '4.3/5', service: '4.1/5', punctuality: '4.2/5', baggage: '4.0/5' },
+          opsText: 'Monitored flight completion rate is 99.1% with cancellation index at 0.9%. Widebody turnaround averages 46 minutes.',
+          sla: '92.4% Resolved < 72 Hours'
+        },
+        'IndiGo': {
+          type: 'Low Cost Carrier (LCC) • High Density Operator',
+          logo: 'https://upload.wikimedia.org/wikipedia/commons/6/69/IndiGo_Airlines_logo.svg',
+          avgFare: '₹5,240',
+          rating: '4.4 / 5',
+          otp: '88.4%',
+          flights: '42 Flights',
+          supportUrl: 'https://www.goindigo.in/contact-us.html',
+          trendText: 'High flight frequency provides pricing flexibility. Dynamic spot price adjustments occur within 48 hours of scheduled departure.',
+          ratings: { comfort: '4.0/5', service: '4.2/5', punctuality: '4.6/5', baggage: '4.4/5' },
+          opsText: 'Industry-leading punctuality score with a 99.4% completion rate across high-frequency trunk sectors.',
+          sla: '95.1% Resolved < 48 Hours'
+        },
+        'Akasa Air': {
+          type: 'Low Cost Carrier (LCC) • Next-Gen Fleet',
+          logo: 'https://upload.wikimedia.org/wikipedia/commons/3/36/Akasa_Air_Logo.svg',
+          avgFare: '₹4,620',
+          rating: '4.5 / 5',
+          otp: '86.2%',
+          flights: '16 Flights',
+          supportUrl: 'https://www.akasaair.com/contact-us',
+          trendText: 'Competitive entry pricing across high-demand secondary nodes with high customer retention rates on new aircraft deliveries.',
+          ratings: { comfort: '4.6/5', service: '4.6/5', punctuality: '4.4/5', baggage: '4.5/5' },
+          opsText: 'Modern Boeing 737 MAX fleet yields high operational reliability with near-zero technical cancellations.',
+          sla: '96.2% Resolved < 24 Hours'
+        },
+        'SpiceJet': {
+          type: 'Low Cost Carrier (LCC) • Point-to-Point Carrier',
+          logo: 'https://upload.wikimedia.org/wikipedia/commons/0/07/SpiceJet_logo.svg',
+          avgFare: '₹4,100',
+          rating: '3.8 / 5',
+          otp: '71.8%',
+          flights: '12 Flights',
+          supportUrl: 'https://www.spicejet.com/contactus',
+          trendText: 'Lowest baseline entry fares observed across key morning departures, though schedule changes present occasional variance.',
+          ratings: { comfort: '3.7/5', service: '3.8/5', punctuality: '3.6/5', baggage: '3.9/5' },
+          opsText: 'Completion rate averages 96.8% with ongoing fleet optimization and schedule stabilization initiatives.',
+          sla: '81.4% Resolved < 96 Hours'
+        },
+        'Air India Express': {
+          type: 'Low Cost Carrier (LCC) • Regional & Metro Connector',
+          logo: 'https://upload.wikimedia.org/wikipedia/commons/e/eb/Air_India_Express_2023_Logo.svg',
+          avgFare: '₹4,300',
+          rating: '4.1 / 5',
+          otp: '81.4%',
+          flights: '14 Flights',
+          supportUrl: 'https://www.airindiaexpress.com/support/contact-us',
+          trendText: 'Affordable tier-2 connector with streamlined baggage add-on pricing structures and steady corporate uptake.',
+          ratings: { comfort: '4.0/5', service: '4.0/5', punctuality: '4.1/5', baggage: '4.2/5' },
+          opsText: 'Operational integration demonstrates increasing fleet utilization and improved turnaround schedules.',
+          sla: '89.6% Resolved < 72 Hours'
+        }
+      };
+
+      const detailModal = document.getElementById('airlineDetailModal');
+      const openDetailBtns = document.querySelectorAll('[data-airline-trigger]');
+      const closeDetailBtn = document.getElementById('modalCloseBtn');
+      const dismissDetailBtn = document.getElementById('modalDismissBtn');
+
+      function openAirlineModal(airlineName) {
+        const data = airlineDataset[airlineName] || airlineDataset['Air India'];
+        document.getElementById('modalAirlineTitle').textContent = airlineName;
+        document.getElementById('modalAirlineType').textContent = data.type;
+        document.getElementById('modalAirlineLogo').src = data.logo;
+        document.getElementById('modalAvgFare').textContent = data.avgFare;
+        document.getElementById('modalRating').innerHTML = `<i class="fa-solid fa-star star-filled"></i> ${data.rating}`;
+        document.getElementById('modalOTP').textContent = data.otp;
+        document.getElementById('modalFlightsToday').textContent = data.flights;
+        document.getElementById('modalContactAirlineBtn').href = data.supportUrl;
+        document.getElementById('modalFareTrendText').textContent = data.trendText;
+        document.getElementById('modalOpsText').textContent = data.opsText;
+
+        const ratingContainer = document.getElementById('modalRatingGrid');
+        if (ratingContainer) {
+          ratingContainer.innerHTML = `
+            <div class="mrg-item"><span>Cabin Comfort:</span> <strong>${data.ratings.comfort}</strong></div>
+            <div class="mrg-item"><span>In-Flight Service:</span> <strong>${data.ratings.service}</strong></div>
+            <div class="mrg-item"><span>Punctuality:</span> <strong>${data.ratings.punctuality}</strong></div>
+            <div class="mrg-item"><span>Baggage Experience:</span> <strong>${data.ratings.baggage}</strong></div>
+          `;
+        }
+
+        if (detailModal) {
+          detailModal.classList.remove('hidden');
+          detailModal.setAttribute('aria-hidden', 'false');
+        }
+      }
+
+      openDetailBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const targetAirline = btn.getAttribute('data-airline-trigger');
+          openAirlineModal(targetAirline);
+        });
+      });
+
+      document.querySelectorAll('.table-row-clickable').forEach(row => {
+        row.addEventListener('click', () => {
+          const airline = row.getAttribute('data-airline');
+          if (airline) openAirlineModal(airline);
+        });
+      });
+
+      function closeDetailModal() {
+        if (detailModal) {
+          detailModal.classList.add('hidden');
+          detailModal.setAttribute('aria-hidden', 'true');
+        }
+      }
+
+      if (closeDetailBtn) closeDetailBtn.addEventListener('click', closeDetailModal);
+      if (dismissDetailBtn) dismissDetailBtn.addEventListener('click', closeDetailModal);
+      if (detailModal) {
+        detailModal.addEventListener('click', (e) => {
+          if (e.target === detailModal) closeDetailModal();
+        });
+      }
+
+      // 6. Report an Issue Modal & Form Handler
+      const reportModal = document.getElementById('reportIssueModal');
+      const openReportBtn = document.getElementById('btnOpenReportIssueModal');
+      const modalReportIssueBtn = document.getElementById('modalReportIssueBtn');
+      const closeReportBtn = document.getElementById('reportModalCloseBtn');
+      const issueForm = document.getElementById('aviationIssueForm');
+      const successAlert = document.getElementById('reportSuccessAlert');
+
+      function openReportModal(preselectedAirline = '') {
+        closeDetailModal();
+        if (preselectedAirline) {
+          const select = document.getElementById('reportAirlineSelect');
+          if (select) select.value = preselectedAirline;
+        }
+        if (reportModal) {
+          reportModal.classList.remove('hidden');
+          reportModal.setAttribute('aria-hidden', 'false');
+        }
+      }
+
+      if (openReportBtn) {
+        openReportBtn.addEventListener('click', () => openReportModal());
+      }
+      if (modalReportIssueBtn) {
+        modalReportIssueBtn.addEventListener('click', () => {
+          const currentAirline = document.getElementById('modalAirlineTitle').textContent;
+          openReportModal(currentAirline);
+        });
+      }
+
+      function closeReportModal() {
+        if (reportModal) {
+          reportModal.classList.add('hidden');
+          reportModal.setAttribute('aria-hidden', 'true');
+        }
+      }
+
+      if (closeReportBtn) closeReportBtn.addEventListener('click', closeReportModal);
+      if (reportModal) {
+        reportModal.addEventListener('click', (e) => {
+          if (e.target === reportModal) closeReportModal();
+        });
+      }
+
+      if (issueForm) {
+        issueForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const randomRef = 'UDAAN-2026-' + Math.floor(1000 + Math.random() * 9000);
+          const refCodeEl = document.getElementById('generatedRefCode');
+          if (refCodeEl) refCodeEl.textContent = randomRef;
+          if (successAlert) successAlert.classList.remove('hidden');
+          issueForm.reset();
+        });
+      }
+
+      // 7. Interactive Filter Form Feedback
+      const filterForm = document.getElementById('airlineFilterForm');
+      if (filterForm) {
+        filterForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const orig = document.getElementById('filterOrigin').value;
+          const dest = document.getElementById('filterDestination').value;
+          const tag = document.querySelector('.panel-tag-live');
+          if (tag) tag.textContent = `Current Sector: ${orig} ➔ ${dest}`;
+        });
+      }
+
+      // 8. UDAAN Assistant Chatbot Controller
+      const assistantWidget = document.getElementById('assistantChatWindow');
+      const assistantToggleBtn = document.getElementById('assistantToggleBtn');
+      const assistantCloseBtn = document.getElementById('chatCloseBtn');
+      const chatForm = document.getElementById('chatInputForm');
+      const chatInput = document.getElementById('chatInputField');
+      const chatMessages = document.getElementById('chatMessagesArea');
+      const suggestionChips = document.querySelectorAll('.suggestion-chip');
+
+      if (assistantToggleBtn) {
+        assistantToggleBtn.addEventListener('click', () => {
+          assistantWidget.classList.toggle('hidden');
+        });
+      }
+
+      if (assistantCloseBtn) {
+        assistantCloseBtn.addEventListener('click', () => {
+          assistantWidget.classList.add('hidden');
+        });
+      }
+
+      function appendChatMessage(text, sender = 'bot') {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `chat-message ${sender}-message`;
+        const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        msgDiv.innerHTML = `<p>${text}</p><span class="message-time">${timeNow}</span>`;
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      function handleAssistantQuery(query) {
+        appendChatMessage(query, 'user');
+        setTimeout(() => {
+          let response = "I am analyzing real-time sector price indices and DGCA punctuality logs. Please refine your query by specifying a city pair or cabin class.";
+          const q = query.toLowerCase();
+          if (q.includes('cheap') || q.includes('lowest')) {
+            response = "Across the monitored DEL-BOM sector, **SpiceJet** currently offers the lowest average spot fare at ₹4,100, followed by **Air India Express** at ₹4,300.";
+          } else if (q.includes('rating') || q.includes('rated')) {
+            response = "**Akasa Air** currently holds the highest passenger satisfaction rating index at **4.5 / 5.0**, particularly noted for cabin comfort and crew behaviour.";
+          } else if (q.includes('preferred') || q.includes('popular')) {
+            response = "**IndiGo** leads passenger preference with a **38.4%** sector share, driven by its 42 daily scheduled frequencies on major trunk routes.";
+          } else if (q.includes('on-time') || q.includes('punctual') || q.includes('otp')) {
+            response = "**IndiGo** leads on-time performance (OTP) at **88.4%**, followed closely by **Akasa Air** at **86.2%**.";
+          }
+          appendChatMessage(response, 'bot');
+        }, 600);
+      }
+
+      if (chatForm) {
+        chatForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const query = chatInput.value.trim();
+          if (query) {
+            handleAssistantQuery(query);
+            chatInput.value = '';
+          }
+        });
+      }
+
+      suggestionChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          const query = chip.getAttribute('data-query');
+          if (query) handleAssistantQuery(query);
+        });
+      });
+
+    });
+  </script>
+</body>
+</html>

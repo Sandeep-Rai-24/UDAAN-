@@ -1,0 +1,2231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UDAAN – Alerts & Aviation News</title>
+
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        /* ----- RESET & BASE ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f7fc;
+            color: #1a2639;
+            display: flex;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            border: none;
+            background: none;
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #eef2f6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #b0c4d8;
+            border-radius: 6px;
+        }
+
+        /* ----- SIDEBAR ----- */
+        .sidebar {
+            width: 220px;
+            background: #062442;
+            color: #b8d0e8;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            min-height: 100vh;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 0 0 16px 0;
+            border-right: 1px solid #1a3a5a;
+            z-index: 100;
+        }
+        .sidebar-brand {
+            padding: 20px 18px 14px 18px;
+            border-bottom: 1px solid #1a3a5a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar-brand .brand-icon {
+            font-size: 22px;
+            color: #6a9af0;
+        }
+        .sidebar-brand .brand-text {
+            font-weight: 700;
+            font-size: 18px;
+            color: #fff;
+            letter-spacing: 0.3px;
+        }
+        .sidebar-brand .brand-sub {
+            font-size: 9px;
+            font-weight: 400;
+            color: #7a9ac0;
+            display: block;
+            margin-top: 1px;
+        }
+        .sidebar-nav {
+            padding: 14px 12px 0 12px;
+            flex: 1;
+        }
+        .sidebar-nav .nav-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #4a6a8e;
+            padding: 6px 12px 4px 12px;
+            font-weight: 600;
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #a0bcdc;
+            transition: background 0.15s, color 0.15s;
+            margin-bottom: 1px;
+        }
+        .sidebar-nav a i {
+            width: 18px;
+            text-align: center;
+            font-size: 14px;
+            color: #5a7a9e;
+        }
+        .sidebar-nav a:hover {
+            background: #0d3455;
+            color: #fff;
+        }
+        .sidebar-nav a:hover i {
+            color: #6a9af0;
+        }
+        .sidebar-nav a.active {
+            background: #0d3455;
+            color: #fff;
+            box-shadow: inset 3px 0 0 #3b82f6;
+        }
+        .sidebar-nav a.active i {
+            color: #6a9af0;
+        }
+        .sidebar-footer {
+            padding: 12px 18px 0 18px;
+            border-top: 1px solid #1a3a5a;
+            font-size: 10px;
+            color: #4a6a8e;
+            margin-top: auto;
+        }
+
+        /* ----- HEADER ----- */
+        .top-header {
+            background: #062442;
+            color: #fff;
+            padding: 8px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #1a3a5a;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 6px 16px;
+        }
+        .top-header .left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .top-header .left .emblem {
+            font-size: 26px;
+            color: #d4a843;
+        }
+        .top-header .left .gov-text {
+            line-height: 1.3;
+        }
+        .top-header .left .gov-text .line1 {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            color: #b8d0f0;
+        }
+        .top-header .left .gov-text .line2 {
+            font-size: 9px;
+            font-weight: 400;
+            color: #7a9ac0;
+        }
+        .top-header .center {
+            text-align: center;
+        }
+        .top-header .center .uda {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #fff;
+        }
+        .top-header .center .uda-sub {
+            font-size: 10px;
+            font-weight: 400;
+            color: #7a9ac0;
+            letter-spacing: 0.4px;
+            display: block;
+            margin-top: -2px;
+        }
+        .top-header .right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .top-header .right .hindi {
+            font-size: 12px;
+            font-weight: 500;
+            color: #b8d0f0;
+            line-height: 1.2;
+            text-align: right;
+        }
+        .top-header .right .hindi small {
+            font-size: 8px;
+            font-weight: 400;
+            color: #5a7a9e;
+            display: block;
+        }
+        .top-header .right .login-btn {
+            background: #0d3455;
+            border: 1px solid #1a4a6e;
+            color: #fff;
+            padding: 5px 16px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            transition: background 0.15s;
+        }
+        .top-header .right .login-btn:hover {
+            background: #1a4a6e;
+        }
+        .top-header .right .live-badge {
+            background: #0d4a2a;
+            color: #6acf8a;
+            font-size: 9px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .top-header .right .live-badge i {
+            font-size: 7px;
+            color: #4acf7a;
+        }
+        .top-header .right .clock {
+            font-size: 12px;
+            font-weight: 500;
+            color: #b8d0f0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ----- MAIN WRAPPER ----- */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        /* ----- PAGE CONTENT ----- */
+        .page-content {
+            padding: 18px 24px 28px 24px;
+            flex: 1;
+        }
+
+        /* ----- TITLE ROW ----- */
+        .page-title-row {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px 20px;
+            margin-bottom: 16px;
+        }
+        .page-title-row .title-group h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #062442;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .page-title-row .title-group h1 i {
+            color: #d4a843;
+            font-size: 22px;
+        }
+        .page-title-row .title-group p {
+            font-size: 14px;
+            color: #4a5a7a;
+            margin-top: 2px;
+            font-weight: 400;
+        }
+        .page-title-row .meta-group {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            background: #eef2f8;
+            padding: 6px 18px 6px 20px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #2a3a5a;
+        }
+        .page-title-row .meta-group .live {
+            color: #0d6a3a;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .page-title-row .meta-group .live i {
+            font-size: 8px;
+            color: #2a9a5a;
+        }
+        .page-title-row .meta-group .proto {
+            font-size: 10px;
+            color: #6a7a9a;
+            font-weight: 400;
+            border-left: 1px solid #d0d8e8;
+            padding-left: 14px;
+        }
+
+        /* ----- TICKER ----- */
+        .ticker-wrap {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e6ecf4;
+            padding: 8px 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            overflow: hidden;
+        }
+        .ticker-wrap .ticker-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #0d6a3a;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ticker-wrap .ticker-label i {
+            font-size: 8px;
+            color: #2a9a5a;
+        }
+        .ticker-wrap .ticker-track {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            height: 24px;
+        }
+        .ticker-wrap .ticker-track .ticker-item {
+            position: absolute;
+            white-space: nowrap;
+            font-size: 13px;
+            color: #1a2a4a;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            width: 100%;
+        }
+        .ticker-wrap .ticker-track .ticker-item.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .ticker-wrap .ticker-track .ticker-item .highlight {
+            font-weight: 600;
+            color: #062442;
+        }
+        .ticker-wrap .ticker-sim {
+            font-size: 9px;
+            color: #6a7a9a;
+            white-space: nowrap;
+            font-weight: 400;
+            border-left: 1px solid #d8e0ec;
+            padding-left: 12px;
+        }
+
+        /* ----- KPI STRIP ----- */
+        .kpi-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .kpi-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 12px 16px;
+            border: 1px solid #e6ecf4;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+            transition: box-shadow 0.15s;
+        }
+        .kpi-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+        .kpi-card .kpi-label {
+            font-size: 10px;
+            font-weight: 500;
+            color: #5a6a8a;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .kpi-card .kpi-label i {
+            font-size: 12px;
+            color: #6a8aaa;
+        }
+        .kpi-card .kpi-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #062442;
+            margin-top: 2px;
+        }
+        .kpi-card .kpi-sub {
+            font-size: 10px;
+            color: #4a5a7a;
+        }
+
+        /* ----- FILTER ROW ----- */
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 10px;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .filter-row .filter-btn {
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #4a5a7a;
+            background: #eef2f8;
+            border: 1px solid transparent;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+        .filter-row .filter-btn:hover {
+            background: #e2e8f0;
+        }
+        .filter-row .filter-btn.active {
+            background: #062442;
+            color: #fff;
+            border-color: #062442;
+        }
+        .filter-row .filter-btn.sev-critical.active {
+            background: #8a1a1a;
+            border-color: #8a1a1a;
+            color: #fff;
+        }
+        .filter-row .filter-btn.sev-high.active {
+            background: #b37a2a;
+            border-color: #b37a2a;
+            color: #fff;
+        }
+        .filter-row .filter-btn.sev-moderate.active {
+            background: #d4a843;
+            border-color: #d4a843;
+            color: #fff;
+        }
+        .filter-row .filter-btn.sev-info.active {
+            background: #2a5a8a;
+            border-color: #2a5a8a;
+            color: #fff;
+        }
+        .filter-row .filter-divider {
+            width: 1px;
+            height: 24px;
+            background: #d8e0ec;
+        }
+        .filter-row .filter-sort {
+            font-size: 12px;
+            color: #4a5a7a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-row .filter-sort select {
+            border: 1px solid #d8e0ec;
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-family: inherit;
+            background: #fff;
+            color: #1a2639;
+        }
+        .filter-row .filter-sort select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .filter-row .mark-read-btn {
+            font-size: 11px;
+            font-weight: 500;
+            color: #2a5a8a;
+            padding: 4px 12px;
+            border-radius: 4px;
+            border: 1px solid #d8e0ec;
+            background: #fff;
+            transition: background 0.15s;
+            margin-left: auto;
+        }
+        .filter-row .mark-read-btn:hover {
+            background: #eef2f8;
+        }
+
+        /* ----- TWO-COLUMN LAYOUT ----- */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        /* ----- ALERT CARDS ----- */
+        .alert-section .as-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .alert-section .as-head h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #062442;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .alert-section .as-head h3 i {
+            color: #d4a843;
+        }
+        .alert-section .as-head .as-count {
+            font-size: 11px;
+            color: #4a5a7a;
+            background: #eef2f8;
+            padding: 2px 12px;
+            border-radius: 12px;
+        }
+
+        .alert-card {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e6ecf4;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+            transition: box-shadow 0.15s, border-color 0.15s;
+            cursor: pointer;
+            position: relative;
+            border-left: 4px solid #8aaaca;
+        }
+        .alert-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .alert-card.sev-critical {
+            border-left-color: #b33a3a;
+        }
+        .alert-card.sev-high {
+            border-left-color: #d47a2a;
+        }
+        .alert-card.sev-moderate {
+            border-left-color: #d4a843;
+        }
+        .alert-card.sev-info {
+            border-left-color: #2a5a8a;
+        }
+        .alert-card .ac-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .alert-card .ac-top .ac-badge {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 12px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .ac-badge.critical {
+            background: #f0d0d0;
+            color: #8a1a1a;
+        }
+        .ac-badge.high {
+            background: #f0e0d0;
+            color: #8a5a1a;
+        }
+        .ac-badge.moderate {
+            background: #f0e8d0;
+            color: #8a6a2a;
+        }
+        .ac-badge.info {
+            background: #d0e0f0;
+            color: #1a4a7a;
+        }
+        .alert-card .ac-top .ac-time {
+            font-size: 10px;
+            color: #6a7a9a;
+            font-weight: 400;
+            flex-shrink: 0;
+        }
+        .alert-card .ac-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #062442;
+            margin: 4px 0 2px 0;
+        }
+        .alert-card .ac-desc {
+            font-size: 13px;
+            color: #4a5a7a;
+            line-height: 1.4;
+        }
+        .alert-card .ac-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #4a5a7a;
+        }
+        .alert-card .ac-meta .ac-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .alert-card .ac-meta .ac-meta-item i {
+            font-size: 11px;
+            color: #6a8aaa;
+            width: 14px;
+        }
+        .alert-card .ac-meta .ac-source {
+            font-size: 10px;
+            color: #6a7a9a;
+        }
+        .alert-card .ac-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #eef2f8;
+        }
+        .alert-card .ac-footer .ac-read-status {
+            font-size: 9px;
+            font-weight: 500;
+            color: #6a7a9a;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .alert-card .ac-footer .ac-read-status .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .alert-card .ac-footer .ac-read-status .dot.unread {
+            background: #2a9a5a;
+        }
+        .alert-card .ac-footer .ac-read-status .dot.read {
+            background: #b0c4d8;
+        }
+        .alert-card .ac-footer .ac-view-btn {
+            font-size: 11px;
+            font-weight: 500;
+            color: #2a5a8a;
+            padding: 2px 12px;
+            border-radius: 4px;
+            border: 1px solid #d8e0ec;
+            background: #fafcff;
+            transition: background 0.15s;
+        }
+        .alert-card .ac-footer .ac-view-btn:hover {
+            background: #eef2f8;
+        }
+
+        .alert-card.read {
+            opacity: 0.7;
+        }
+        .alert-card.read .ac-footer .ac-read-status .dot {
+            background: #b0c4d8;
+        }
+
+        /* ----- NEWS CARDS ----- */
+        .news-section .ns-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 4px 10px;
+        }
+        .news-section .ns-head h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #062442;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .news-section .ns-head h3 i {
+            color: #2a5a8a;
+        }
+        .news-section .ns-head .ns-cats {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .news-section .ns-head .ns-cats .ns-cat {
+            font-size: 9px;
+            font-weight: 500;
+            padding: 2px 10px;
+            border-radius: 12px;
+            background: #eef2f8;
+            color: #4a5a7a;
+            border: 1px solid transparent;
+            transition: background 0.15s, color 0.15s;
+            cursor: pointer;
+        }
+        .news-section .ns-head .ns-cats .ns-cat:hover {
+            background: #e2e8f0;
+        }
+        .news-section .ns-head .ns-cats .ns-cat.active {
+            background: #062442;
+            color: #fff;
+        }
+
+        .news-card {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e6ecf4;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+            transition: box-shadow 0.15s;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .news-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+        .news-card .nc-thumb {
+            width: 64px;
+            height: 48px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            background: #eef2f8;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6a8aaa;
+            font-size: 20px;
+        }
+        .news-card .nc-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .news-card .nc-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .news-card .nc-body .nc-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #062442;
+            line-height: 1.3;
+        }
+        .news-card .nc-body .nc-summary {
+            font-size: 12px;
+            color: #4a5a7a;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .news-card .nc-body .nc-meta {
+            display: flex;
+            gap: 10px;
+            margin-top: 3px;
+            font-size: 10px;
+            color: #6a7a9a;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .news-card .nc-body .nc-meta .nc-source {
+            font-weight: 500;
+            color: #4a5a7a;
+        }
+        .news-card .nc-body .nc-meta .nc-readmore {
+            color: #2a5a8a;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .news-card .nc-body .nc-meta .nc-readmore:hover {
+            text-decoration: underline;
+        }
+
+        /* ----- VIDEO SECTION ----- */
+        .video-section {
+            margin-bottom: 18px;
+        }
+        .video-section .vs-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 4px 10px;
+        }
+        .video-section .vs-head h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #062442;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .video-section .vs-head h3 i {
+            color: #b33a3a;
+        }
+        .video-section .vs-head .vs-search {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .video-section .vs-head .vs-search input {
+            border: 1px solid #d8e0ec;
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 11px;
+            font-family: inherit;
+            width: 180px;
+            background: #fff;
+            color: #1a2639;
+        }
+        .video-section .vs-head .vs-search input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .video-section .vs-head .vs-search button {
+            background: #062442;
+            color: #fff;
+            padding: 5px 14px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+        .video-section .vs-head .vs-search button:hover {
+            background: #0d3455;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .video-card {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e6ecf4;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+            transition: box-shadow 0.15s;
+            cursor: pointer;
+        }
+        .video-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+        .video-card .vc-thumb {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #0d1a2e;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .video-card .vc-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .video-card .vc-thumb .vc-play {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b33a3a;
+            font-size: 18px;
+            transition: transform 0.15s;
+        }
+        .video-card:hover .vc-thumb .vc-play {
+            transform: scale(1.1);
+        }
+        .video-card .vc-thumb .vc-duration {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 500;
+            padding: 1px 8px;
+            border-radius: 4px;
+        }
+        .video-card .vc-body {
+            padding: 10px 12px 12px 12px;
+        }
+        .video-card .vc-body .vc-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #062442;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .video-card .vc-body .vc-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #6a7a9a;
+            margin-top: 4px;
+        }
+        .video-card .vc-body .vc-meta .vc-channel {
+            font-weight: 500;
+            color: #4a5a7a;
+        }
+
+        /* ----- UDAAN INTELLIGENCE ALERT ----- */
+        .intel-alert {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e6ecf4;
+            padding: 16px 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+            border-left: 4px solid #d4a843;
+            display: flex;
+            align-items: center;
+            gap: 16px 24px;
+            flex-wrap: wrap;
+        }
+        .intel-alert .ia-icon {
+            font-size: 28px;
+            color: #d4a843;
+        }
+        .intel-alert .ia-body {
+            flex: 1;
+            min-width: 200px;
+        }
+        .intel-alert .ia-body .ia-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #062442;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .intel-alert .ia-body .ia-title .ia-badge {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 12px;
+            border-radius: 12px;
+            background: #f0e0d0;
+            color: #8a5a1a;
+        }
+        .intel-alert .ia-body .ia-desc {
+            font-size: 13px;
+            color: #4a5a7a;
+            margin-top: 2px;
+        }
+        .intel-alert .ia-body .ia-meta {
+            font-size: 11px;
+            color: #6a7a9a;
+            margin-top: 4px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .intel-alert .ia-action {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .intel-alert .ia-action .ia-btn {
+            background: #062442;
+            color: #fff;
+            padding: 6px 18px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.15s;
+        }
+        .intel-alert .ia-action .ia-btn:hover {
+            background: #0d3455;
+        }
+        .intel-alert .ia-action .ia-btn-outline {
+            border: 1px solid #d8e0ec;
+            padding: 6px 18px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #4a5a7a;
+            background: #fafcff;
+            transition: background 0.15s;
+        }
+        .intel-alert .ia-action .ia-btn-outline:hover {
+            background: #eef2f8;
+        }
+
+        /* ----- FOOTER ----- */
+        .page-footer {
+            border-top: 1px solid #e6ecf4;
+            padding-top: 14px;
+            margin-top: 6px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            font-size: 11px;
+            color: #6a7a9a;
+        }
+        .page-footer .footer-links {
+            display: flex;
+            gap: 16px;
+        }
+        .page-footer .footer-links a {
+            color: #4a6a8a;
+        }
+        .page-footer .footer-links a:hover {
+            color: #062442;
+        }
+        .page-footer .footer-disclaimer {
+            font-size: 10px;
+            color: #8a9aaa;
+            font-style: italic;
+        }
+
+        /* ----- MODAL ----- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(6, 36, 66, 0.5);
+            z-index: 300;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: 12px;
+            max-width: 640px;
+            width: 100%;
+            max-height: 94vh;
+            overflow-y: auto;
+            padding: 24px 28px 20px 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+            position: relative;
+        }
+        .modal-box .close-modal {
+            position: absolute;
+            top: 14px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 26px;
+            color: #5a6a8a;
+            cursor: pointer;
+        }
+        .modal-box .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #062442;
+            margin-bottom: 4px;
+            padding-right: 30px;
+        }
+        .modal-box .modal-sub {
+            font-size: 13px;
+            color: #4a5a7a;
+            margin-bottom: 14px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .modal-box .modal-sub .ms-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 14px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+        .modal-box .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 24px;
+            margin-bottom: 12px;
+        }
+        .modal-box .modal-grid .mg-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #f0f4fa;
+            font-size: 13px;
+        }
+        .modal-box .modal-grid .mg-item .mg-label {
+            color: #4a5a7a;
+        }
+        .modal-box .modal-grid .mg-item .mg-val {
+            font-weight: 500;
+            color: #062442;
+        }
+        .modal-box .modal-desc {
+            font-size: 13px;
+            color: #1a2a4a;
+            padding: 10px 14px;
+            background: #f7f9fc;
+            border-radius: 6px;
+            border: 1px solid #eef2f8;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+            border-top: 1px solid #eef2f8;
+            padding-top: 14px;
+        }
+        .modal-box .modal-actions button {
+            padding: 6px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 12px;
+            border: 1px solid #d8e0ec;
+            background: #f7f9fc;
+            color: #1a2a4a;
+            transition: background 0.15s;
+        }
+        .modal-box .modal-actions button.primary {
+            background: #062442;
+            color: #fff;
+            border-color: #062442;
+        }
+        .modal-box .modal-actions button.primary:hover {
+            background: #0d3455;
+        }
+        .modal-box .modal-actions button:hover {
+            background: #eef2f8;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                width: 60px;
+                padding: 0 0 10px 0;
+            }
+            .sidebar-brand .brand-text,
+            .sidebar-brand .brand-sub,
+            .sidebar-nav .nav-label,
+            .sidebar-nav a span,
+            .sidebar-footer {
+                display: none;
+            }
+            .sidebar-nav a {
+                justify-content: center;
+                padding: 10px 0;
+            }
+            .sidebar-nav a i {
+                font-size: 18px;
+                width: auto;
+            }
+            .top-header .left .gov-text .line2 {
+                display: none;
+            }
+            .top-header .center .uda {
+                font-size: 22px;
+            }
+            .page-content {
+                padding: 12px 14px 20px 14px;
+            }
+            .video-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 48px;
+            }
+            .sidebar-nav a {
+                padding: 8px 0;
+            }
+            .top-header {
+                padding: 6px 12px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+            }
+            .top-header .left,
+            .top-header .center,
+            .top-header .right {
+                justify-content: center;
+            }
+            .top-header .right .hindi {
+                text-align: center;
+            }
+            .top-header .right .clock {
+                font-size: 10px;
+            }
+            .page-content {
+                padding: 8px 10px 14px 10px;
+            }
+            .page-title-row .title-group h1 {
+                font-size: 18px;
+            }
+            .page-title-row .meta-group {
+                font-size: 10px;
+                padding: 4px 12px;
+                gap: 8px;
+            }
+            .kpi-strip {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .filter-row {
+                gap: 4px 6px;
+            }
+            .filter-row .filter-btn {
+                font-size: 10px;
+                padding: 2px 10px;
+            }
+            .filter-row .mark-read-btn {
+                font-size: 10px;
+                padding: 2px 10px;
+                margin-left: 0;
+                width: 100%;
+                text-align: center;
+            }
+            .filter-row .filter-sort select {
+                font-size: 10px;
+                padding: 2px 6px;
+            }
+            .intel-alert {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .intel-alert .ia-action {
+                width: 100%;
+            }
+            .intel-alert .ia-action .ia-btn,
+            .intel-alert .ia-action .ia-btn-outline {
+                flex: 1;
+                text-align: center;
+            }
+            .video-section .vs-head {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .video-section .vs-head .vs-search {
+                width: 100%;
+            }
+            .video-section .vs-head .vs-search input {
+                flex: 1;
+                width: auto;
+            }
+            .video-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .modal-box {
+                padding: 16px;
+                margin: 8px;
+            }
+            .modal-box .modal-grid {
+                grid-template-columns: 1fr;
+            }
+            .page-footer {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .news-card .nc-thumb {
+                width: 48px;
+                height: 36px;
+            }
+            .ticker-wrap .ticker-sim {
+                display: none;
+            }
+            .ticker-wrap .ticker-track .ticker-item {
+                font-size: 11px;
+            }
+        }
+        @media (max-width: 480px) {
+            .kpi-strip {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .kpi-card .kpi-value {
+                font-size: 17px;
+            }
+            .page-title-row .title-group h1 {
+                font-size: 16px;
+            }
+            .page-title-row .meta-group {
+                font-size: 9px;
+                padding: 3px 10px;
+                gap: 6px;
+            }
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+            .alert-card .ac-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .alert-card .ac-top .ac-time {
+                align-self: flex-start;
+            }
+            .filter-row .filter-divider {
+                display: none;
+            }
+            .intel-alert .ia-body .ia-title {
+                font-size: 13px;
+            }
+        }
+
+        /* ----- UTILITY ----- */
+        .hidden {
+            display: none !important;
+        }
+        .text-muted {
+            color: #6a7a9a;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon"><i class="fas fa-plane-departure"></i></span>
+            <div>
+                <span class="brand-text">UDAAN</span>
+                <span class="brand-sub">Airfare Intelligence</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main</div>
+            <a href="index.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+            <a href="airfare-index.html"><i class="fas fa-chart-line"></i><span>Airfare Index</span></a>
+            <a href="routeanalysis.html"><i class="fas fa-route"></i><span>Route Analysis</span></a>
+            <a href="airline-comparison.html"><i class="fas fa-building"></i><span>Airline Comparison</span></a>
+            <a href="advance-booking.html"><i class="fas fa-calendar-alt"></i><span>Advance Booking</span></a>
+            <a href="heatmap.html"><i class="fas fa-fire"></i><span>Heat Map</span></a>
+            <a href="live-monitoring.html"><i class="fas fa-satellite-dish"></i><span>Live Monitoring</span></a>
+            <a href="data-explorer.html"><i class="fas fa-database"></i><span>Data Explorer</span></a>
+            <a href="reports.html"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+            <a href="https://esankhyiki.mospi.gov.in" target="_blank"><i class="fas fa-plug"></i><span>API Access</span></a>
+            <a href="#" class="active"><i class="fas fa-bell"></i><span>Alerts</span></a>
+            <a href="about.html"><i class="fas fa-info-circle"></i><span>About UDAAN</span></a>
+        </nav>
+        <div class="sidebar-footer">v2.4 &bull; Prototype</div>
+    </aside>
+
+    <!-- ===== MAIN WRAPPER ===== -->
+    <div class="main-wrapper">
+
+        <!-- ===== HEADER ===== -->
+        <header class="top-header">
+            <div class="left">
+                <span class="emblem"><i class="fas fa-ashoka"></i></span>
+                <div class="gov-text">
+                    <div class="line1">Government of India</div>
+                    <div class="line2">Ministry of Statistics &amp; Programme Implementation &middot; National Statistical Office</div>
+                </div>
+            </div>
+            <div class="center">
+                <div class="uda">UDAAN</div>
+                <span class="uda-sub">Real-time Airfare Intelligence Portal</span>
+            </div>
+            <div class="right">
+                <div class="hindi">
+                    भारत सरकार
+                    <small>GOVERNMENT OF INDIA</small>
+                </div>
+                <button class="login-btn"><i class="fas fa-user-circle"></i> Login / Sign Up</button>
+                <span class="live-badge"><i class="fas fa-circle"></i> LIVE</span>
+                <span class="clock" id="headerClock">00:00:00 IST</span>
+            </div>
+        </header>
+
+        <!-- ===== PAGE CONTENT ===== -->
+        <div class="page-content">
+
+            <!-- TITLE -->
+            <div class="page-title-row">
+                <div class="title-group">
+                    <h1><i class="fas fa-bell"></i> Alerts &amp; Aviation News</h1>
+                    <p>Major aviation developments, airfare alerts and industry updates relevant to UDAAN users.</p>
+                </div>
+                <div class="meta-group">
+                    <span class="live"><i class="fas fa-circle"></i> ALERT CENTER ACTIVE</span>
+                    <span class="proto">Prototype &bull; Simulated Alert Feed</span>
+                </div>
+            </div>
+
+            <!-- TICKER -->
+            <div class="ticker-wrap">
+                <div class="ticker-label"><i class="fas fa-circle"></i> LIVE ALERT FEED</div>
+                <div class="ticker-track" id="tickerTrack">
+                    <div class="ticker-item active">Fare pressure detected on <span class="highlight">DEL → BOM</span></div>
+                    <div class="ticker-item">High demand at <span class="highlight">DEL</span> Airport</div>
+                    <div class="ticker-item">Airfare Index <span class="highlight">+4.82%</span></div>
+                    <div class="ticker-item">Weekend travel demand <span class="highlight">rising</span></div>
+                    <div class="ticker-item">DEL → MAA fare movement <span class="highlight">unusual</span></div>
+                </div>
+                <span class="ticker-sim">Simulated Feed</span>
+            </div>
+
+            <!-- KPI STRIP -->
+            <div class="kpi-strip">
+                <div class="kpi-card"><div class="kpi-label"><i class="fas fa-exclamation-circle" style="color:#b33a3a;"></i> Critical Alerts</div><div class="kpi-value" id="kpiCritical">2</div></div>
+                <div class="kpi-card"><div class="kpi-label"><i class="fas fa-exclamation-triangle" style="color:#d47a2a;"></i> High Priority</div><div class="kpi-value" id="kpiHigh">5</div></div>
+                <div class="kpi-card"><div class="kpi-label"><i class="fas fa-chart-line" style="color:#d4a843;"></i> Market Alerts</div><div class="kpi-value" id="kpiMarket">8</div></div>
+                <div class="kpi-card"><div class="kpi-label"><i class="fas fa-newspaper" style="color:#2a5a8a;"></i> Latest Updates</div><div class="kpi-value" id="kpiUpdates">24</div></div>
+            </div>
+
+            <!-- FILTER ROW -->
+            <div class="filter-row" id="filterRow">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn sev-critical" data-filter="critical">Critical</button>
+                <button class="filter-btn sev-high" data-filter="high">High</button>
+                <button class="filter-btn sev-moderate" data-filter="moderate">Moderate</button>
+                <button class="filter-btn sev-info" data-filter="info">Info</button>
+                <span class="filter-divider"></span>
+                <div class="filter-sort">
+                    <span>Sort:</span>
+                    <select id="sortSelect">
+                        <option value="latest">Latest</option>
+                        <option value="important">Most Important</option>
+                    </select>
+                </div>
+                <button class="mark-read-btn" id="markReadBtn"><i class="fas fa-check-double"></i> Mark All as Read</button>
+            </div>
+
+            <!-- TWO-COLUMN: Alerts + News -->
+            <div class="two-col">
+                <!-- ALERTS -->
+                <div class="alert-section">
+                    <div class="as-head">
+                        <h3><i class="fas fa-bell"></i> Major Aviation Alerts</h3>
+                        <span class="as-count" id="alertCount">6 alerts</span>
+                    </div>
+                    <div id="alertContainer">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- NEWS -->
+                <div class="news-section">
+                    <div class="ns-head">
+                        <h3><i class="fas fa-newspaper"></i> Latest Aviation News</h3>
+                        <div class="ns-cats" id="newsCats">
+                            <span class="ns-cat active" data-cat="all">All</span>
+                            <span class="ns-cat" data-cat="airlines">Airlines</span>
+                            <span class="ns-cat" data-cat="airports">Airports</span>
+                            <span class="ns-cat" data-cat="fares">Fares</span>
+                            <span class="ns-cat" data-cat="policy">Policy</span>
+                            <span class="ns-cat" data-cat="safety">Safety</span>
+                            <span class="ns-cat" data-cat="technology">Technology</span>
+                        </div>
+                    </div>
+                    <div id="newsContainer">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- UDAAN INTELLIGENCE ALERT -->
+            <div class="intel-alert">
+                <div class="ia-icon"><i class="fas fa-microchip"></i></div>
+                <div class="ia-body">
+                    <div class="ia-title">
+                        UDAAN Intelligence Alert
+                        <span class="ia-badge">HIGH</span>
+                    </div>
+                    <div class="ia-desc">
+                        Airfare pressure is currently concentrated on major metro corridors. Users should monitor <strong>DEL–BOM</strong> and <strong>DEL–MAA</strong> before booking during high-demand periods.
+                    </div>
+                    <div class="ia-meta">
+                        <span><i class="far fa-clock"></i> 11:22 PM</span>
+                        <span><i class="fas fa-tag"></i> Route Intelligence</span>
+                    </div>
+                </div>
+                <div class="ia-action">
+                    <button class="ia-btn" id="openAirfareIndex"><i class="fas fa-chart-line"></i> Open Airfare Index</button>
+                    <button class="ia-btn-outline" id="intelMoreBtn">Learn More</button>
+                </div>
+            </div>
+
+            <!-- VIDEO SECTION -->
+            <div class="video-section">
+                <div class="vs-head">
+                    <h3><i class="fab fa-youtube"></i> Latest Aviation Videos</h3>
+                    <div class="vs-search">
+                        <input type="text" id="videoSearchInput" placeholder="Search aviation news, airlines, airports..." />
+                        <button id="videoSearchBtn"><i class="fab fa-youtube"></i> Search YouTube</button>
+                    </div>
+                </div>
+                <div class="video-grid" id="videoGrid">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="page-footer">
+                <span>© 2026 UDAAN — Real-time Airfare Intelligence Portal. All Rights Reserved.</span>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Use</a>
+                    <a href="#">Disclaimer</a>
+                    <a href="#">Contact Us</a>
+                </div>
+                <div class="footer-disclaimer">News and external content remain property of their respective publishers. External news and video content can be connected through approved APIs/RSS feeds.</div>
+            </div>
+
+        </div><!-- /page-content -->
+    </div><!-- /main-wrapper -->
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="alertModal">
+        <div class="modal-box">
+            <button class="close-modal" id="modalClose">&times;</button>
+            <div class="modal-title" id="modalTitle">Alert Details</div>
+            <div class="modal-sub" id="modalSub">
+                <span id="modalId">UDAAN-ALT-001</span>
+                <span class="ms-badge" id="modalBadge">CRITICAL</span>
+                <span id="modalTime">11:22 PM</span>
+            </div>
+            <div class="modal-grid" id="modalGrid">
+                <div class="mg-item"><span class="mg-label">Severity</span><span class="mg-val" id="mSeverity">Critical</span></div>
+                <div class="mg-item"><span class="mg-label">Affected Route</span><span class="mg-val" id="mRoute">DEL → BOM</span></div>
+                <div class="mg-item"><span class="mg-label">Current Fare</span><span class="mg-val" id="mCurrent">₹7,240</span></div>
+                <div class="mg-item"><span class="mg-label">Historical Baseline</span><span class="mg-val" id="mBaseline">₹6,120</span></div>
+                <div class="mg-item"><span class="mg-label">Deviation</span><span class="mg-val" id="mDeviation">+18.2%</span></div>
+                <div class="mg-item"><span class="mg-label">Source</span><span class="mg-val" id="mSource">UDAAN Analytical Alert</span></div>
+                <div class="mg-item"><span class="mg-label">Status</span><span class="mg-val" id="mStatus">Active</span></div>
+                <div class="mg-item"><span class="mg-label">Airline/Airport</span><span class="mg-val" id="mAffected">—</span></div>
+            </div>
+            <div class="modal-desc" id="modalDesc">
+                Current fares are above the recent route baseline due to elevated demand and reduced availability.
+            </div>
+            <div style="font-size:12px;color:#4a5a7a;margin-bottom:8px;">
+                <strong>Possible Cause:</strong> <span id="modalCause">Elevated demand + reduced availability</span>
+            </div>
+            <div style="font-size:12px;color:#4a5a7a;margin-bottom:12px;">
+                <strong>Recommended Action:</strong> <span id="modalAction">Monitor route before booking.</span>
+            </div>
+            <div class="modal-actions">
+                <button class="primary" id="modalCloseBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ============================================================ -->
+    <script>
+        // ============================================================
+        //  DATA
+        // ============================================================
+
+        const ALERTS = [{
+            id: 'UDAAN-ALT-001',
+            severity: 'critical',
+            title: 'Fare pressure detected on Delhi–Mumbai corridor',
+            description: 'Current fares are above the recent route baseline. Elevated demand and reduced availability are contributing factors.',
+            route: 'DEL → BOM',
+            affected: 'DEL → BOM',
+            airline: null,
+            airport: null,
+            currentFare: 7240,
+            baseline: 6120,
+            deviation: 18.2,
+            cause: 'Elevated demand + reduced availability',
+            action: 'Monitor route before booking.',
+            source: 'UDAAN Analytical Alert',
+            time: '11:15 PM',
+            timestamp: Date.now() - 3600000,
+            read: false
+        }, {
+            id: 'UDAAN-ALT-002',
+            severity: 'critical',
+            title: 'Multiple cancellation reports detected',
+            description: 'Several passengers have reported cancellations on the DEL–HYD route. Operational issues may be affecting schedule reliability.',
+            route: 'DEL → HYD',
+            affected: 'DEL → HYD',
+            airline: 'SpiceJet',
+            airport: null,
+            currentFare: null,
+            baseline: null,
+            deviation: null,
+            cause: 'Operational disruption',
+            action: 'Check flight status before travel.',
+            source: 'UDAAN Analytical Alert',
+            time: '10:45 PM',
+            timestamp: Date.now() - 5400000,
+            read: false
+        }, {
+            id: 'UDAAN-ALT-003',
+            severity: 'high',
+            title: 'Elevated passenger demand detected',
+            description: 'Delhi Airport is experiencing above-average passenger traffic. High demand may affect fare levels and availability.',
+            route: null,
+            affected: 'Delhi Airport',
+            airline: null,
+            airport: 'DEL',
+            currentFare: null,
+            baseline: null,
+            deviation: null,
+            cause: 'Seasonal travel increase',
+            action: 'Book in advance to secure fares.',
+            source: 'UDAAN Analytical Alert',
+            time: '10:20 PM',
+            timestamp: Date.now() - 6600000,
+            read: false
+        }, {
+            id: 'UDAAN-ALT-004',
+            severity: 'moderate',
+            title: 'Unusual fare movement detected on DEL → MAA',
+            description: 'Fares on the Delhi–Chennai route have shown unusual movement over the last 48 hours. Monitoring recommended.',
+            route: 'DEL → MAA',
+            affected: 'DEL → MAA',
+            airline: null,
+            airport: null,
+            currentFare: 6420,
+            baseline: 5800,
+            deviation: 10.7,
+            cause: 'Demand fluctuation',
+            action: 'Monitor fares before booking.',
+            source: 'UDAAN Analytical Alert',
+            time: '09:50 PM',
+            timestamp: Date.now() - 7200000,
+            read: false
+        }, {
+            id: 'UDAAN-ALT-005',
+            severity: 'moderate',
+            title: 'High booking activity observed for upcoming weekend',
+            description: 'Booking activity for the coming weekend is significantly above average. Fare pressure is expected to increase.',
+            route: null,
+            affected: 'Weekend Travel',
+            airline: null,
+            airport: null,
+            currentFare: null,
+            baseline: null,
+            deviation: null,
+            cause: 'Weekend demand surge',
+            action: 'Book early to avoid premium.',
+            source: 'UDAAN Analytical Alert',
+            time: '09:10 PM',
+            timestamp: Date.now() - 7800000,
+            read: false
+        }, {
+            id: 'UDAAN-ALT-006',
+            severity: 'info',
+            title: 'Airfare index updated',
+            description: 'The national airfare index has been updated with the latest observations. Current index: 129.06.',
+            route: null,
+            affected: 'National Index',
+            airline: null,
+            airport: null,
+            currentFare: null,
+            baseline: null,
+            deviation: null,
+            cause: 'Routine update',
+            action: 'Review index for trends.',
+            source: 'UDAAN Analytical Alert',
+            time: '08:30 PM',
+            timestamp: Date.now() - 9000000,
+            read: false
+        }];
+
+        const NEWS_ITEMS = [{
+            id: 'n1',
+            category: 'airlines',
+            title: 'Air India launches new direct flights to Europe',
+            summary: 'Air India announced new direct routes to multiple European destinations starting next month.',
+            source: 'The Hindu',
+            date: '31 Aug 2026',
+            readmore: 'https://www.thehindu.com/business/air-india-new-flights'
+        }, {
+            id: 'n2',
+            category: 'airports',
+            title: 'Delhi airport introduces new digital arrival system',
+            summary: 'IGI Airport has implemented a new digital system to streamline passenger arrivals and reduce wait times.',
+            source: 'Economic Times',
+            date: '31 Aug 2026',
+            readmore: 'https://economictimes.indiatimes.com/delhi-airport-digital-system'
+        }, {
+            id: 'n3',
+            category: 'fares',
+            title: 'Airfare prices show upward trend ahead of festive season',
+            summary: 'Aviation analysts predict a 12-15% increase in airfares as the festive season approaches.',
+            source: 'Mint',
+            date: '30 Aug 2026',
+            readmore: 'https://www.livemint.com/airfares-festive-season'
+        }, {
+            id: 'n4',
+            category: 'policy',
+            title: 'DGCA issues new guidelines for passenger rights',
+            summary: 'The Directorate General of Civil Aviation has published updated guidelines for passenger compensation and rights.',
+            source: 'Times of India',
+            date: '30 Aug 2026',
+            readmore: 'https://timesofindia.indiatimes.com/dgca-passenger-rights'
+        }, {
+            id: 'n5',
+            category: 'airlines',
+            title: 'IndiGo expands fleet with 30 new aircraft orders',
+            summary: 'IndiGo has placed an order for 30 new Airbus aircraft to support its expanding domestic network.',
+            source: 'Reuters',
+            date: '29 Aug 2026',
+            readmore: 'https://www.reuters.com/business/indigo-aircraft-order'
+        }];
+
+        const VIDEOS = [{
+            title: 'Indian Aviation Market 2026 – Growth & Trends',
+            channel: 'Aviation India',
+            duration: '8:24',
+            search: 'Indian+aviation+market+2026'
+        }, {
+            title: 'Airfare Analysis: What\'s Driving Prices Up?',
+            channel: 'Airfare Today',
+            duration: '6:52',
+            search: 'airfare+analysis+India'
+        }, {
+            title: 'Delhi Airport Terminal 3 Expansion Tour',
+            channel: 'Airport Updates',
+            duration: '11:05',
+            search: 'Delhi+airport+terminal+3+expansion'
+        }, {
+            title: 'IndiGo vs Akasa – The New Battle in Indian Skies',
+            channel: 'Aviation Insider',
+            duration: '7:38',
+            search: 'IndiGo+Akasa+Air+comparison'
+        }];
+
+        // ============================================================
+        //  STATE
+        // ============================================================
+        let currentFilter = 'all';
+        let currentNewsCat = 'all';
+        let currentSort = 'latest';
+        let selectedAlertId = null;
+
+        // Read state from localStorage
+        function getReadState() {
+            try {
+                const data = JSON.parse(localStorage.getItem('udaan_alerts_read') || '{}');
+                return data;
+            } catch { return {}; }
+        }
+
+        function setReadState(data) {
+            localStorage.setItem('udaan_alerts_read', JSON.stringify(data));
+        }
+
+        function markAlertRead(id) {
+            const state = getReadState();
+            state[id] = true;
+            setReadState(state);
+        }
+
+        function isAlertRead(id) {
+            const state = getReadState();
+            return state[id] || false;
+        }
+
+        function markAllRead() {
+            const state = {};
+            ALERTS.forEach(a => { state[a.id] = true; });
+            setReadState(state);
+            renderAlerts();
+            updateKPIs();
+        }
+
+        // ============================================================
+        //  CLOCK
+        // ============================================================
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit',
+                hour12: false });
+            document.getElementById('headerClock').textContent = timeStr + ' IST';
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // ============================================================
+        //  TICKER
+        // ============================================================
+        let tickerIndex = 0;
+        const tickerItems = document.querySelectorAll('#tickerTrack .ticker-item');
+
+        function rotateTicker() {
+            tickerItems.forEach(el => el.classList.remove('active'));
+            tickerIndex = (tickerIndex + 1) % tickerItems.length;
+            tickerItems[tickerIndex].classList.add('active');
+        }
+        setInterval(rotateTicker, 4000);
+
+        // ============================================================
+        //  RENDER: ALERTS
+        // ============================================================
+        function renderAlerts() {
+            const container = document.getElementById('alertContainer');
+            let filtered = [...ALERTS];
+
+            // Filter
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(a => a.severity === currentFilter);
+            }
+
+            // Sort
+            if (currentSort === 'important') {
+                const order = { critical: 0, high: 1, moderate: 2, info: 3 };
+                filtered.sort((a, b) => order[a.severity] - order[b.severity]);
+            } else {
+                filtered.sort((a, b) => b.timestamp - a.timestamp);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML =
+                    `<div style="padding:30px 20px;text-align:center;color:#6a7a9a;background:#f9fafc;border-radius:8px;border:1px solid #e6ecf4;font-size:13px;">No alerts match the current filter.</div>`;
+                document.getElementById('alertCount').textContent = '0 alerts';
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(alert => {
+                const read = isAlertRead(alert.id);
+                const sevClass = alert.severity;
+                const badgeClass = alert.severity;
+                const badgeLabel = alert.severity.charAt(0).toUpperCase() + alert.severity.slice(1);
+
+                html += `
+                    <div class="alert-card sev-${sevClass} ${read ? 'read' : ''}" data-id="${alert.id}">
+                        <div class="ac-top">
+                            <span class="ac-badge ${badgeClass}">${badgeLabel}</span>
+                            <span class="ac-time">${alert.time}</span>
+                        </div>
+                        <div class="ac-title">${alert.title}</div>
+                        <div class="ac-desc">${alert.description}</div>
+                        <div class="ac-meta">
+                            ${alert.route ? `<span class="ac-meta-item"><i class="fas fa-route"></i> ${alert.route}</span>` : ''}
+                            ${alert.airline ? `<span class="ac-meta-item"><i class="fas fa-building"></i> ${alert.airline}</span>` : ''}
+                            ${alert.airport ? `<span class="ac-meta-item"><i class="fas fa-plane"></i> ${alert.airport}</span>` : ''}
+                            <span class="ac-meta-item"><i class="fas fa-tag"></i> ${alert.source}</span>
+                        </div>
+                        <div class="ac-footer">
+                            <span class="ac-read-status">
+                                <span class="dot ${read ? 'read' : 'unread'}"></span>
+                                ${read ? 'Read' : 'Unread'}
+                            </span>
+                            <button class="ac-view-btn" data-id="${alert.id}">View Details</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            document.getElementById('alertCount').textContent = filtered.length + ' alerts';
+
+            // Event listeners
+            container.querySelectorAll('.ac-view-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    openAlertModal(id);
+                });
+            });
+
+            container.querySelectorAll('.alert-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    if (!isAlertRead(id)) {
+                        markAlertRead(id);
+                        renderAlerts();
+                        updateKPIs();
+                    }
+                    openAlertModal(id);
+                });
+            });
+        }
+
+        // ============================================================
+        //  RENDER: NEWS
+        // ============================================================
+        function renderNews() {
+            const container = document.getElementById('newsContainer');
+            let filtered = [...NEWS_ITEMS];
+
+            if (currentNewsCat !== 'all') {
+                filtered = filtered.filter(n => n.category === currentNewsCat);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML =
+                    `<div style="padding:20px;text-align:center;color:#6a7a9a;background:#f9fafc;border-radius:8px;border:1px solid #e6ecf4;font-size:13px;">No news items in this category.</div>`;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(news => {
+                const iconMap = {
+                    airlines: 'fa-building',
+                    airports: 'fa-plane',
+                    fares: 'fa-rupee-sign',
+                    policy: 'fa-gavel',
+                    safety: 'fa-shield-alt',
+                    technology: 'fa-microchip'
+                };
+                const icon = iconMap[news.category] || 'fa-newspaper';
+                html += `
+                    <div class="news-card" data-id="${news.id}">
+                        <div class="nc-thumb"><i class="fas ${icon}"></i></div>
+                        <div class="nc-body">
+                            <div class="nc-title">${news.title}</div>
+                            <div class="nc-summary">${news.summary}</div>
+                            <div class="nc-meta">
+                                <span class="nc-source"><i class="fas fa-pen"></i> ${news.source}</span>
+                                <span><i class="far fa-calendar-alt"></i> ${news.date}</span>
+                                <span class="nc-readmore" data-href="${news.readmore}">Read More →</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            container.querySelectorAll('.nc-readmore').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const href = this.dataset.href;
+                    if (href) {
+                        window.open(href, '_blank');
+                    } else {
+                        alert('This is a demo news item. In production, this would link to the full article.');
+                    }
+                });
+            });
+        }
+
+        // ============================================================
+        //  RENDER: VIDEOS
+        // ============================================================
+        function renderVideos() {
+            const container = document.getElementById('videoGrid');
+            let html = '';
+            VIDEOS.forEach(video => {
+                html += `
+                    <div class="video-card" data-search="${video.search}">
+                        <div class="vc-thumb">
+                            <div style="width:100%;height:100%;background:linear-gradient(135deg,#0d1a2e 0%,#1a3a5a 100%);display:flex;align-items:center;justify-content:center;color:#6a8aaa;font-size:32px;">
+                                <i class="fab fa-youtube"></i>
+                            </div>
+                            <div class="vc-play"><i class="fas fa-play"></i></div>
+                            <span class="vc-duration">${video.duration}</span>
+                        </div>
+                        <div class="vc-body">
+                            <div class="vc-title">${video.title}</div>
+                            <div class="vc-meta">
+                                <span class="vc-channel">${video.channel}</span>
+                                <span>${video.duration}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            container.querySelectorAll('.video-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const search = this.dataset.search || 'Indian+aviation';
+                    const url = `https://www.youtube.com/results?search_query=${search}`;
+                    window.open(url, '_blank');
+                });
+            });
+        }
+
+        // ============================================================
+        //  UPDATE KPIs
+        // ============================================================
+        function updateKPIs() {
+            const critical = ALERTS.filter(a => a.severity === 'critical').length;
+            const high = ALERTS.filter(a => a.severity === 'high').length;
+            const moderate = ALERTS.filter(a => a.severity === 'moderate').length;
+            const info = ALERTS.filter(a => a.severity === 'info').length;
+            const total = ALERTS.length;
+
+            document.getElementById('kpiCritical').textContent = critical;
+            document.getElementById('kpiHigh').textContent = high;
+            document.getElementById('kpiMarket').textContent = moderate + info;
+            document.getElementById('kpiUpdates').textContent = total;
+        }
+
+        // ============================================================
+        //  MODAL
+        // ============================================================
+        function openAlertModal(id) {
+            const alert = ALERTS.find(a => a.id === id);
+            if (!alert) return;
+
+            selectedAlertId = id;
+            if (!isAlertRead(id)) {
+                markAlertRead(id);
+                renderAlerts();
+                updateKPIs();
+            }
+
+            document.getElementById('modalTitle').textContent = alert.title;
+            document.getElementById('modalId').textContent = alert.id;
+            document.getElementById('modalTime').textContent = alert.time;
+
+            const badge = document.getElementById('modalBadge');
+            badge.textContent = alert.severity.toUpperCase();
+            badge.className = 'ms-badge';
+            badge.style.background = alert.severity === 'critical' ? '#f0d0d0' :
+                alert.severity === 'high' ? '#f0e0d0' :
+                alert.severity === 'moderate' ? '#f0e8d0' : '#d0e0f0';
+            badge.style.color = alert.severity === 'critical' ? '#8a1a1a' :
+                alert.severity === 'high' ? '#8a5a1a' :
+                alert.severity === 'moderate' ? '#8a6a2a' : '#1a4a7a';
+
+            document.getElementById('mSeverity').textContent = alert.severity.charAt(0).toUpperCase() + alert.severity.slice(
+            1);
+            document.getElementById('mRoute').textContent = alert.route || '—';
+            document.getElementById('mCurrent').textContent = alert.currentFare ? '₹' + alert.currentFare.toLocaleString() :
+                '—';
+            document.getElementById('mBaseline').textContent = alert.baseline ? '₹' + alert.baseline.toLocaleString() : '—';
+            document.getElementById('mDeviation').textContent = alert.deviation ? (alert.deviation > 0 ? '+' : '') + alert
+                .deviation + '%' : '—';
+            document.getElementById('mSource').textContent = alert.source || 'UDAAN Analytical Alert';
+            document.getElementById('mStatus').textContent = alert.read ? 'Read' : 'Active';
+            document.getElementById('mAffected').textContent = alert.airline || alert.airport || '—';
+            document.getElementById('modalDesc').textContent = alert.description;
+            document.getElementById('modalCause').textContent = alert.cause || 'Under investigation';
+            document.getElementById('modalAction').textContent = alert.action || 'Monitor and review.' + (alert.route ?
+                ' Consider booking within the recommended window.' : '');
+
+            document.getElementById('alertModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('alertModal').classList.remove('active');
+        }
+
+        // ============================================================
+        //  EVENT BINDINGS
+        // ============================================================
+
+        // Filter buttons
+        document.querySelectorAll('#filterRow .filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#filterRow .filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                renderAlerts();
+            });
+        });
+
+        // Sort
+        document.getElementById('sortSelect').addEventListener('change', function() {
+            currentSort = this.value;
+            renderAlerts();
+        });
+
+        // Mark all read
+        document.getElementById('markReadBtn').addEventListener('click', function() {
+            markAllRead();
+        });
+
+        // News categories
+        document.querySelectorAll('#newsCats .ns-cat').forEach(cat => {
+            cat.addEventListener('click', function() {
+                document.querySelectorAll('#newsCats .ns-cat').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                currentNewsCat = this.dataset.cat;
+                renderNews();
+            });
+        });
+
+        // Video search
+        document.getElementById('videoSearchBtn').addEventListener('click', function() {
+            const query = document.getElementById('videoSearchInput').value.trim();
+            if (query) {
+                const encoded = encodeURIComponent(query);
+                window.open(`https://www.youtube.com/results?search_query=${encoded}`, '_blank');
+            } else {
+                window.open('https://www.youtube.com/results?search_query=Indian+aviation+news', '_blank');
+            }
+        });
+
+        document.getElementById('videoSearchInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('videoSearchBtn').click();
+            }
+        });
+
+        // Intel alert buttons
+        document.getElementById('openAirfareIndex').addEventListener('click', function() {
+            window.location.href = 'airfare-index.html';
+        });
+
+        document.getElementById('intelMoreBtn').addEventListener('click', function() {
+            // Find the intel alert and show its details
+            const intelAlert = {
+                id: 'UDAAN-INTEL-001',
+                title: 'UDAAN Intelligence Alert: Metro Corridor Fare Pressure',
+                description: 'Airfare pressure is currently concentrated on major metro corridors. Users should monitor DEL–BOM and DEL–MAA before booking during high-demand periods. This alert is based on observed fare patterns and booking activity across monitored routes.',
+                severity: 'high',
+                route: 'Multiple',
+                currentFare: null,
+                baseline: null,
+                deviation: null,
+                cause: 'Concentrated demand on metro corridors',
+                action: 'Monitor fares and consider booking 22–30 days in advance for optimal pricing.',
+                source: 'UDAAN Intelligence',
+                time: '11:22 PM',
+                read: false
+            };
+            // Add to modal
+            const alert = intelAlert;
+            document.getElementById('modalTitle').textContent = alert.title;
+            document.getElementById('modalId').textContent = alert.id;
+            document.getElementById('modalTime').textContent = alert.time;
+
+            const badge = document.getElementById('modalBadge');
+            badge.textContent = 'HIGH';
+            badge.className = 'ms-badge';
+            badge.style.background = '#f0e0d0';
+            badge.style.color = '#8a5a1a';
+
+            document.getElementById('mSeverity').textContent = 'High';
+            document.getElementById('mRoute').textContent = alert.route || 'Multiple';
+            document.getElementById('mCurrent').textContent = '—';
+            document.getElementById('mBaseline').textContent = '—';
+            document.getElementById('mDeviation').textContent = '—';
+            document.getElementById('mSource').textContent = alert.source || 'UDAAN Intelligence';
+            document.getElementById('mStatus').textContent = 'Active';
+            document.getElementById('mAffected').textContent = 'DEL–BOM, DEL–MAA';
+            document.getElementById('modalDesc').textContent = alert.description;
+            document.getElementById('modalCause').textContent = alert.cause || 'Concentrated demand on metro corridors';
+            document.getElementById('modalAction').textContent = alert.action ||
+                'Monitor fares and consider booking 22–30 days in advance for optimal pricing.';
+
+            document.getElementById('alertModal').classList.add('active');
+        });
+
+        // Modal close
+        document.getElementById('modalClose').addEventListener('click', closeModal);
+        document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+        document.getElementById('alertModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        function init() {
+            renderAlerts();
+            renderNews();
+            renderVideos();
+            updateKPIs();
+
+            // Mark all read timeout - just for demo, after 2 seconds mark one as read to show the feature
+            setTimeout(() => {
+                // Mark first alert as read if not already
+                const first = ALERTS[0];
+                if (first && !isAlertRead(first.id)) {
+                    markAlertRead(first.id);
+                    renderAlerts();
+                    updateKPIs();
+                }
+            }, 3000);
+
+            console.log('UDAAN Alerts & Aviation News initialized.');
+            console.log('Prototype • Simulated Alert Feed');
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+</body>
+</html>
