@@ -10,7 +10,7 @@ Instead of looking at a single ticket price, UDAAN brings together multiple obse
 
 ## 🚀 Live Demo
 
-🔗 **Live Portal:** [ udaan-theta-blush.vercel.app ]
+🔗 **Live Portal:** [ https://udaan-theta-blush.vercel.app/ ]
 
 The live prototype demonstrates the UDAAN dashboard, Airfare Index, route analysis, airline comparison, booking-window analysis, heat maps and other intelligence modules.
 
